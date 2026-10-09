@@ -1,17 +1,1825 @@
 {
-  "_doc": "PIPELINE.md §7.5. entries: 'chNN:<ref key>' -> {doi|url, status verified|search|mismatch|none, verified_by, checked}. aliases: 'chNN:<cite author>,<year>' -> 'ref-<key>'. missing: citations to works absent from References (fix in item 2).",
-  "entries": {},
-  "aliases": {
-    "ch01:University of Manchester,1962": "ref-kilburn-1962",
-    "ch02:Peter Denning,1968": "ref-denning-1968",
-    "ch03:Barr et al.,2010": "ref-barr-2010a",
-    "ch12:IEEE Transactions on Computers,1978": "ref-censier-1978",
-    "ch16:SpecTLB,2011": "ref-barr-2011",
-    "ch16:Avatar,2024": "ref-memory-2024",
-    "ch16:FlexPointer,2023": "ref-compiler-2023"
+ "_doc": "PIPELINE.md §7.5. entries: 'chNN:<ref key>' -> {doi|url, status verified|search|mismatch|none, verified_by, checked}. aliases: 'chNN:<cite author>,<year>' -> 'ref-<key>'. missing: citations to works absent from References (fix in item 2).",
+ "entries": {
+  "ch01:denning-1970": {
+   "status": "verified",
+   "doi": "10.1145/356571.356573",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
   },
-  "missing": [
-    "ch01:[Bhattacharjee &amp; Lustig, 2017]",
-    "ch01:[Fotheringham, 1961; Kilburn et al., 1962]"
-  ]
+  "ch01:hennessy-2024": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch01:jacob-2010": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Book is 2008 (Morgan Kaufmann, Jacob, Ng, Wang); year 2010 wrong",
+   "checked": "2026-10-09"
+  },
+  "ch01:kilburn-1962": {
+   "status": "verified",
+   "doi": "10.1109/TEC.1962.5219356",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch01:kim-2014": {
+   "status": "verified",
+   "doi": "10.1109/ISCA.2014.6853210",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch01:kocher-2019": {
+   "status": "verified",
+   "doi": "10.1145/3399742",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch01:lipp-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity18/presentation/lipp",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch02:aho-1971": {
+   "status": "verified",
+   "doi": "10.1145/321623.321632",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch02:belady-1966": {
+   "status": "verified",
+   "doi": "10.1147/sj.52.0078",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch02:bhattacharjee-2017": {
+   "status": "verified",
+   "doi": "10.1007/978-3-031-01757-5",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch02:denning-1968": {
+   "status": "verified",
+   "doi": "10.1145/363095.363141",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch02:denning-1970": {
+   "status": "verified",
+   "doi": "10.1145/356571.356573",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch02:gorman-2004": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.kernel.org/doc/gorman/",
+   "verified_by": "kernel.org mirror of the book (Open Publication License)",
+   "checked": "2026-10-09"
+  },
+  "ch02:love-2010": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch02:silberschatz-2018": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch03:arcangeli-2011": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "KSM paper is Ottawa Linux Symposium 2009 (pp. 19–28), https://www.kernel.org/doc/ols/2009/ols2009-pages-19-28.pdf",
+   "checked": "2026-10-09"
+  },
+  "ch03:gandini-2016": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch03:levy-1982": {
+   "status": "verified",
+   "doi": "10.1109/MC.1982.1653971",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch03:silberschatz-2018": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch03:tanenbaum-2015": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch04:amd-2016a": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch04:amd-2023": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch04:amit-2017": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/atc17/technical-sessions/presentation/amit",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch04:arm-2019": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ihi0070/latest",
+   "verified_by": "Arm documentation ID IHI0070 (SMMUv3)",
+   "checked": "2026-10-09"
+  },
+  "ch04:arm-2020a": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch04:arm-2020b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/100310/latest",
+   "verified_by": "Arm documentation ID 100310 (MMU-600 TRM)",
+   "checked": "2026-10-09"
+  },
+  "ch04:arm-2023a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch04:arm-2023b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch04:benyehuda-2007": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch04:cox-2006": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real authors Menon, Cox, Zwaenepoel, 'Optimizing Network Virtualization in Xen', USENIX ATC 2006, https://www.usenix.org/legacy/event/usenix06/tech/menon.html",
+   "checked": "2026-10-09"
+  },
+  "ch04:intel-2020": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/content-details/774206/intel-virtualization-technology-for-directed-i-o-architecture-specification.html",
+   "verified_by": "intel.com VT-d spec landing page",
+   "checked": "2026-10-09"
+  },
+  "ch04:intel-2023a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch04:intel-2023b": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch04:intel-2024a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch04:intel-2024b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch04:kwon-2016": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/osdi16/technical-sessions/presentation/kwon",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch04:marwaha-2022": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch04:navarro-2002": {
+   "status": "verified",
+   "doi": "10.1145/1060289.1060299",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch04:nvidia-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://docs.nvidia.com/cuda/cuda-c-programming-guide/",
+   "verified_by": "docs.nvidia.com CUDA C++ Programming Guide (Unified Memory section)",
+   "checked": "2026-10-09"
+  },
+  "ch04:riscv-2019": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://github.com/riscv/riscv-isa-manual/releases/tag/Ratified-IMAFDQC",
+   "verified_by": "riscv-isa-manual release Ratified-IMAFDQC = 20191213",
+   "checked": "2026-10-09"
+  },
+  "ch04:riscv-2021": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://github.com/riscv/riscv-isa-manual/releases/tag/Priv-v1.12",
+   "verified_by": "riscv-isa-manual release Priv-v1.12 = 20211203",
+   "checked": "2026-10-09"
+  },
+  "ch04:rosenblum-1992": {
+   "status": "verified",
+   "doi": "10.1145/146941.146943",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch04:silicongraphics-1994": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch04:vilanova-2014": {
+   "status": "verified",
+   "doi": "10.1109/ISCA.2014.6853202",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch05:zha-2023": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "'(Forthcoming)' survey; no record found",
+   "checked": "2026-10-09"
+  },
+  "ch06:amd-2020a": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:amd-2020b": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:amd-2020c": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:amd-2023a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/24593.pdf",
+   "verified_by": "amd.com Pub 24593 (APM Vol 2)",
+   "checked": "2026-10-09"
+  },
+  "ch06:amd-2023b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/24593.pdf",
+   "verified_by": "amd.com Pub 24593 (APM Vol 2)",
+   "checked": "2026-10-09"
+  },
+  "ch06:amd-2023c": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:amd-2023d": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:anderson-2020": {
+   "status": "verified",
+   "doi": "10.1002/9781119644682",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch06:apple-2023": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2009": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2018": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2019": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2020": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2021a": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2021b": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2022": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0615/latest",
+   "verified_by": "Arm documentation ID DDI0615 (RME)",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2023a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2023b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch06:arm-2023c": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch06:bryant-2015": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:costan-2016": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://eprint.iacr.org/2016/086",
+   "verified_by": "IACR ePrint page: title+authors match",
+   "checked": "2026-10-09"
+  },
+  "ch06:hedayati-2019": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/atc19/presentation/hedayati-hodor",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch06:hennessy-2017": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2020a": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2020b": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2021": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2023": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2024a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2024b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2024c": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2024d": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch06:intel-2024e": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch06:kaplan-2016": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:kaplan-2017": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:kemerlis-2013": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "kGuard is USENIX Security 2012 (21st), https://www.usenix.org/conference/usenixsecurity12/technical-sessions/presentation/kemerlis",
+   "checked": "2026-10-09"
+  },
+  "ch06:li-2022": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity21/presentation/li-mengyuan",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch06:lipp-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity18/presentation/lipp",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch06:nvidia-2022a": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:nvidia-2022b": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:nvidia-2023": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:one-1996": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:park-2019": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/atc19/presentation/park-soyeon",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch06:riscv-2021a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://github.com/riscv/riscv-isa-manual/releases/tag/Priv-v1.12",
+   "verified_by": "riscv-isa-manual release Priv-v1.12 = 20211203",
+   "checked": "2026-10-09"
+  },
+  "ch06:riscv-2021b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://github.com/riscv/riscv-isa-manual/releases/tag/Priv-v1.12",
+   "verified_by": "riscv-isa-manual release Priv-v1.12 = 20211203",
+   "checked": "2026-10-09"
+  },
+  "ch06:riscv-2021c": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:serebryany-2020": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:silberschatz-2018": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:solar-1997": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://seclists.org/bugtraq/1997/Aug/63",
+   "verified_by": "Bugtraq archive: subject+author match",
+   "checked": "2026-10-09"
+  },
+  "ch06:tanenbaum-2015": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch06:the-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://docs.kernel.org/arch/x86/pti.html",
+   "verified_by": "docs.kernel.org PTI page",
+   "checked": "2026-10-09"
+  },
+  "ch06:vahldiekoberwagner-2019": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity19/presentation/vahldiek-oberwagner",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch06:vanbulck-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity18/presentation/bulck",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch06:volos-2020": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Graviton is OSDI 2018 (13th), https://www.usenix.org/conference/osdi18/presentation/volos (L06-01)",
+   "checked": "2026-10-09"
+  },
+  "ch06:weiser-2019": {
+   "status": "verified",
+   "doi": "10.14722/ndss.2019.23068",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch07:arm-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch07:bovet-2005": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch07:intel-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch07:lipp-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity18/presentation/lipp",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch07:riscv-2021": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://github.com/riscv/riscv-isa-manual/releases/tag/Priv-v1.12",
+   "verified_by": "riscv-isa-manual release Priv-v1.12 = 20211203",
+   "checked": "2026-10-09"
+  },
+  "ch07:silberschatz-2018": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch07:vesely-2015": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch08:corbato-1968": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch08:gregg-2020": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch08:johnson-1994": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.vldb.org/conf/1994/P439.PDF",
+   "verified_by": "VLDB 1994 proceedings PDF: title+authors match",
+   "checked": "2026-10-09"
+  },
+  "ch09:blagodurov-2011": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixatc11/case-numa-aware-contention-management-multicore-systems",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch09:bovet-2005": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch09:gorman-2004": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.kernel.org/doc/gorman/",
+   "verified_by": "kernel.org mirror of the book (Open Publication License)",
+   "checked": "2026-10-09"
+  },
+  "ch09:guo-2017": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/atc17/technical-sessions/presentation/guo-fan",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch09:silberschatz-2018": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch10:arm-2019": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ihi0070/latest",
+   "verified_by": "Arm documentation ID IHI0070 (SMMUv3)",
+   "checked": "2026-10-09"
+  },
+  "ch10:benyehuda-2006": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch10:infiniband-2020": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch10:intel-2020": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/content-details/774206/intel-virtualization-technology-for-directed-i-o-architecture-specification.html",
+   "verified_by": "intel.com VT-d spec landing page",
+   "checked": "2026-10-09"
+  },
+  "ch10:nvidia-2022": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch10:pcisig-2019": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch11:apple-2021": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch11:apple-2024": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch11:arm-2024": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch11:brendan-2019": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch11:cox-2006": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real authors Menon, Cox, Zwaenepoel, 'Optimizing Network Virtualization in Xen', USENIX ATC 2006, https://www.usenix.org/legacy/event/usenix06/tech/menon.html",
+   "checked": "2026-10-09"
+  },
+  "ch11:intel-2023": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch11:intel-2024": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch11:jedec-2023": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch11:nvidia-2023": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch11:nvidia-2024a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://docs.nvidia.com/cuda/cuda-c-programming-guide/",
+   "verified_by": "docs.nvidia.com CUDA C++ Programming Guide (Unified Memory section)",
+   "checked": "2026-10-09"
+  },
+  "ch11:nvidia-2024b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/",
+   "verified_by": "docs.nvidia.com CUDA C++ Best Practices Guide",
+   "checked": "2026-10-09"
+  },
+  "ch11:pcisig-2022": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch12:amd-2024": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch12:arm-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch12:bhattacharjee-2019": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch12:brown-2020": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://proceedings.neurips.cc/paper_files/paper/2020/hash/1457c0d6bfcb4967418bfb8ac142f64a-Abstract.html",
+   "verified_by": "proceedings.neurips.cc paper page",
+   "checked": "2026-10-09"
+  },
+  "ch12:cekleov-1997": {
+   "status": "verified",
+   "doi": "10.1109/40.621215",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch12:censier-1978": {
+   "status": "verified",
+   "doi": "10.1109/TC.1978.1675013",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch12:confidential-2023": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "CryptoMMU real: Alam et al., 'CryptoMMU: Enabling Scalable and Secure Access Control of Third-Party Accelerators', MICRO 2023, doi:10.1145/3613424.3614311 (L12-05)",
+   "checked": "2026-10-09"
+  },
+  "ch12:gpu-2025": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Placeholder author; no 'Lightweight Virtual Memory for GPUs (LVM)' MICRO 2025 record found",
+   "checked": "2026-10-09"
+  },
+  "ch12:intel-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch12:lenoski-1990": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real: Lenoski et al., 'The DASH Prototype: Implementation and Performance', ISCA 1992, doi:10.1109/ISCA.1992.753307 (not ASPLOS 1990)",
+   "checked": "2026-10-09"
+  },
+  "ch12:liu-2023": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "TunneLs real: Zhang et al., 'TunneLs for Bootlegging: Fully Reverse-Engineering GPU TLBs...', ACM CCS 2023, doi:10.1145/3576915.3616672 (L12-04)",
+   "checked": "2026-10-09"
+  },
+  "ch12:maass-2020": {
+   "status": "verified",
+   "doi": "10.1145/3409454",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch12:memory-2024": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Placeholder author; no 'DMT' ASPLOS 2024 record found",
+   "checked": "2026-10-09"
+  },
+  "ch12:menychtas-2023": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "GRIT real: Wang et al., 'GRIT: Enhancing Multi-GPU Performance with Fine-Grained Dynamic Page Placement', HPCA 2024, doi:10.1109/HPCA57654.2024.00085 (authors/title wrong)",
+   "checked": "2026-10-09"
+  },
+  "ch12:meta-2024": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://github.com/meta-llama/llama3/blob/main/MODEL_CARD.md",
+   "verified_by": "official meta-llama repo",
+   "checked": "2026-10-09"
+  },
+  "ch12:nvidia-2023a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://docs.nvidia.com/datacenter/tesla/mig-user-guide/",
+   "verified_by": "docs.nvidia.com MIG User Guide",
+   "checked": "2026-10-09"
+  },
+  "ch12:nvidia-2023b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://docs.nvidia.com/cuda/cuda-c-programming-guide/",
+   "verified_by": "docs.nvidia.com CUDA C++ Programming Guide (Unified Memory section)",
+   "checked": "2026-10-09"
+  },
+  "ch12:nvidia-2023c": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://docs.nvidia.com/cuda/cuda-c-programming-guide/",
+   "verified_by": "docs.nvidia.com CUDA C++ Programming Guide (Unified Memory section)",
+   "checked": "2026-10-09"
+  },
+  "ch12:openai-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://arxiv.org/abs/2303.08774",
+   "verified_by": "arxiv.org abs page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch12:touvron-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://arxiv.org/abs/2302.13971",
+   "verified_by": "arxiv.org abs page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch12:university-2023": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "IDYLL real: Li et al., 'IDYLL: Enhancing Page Translation in Multi-GPUs via Light Weight PTE Invalidations', MICRO 2023, doi:10.1145/3613424.3614269 (L12-03)",
+   "checked": "2026-10-09"
+  },
+  "ch12:vaswani-2017": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+   "verified_by": "proceedings.neurips.cc paper page",
+   "checked": "2026-10-09"
+  },
+  "ch12:virtual-2025": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "HugeGPT real: Jia et al., PACT 2023, doi:10.1109/PACT58117.2023.00014 (L12-06)",
+   "checked": "2026-10-09"
+  },
+  "ch12:wang-2023": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Trans-FW real: Li et al., 'Trans-FW: Short Circuiting Page Table Walk in Multi-GPU Systems via Remote Forwarding', HPCA 2023, doi:10.1109/HPCA56546.2023.10071054 (L12-02)",
+   "checked": "2026-10-09"
+  },
+  "ch12:xlateam-2019": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Placeholder; no XLA paper at MLSys 2019",
+   "checked": "2026-10-09"
+  },
+  "ch13:bhatotia-2012": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "iDedup real authors Srinivasan, Bisson, Goodson, Voruganti, FAST 2012, https://www.usenix.org/conference/fast12/idedup-latency-aware-inline-data-deduplication-primary-storage",
+   "checked": "2026-10-09"
+  },
+  "ch13:hashemi-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://proceedings.mlr.press/v80/hashemi18a.html",
+   "verified_by": "PMLR v80 page: title+authors match",
+   "checked": "2026-10-09"
+  },
+  "ch13:vietri-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/hotstorage18/presentation/vietri",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch14:arm-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch14:basu-2013": {
+   "status": "verified",
+   "doi": "10.1145/2485922.2485943",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:bhattacharjee-2017": {
+   "status": "verified",
+   "doi": "10.1007/978-3-031-01757-5",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:bhattacharjee-2019": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch14:brown-2020": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://proceedings.neurips.cc/paper_files/paper/2020/hash/1457c0d6bfcb4967418bfb8ac142f64a-Abstract.html",
+   "verified_by": "proceedings.neurips.cc paper page",
+   "checked": "2026-10-09"
+  },
+  "ch14:denning-1970": {
+   "status": "verified",
+   "doi": "10.1145/356571.356573",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:intel-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch14:jacob-1998": {
+   "status": "verified",
+   "doi": "10.1109/40.710872",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:kwon-2023": {
+   "status": "verified",
+   "doi": "10.1145/3600006.3613165",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:memory-2026": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "arXiv:2512.24637 real: W. Shen et al., 'Towards Fully-fledged GPU Multitasking via Proactive Memory Scheduling', https://arxiv.org/abs/2512.24637 (placeholder author, title differs)",
+   "checked": "2026-10-09"
+  },
+  "ch14:menychtas-2024": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "GRIT real: Wang et al., 'GRIT: Enhancing Multi-GPU Performance with Fine-Grained Dynamic Page Placement', HPCA 2024, doi:10.1109/HPCA57654.2024.00085 (authors/title wrong)",
+   "checked": "2026-10-09"
+  },
+  "ch14:nvidia-2023a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://github.com/NVIDIA/FasterTransformer",
+   "verified_by": "official NVIDIA repo",
+   "checked": "2026-10-09"
+  },
+  "ch14:nvidia-2023b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://docs.nvidia.com/cuda/cuda-c-programming-guide/",
+   "verified_by": "docs.nvidia.com CUDA C++ Programming Guide (Unified Memory section)",
+   "checked": "2026-10-09"
+  },
+  "ch14:pham-2012": {
+   "status": "verified",
+   "doi": "10.1109/MICRO.2012.32",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:pichai-2014": {
+   "status": "verified",
+   "doi": "10.1145/2541940.2541942",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:shun-2012": {
+   "status": "verified",
+   "doi": "10.1145/2312005.2312018",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:vaswani-2017": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+   "verified_by": "proceedings.neurips.cc paper page",
+   "checked": "2026-10-09"
+  },
+  "ch14:yan-2019": {
+   "status": "verified",
+   "doi": "10.1145/3307650.3322223",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch14:yu-2022": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/osdi22/presentation/yu",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch15:abhishek-2021": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "MIND real first author S.-s. Lee et al., SOSP 2021, doi:10.1145/3477132.3483561",
+   "checked": "2026-10-09"
+  },
+  "ch15:fatima-2023": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real: A. Fatima et al., 'vPIM: Efficient Virtual Address Translation for Scalable Processing-in-Memory Architectures', DAC 2023, doi:10.1109/DAC56929.2023.10247745 (author/title wrong)",
+   "checked": "2026-10-09"
+  },
+  "ch15:h2m2researchteam-2025": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Placeholder author; not found on arXiv",
+   "checked": "2026-10-09"
+  },
+  "ch15:hao-2025": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "pulse real first author Y. Tang et al., ASPLOS 2025, doi:10.1145/3669940.3707253",
+   "checked": "2026-10-09"
+  },
+  "ch15:imprintresearchteam-nd": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Placeholder author, no year; not found",
+   "checked": "2026-10-09"
+  },
+  "ch15:jayneelgandhi-2013": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Direct Segments real first author A. Basu et al., ISCA 2013, doi:10.1145/2485922.2485943",
+   "checked": "2026-10-09"
+  },
+  "ch15:maruf-2020": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/atc20/presentation/al-maruf",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch15:ndpageresearchteam-2025": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real: Q. Jiang et al., 'NDPage: Efficient Address Translation for Near-Data Processing Architectures...', https://arxiv.org/abs/2502.14220 (placeholder author, title wrong)",
+   "checked": "2026-10-09"
+  },
+  "ch15:norman-2023": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real title 'TPU v4: An Optically Reconfigurable Supercomputer for Machine Learning with Hardware Support for Embeddings', Jouppi et al., ISCA 2023, doi:10.1145/3579371.3589350 (first author listed by given name)",
+   "checked": "2026-10-09"
+  },
+  "ch15:utopiaresearchteam-2022": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real: K. Kanellopoulos et al., 'Utopia: Fast and Efficient Address Translation via Hybrid Restrictive & Flexible Virtual-to-Physical Address Mappings', https://arxiv.org/abs/2211.12205 (placeholder author)",
+   "checked": "2026-10-09"
+  },
+  "ch15:xulong-2024": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "GRIT real: Wang et al., 'GRIT: Enhancing Multi-GPU Performance with Fine-Grained Dynamic Page Placement', HPCA 2024, doi:10.1109/HPCA57654.2024.00085 (authors/title wrong)",
+   "checked": "2026-10-09"
+  },
+  "ch16:amd-2017": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch16:arm-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0487/latest",
+   "verified_by": "Arm documentation ID DDI0487 (Arm ARM), latest issue",
+   "checked": "2026-10-09"
+  },
+  "ch16:barr-2011": {
+   "status": "verified",
+   "doi": "10.1145/2000064.2000101",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch16:compiler-2023": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Placeholder; real FlexPointer is Chen et al. ACM TACO 2023 doi:10.1145/3579854 (L16-06)",
+   "checked": "2026-10-09"
+  },
+  "ch16:gosakan-2023": {
+   "status": "verified",
+   "doi": "10.1145/3582016.3582021",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch16:graph-2023": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Placeholder; real SnakeByte is Lee et al. HPCA 2023 page merging, not Markov prefetching (L16-05)",
+   "checked": "2026-10-09"
+  },
+  "ch16:heterogeneous-2024": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "IAS real: Liu et al., 'Intermediate Address Space: virtual memory optimization of heterogeneous architectures...', ACM TACO 2024, doi:10.1145/3659207 (L16-07)",
+   "checked": "2026-10-09"
+  },
+  "ch16:intel-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+   "verified_by": "intel.com manuals page (SDM + Optimization Reference Manual)",
+   "checked": "2026-10-09"
+  },
+  "ch16:memory-2024": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Avatar real: Park et al., 'A Case for Speculative Address Translation with Rapid Validation for GPUs', MICRO 2024, doi:10.1109/MICRO61859.2024.00029 (placeholder author; L16-02)",
+   "checked": "2026-10-09"
+  },
+  "ch16:pham-2012": {
+   "status": "verified",
+   "doi": "10.1109/MICRO.2012.32",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch16:pichai-2014": {
+   "status": "verified",
+   "doi": "10.1145/2541940.2541942",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch17:vanbulck-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity18/presentation/bulck",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch18:canella-2019": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity19/presentation/canella",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch18:gruss-2017": {
+   "status": "verified",
+   "doi": "10.1007/978-3-319-62105-0_11",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch18:horn-2022": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "BHI real authors Barberis, Frigo, Muench, Bos, Giuffrida, USENIX Security 2022, https://www.usenix.org/conference/usenixsecurity22/presentation/barberis",
+   "checked": "2026-10-09"
+  },
+  "ch18:lipp-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity18/presentation/lipp",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch18:vanbulck-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity18/presentation/bulck",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch18:yarom-2014": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/usenixsecurity14/technical-sessions/presentation/yarom",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch19:almaruf-2023": {
+   "status": "verified",
+   "doi": "10.1145/3582016.3582063",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch19:jang-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/atc23/presentation/jang",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch19:kim-2021": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.usenix.org/conference/atc21/presentation/kim-jonghyeon",
+   "verified_by": "usenix.org paper page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch19:pan-2025": {
+   "status": "verified",
+   "doi": "10.1145/3731569.3764842",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch19:pcisig-2020": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch19:tang-2025": {
+   "status": "verified",
+   "doi": "10.1145/3669940.3707253",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch19:wang-2024": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch19:zhang-2025": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real first author C. Chen et al., 'Next-Gen Computing Systems with Compute Express Link: a Comprehensive Survey', https://arxiv.org/abs/2412.20249",
+   "checked": "2026-10-09"
+  },
+  "ch20:amd-2022": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf",
+   "verified_by": "amd.com Pub 48882 (now rev 3.10)",
+   "checked": "2026-10-09"
+  },
+  "ch20:arm-2022b": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://developer.arm.com/documentation/ddi0615/latest",
+   "verified_by": "Arm documentation ID DDI0615 (RME)",
+   "checked": "2026-10-09"
+  },
+  "ch20:deng-2023b": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "IOTLB-SC real: Tiemann et al., 'IOTLB-SC: An Accelerator-Independent Leakage Source in Modern Cloud Systems', https://arxiv.org/abs/2202.11623 (authors/venue wrong)",
+   "checked": "2026-10-09"
+  },
+  "ch20:lee-2025": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://arxiv.org/abs/2501.11771",
+   "verified_by": "arxiv.org abs page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch20:li-2023": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "No ASPLOS 2023 paper with this title/authors found (Crossref)",
+   "checked": "2026-10-09"
+  },
+  "ch20:mccoyd-2023": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "No HotOS 2023 'Attestation Chains' record found (Crossref, arXiv)",
+   "checked": "2026-10-09"
+  },
+  "ch20:radev-2024": {
+   "status": "verified",
+   "doi": "10.14722/ndss.2024.24763",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch20:shen-2024": {
+   "status": "none",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "No ASPLOS 2024 'DejaVu' record found (Crossref, arXiv)",
+   "checked": "2026-10-09"
+  },
+  "ch20:wang-2024": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://arxiv.org/abs/2408.11601",
+   "verified_by": "arxiv.org abs page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch20:wilke-2021": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "arXiv:2105.13824 is 'SEVerity: Code Injection Attacks against Encrypted Virtual Machines' (Morbitzer et al.), not SEVurity (Wilke et al.)",
+   "checked": "2026-10-09"
+  },
+  "ch20:zhu-2024": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://arxiv.org/abs/2409.03992",
+   "verified_by": "arxiv.org abs page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch21:almatary-2023": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://arxiv.org/abs/2310.00933",
+   "verified_by": "arxiv.org abs page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch21:ampere-2025": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://arxiv.org/abs/2511.17773",
+   "verified_by": "arxiv.org abs page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch21:arm-2021": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch21:bauereiss-2024": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "Real first author A. L. Duque Antón et al., VeriCHERI, ICCAD 2024, doi:10.1145/3676536.3676841",
+   "checked": "2026-10-09"
+  },
+  "ch21:cisa-2023": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch21:guzairov-2026": {
+   "status": "verified",
+   "doi": "10.1007/978-3-032-38692-2_31",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch21:jiang-2026": {
+   "status": "mismatch",
+   "doi": null,
+   "url": null,
+   "verified_by": "browser check 2026-10-09",
+   "note": "arXiv:2601.11786 real first author T. Noh et al., 'ARM MTE Performance in Practice', https://arxiv.org/abs/2601.11786",
+   "checked": "2026-10-09"
+  },
+  "ch21:kim-2024": {
+   "status": "verified",
+   "doi": "10.1109/SP61157.2025.00039",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch21:microsoft-2019": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch21:serebryany-2018": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://arxiv.org/abs/1802.09517",
+   "verified_by": "arxiv.org abs page: title+first author match",
+   "checked": "2026-10-09"
+  },
+  "ch21:watson-2023a": {
+   "status": "verified",
+   "doi": null,
+   "url": "https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-987.html",
+   "verified_by": "Cambridge tech report page: CHERI ISA v9, Watson et al.",
+   "checked": "2026-10-09"
+  },
+  "ch21:watson-2023b": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch22:pcisig-2022": {
+   "status": "search",
+   "doi": null,
+   "url": null,
+   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "note": "official landing page not yet verified",
+   "checked": "2026-10-09"
+  },
+  "ch22:schieffer-2024": {
+   "status": "verified",
+   "doi": "10.1145/3673038.3673110",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  },
+  "ch22:wahlgren-2025": {
+   "status": "verified",
+   "doi": "10.1109/IISWC66894.2025.00038",
+   "url": null,
+   "verified_by": "Crossref: title+first author+year match",
+   "checked": "2026-10-09"
+  }
+ },
+ "aliases": {
+  "ch01:University of Manchester,1962": "ref-kilburn-1962",
+  "ch02:Peter Denning,1968": "ref-denning-1968",
+  "ch03:Barr et al.,2010": "ref-barr-2010a",
+  "ch12:IEEE Transactions on Computers,1978": "ref-censier-1978",
+  "ch16:SpecTLB,2011": "ref-barr-2011",
+  "ch16:Avatar,2024": "ref-memory-2024",
+  "ch16:FlexPointer,2023": "ref-compiler-2023"
+ },
+ "missing": [
+  "ch01:[Bhattacharjee &amp; Lustig, 2017]",
+  "ch01:[Fotheringham, 1961; Kilburn et al., 1962]"
+ ]
 }
