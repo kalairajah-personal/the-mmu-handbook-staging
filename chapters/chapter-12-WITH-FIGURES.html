@@ -1122,7 +1122,14 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h3>2.1 Hardware Configuration</h3>
 
 <strong>System Specifications:</strong>
-<p>- <strong>GPUs:</strong> 512 NVIDIA V100 GPUs (32 GB HBM2 each) - <strong>Topology:</strong> 16 servers × 32 GPUs per server - <strong>Interconnect:</strong> Mellanox InfiniBand EDR (100 Gbps per link) - <strong>CPU:</strong> Dual Intel Xeon Platinum 8168 (48 cores total per server) - <strong>Memory:</strong> 768 GB DDR4-2666 per server - <strong>OS:</strong> Linux 5.10 with modified kernel TLB shootdown instrumentation</p>
+<ul>
+<li><strong>GPUs:</strong> 512 NVIDIA V100 GPUs (32 GB HBM2 each)</li>
+<li><strong>Topology:</strong> 16 servers × 32 GPUs per server</li>
+<li><strong>Interconnect:</strong> Mellanox InfiniBand EDR (100 Gbps per link)</li>
+<li><strong>CPU:</strong> Dual Intel Xeon Platinum 8168 (48 cores total per server)</li>
+<li><strong>Memory:</strong> 768 GB DDR4-2666 per server</li>
+<li><strong>OS:</strong> Linux 5.10 with modified kernel TLB shootdown instrumentation</li>
+</ul>
 
 <strong>Network Topology:</strong>
 <pre><code>    ┌─────────────────────────────────────────┐
@@ -1377,9 +1384,19 @@ GPU 2:
 
 <p>Historical reasons: Linux kernel TLB shootdown was designed for <strong>CPUs</strong> with 4-128 cores, not 512 GPUs.</p>
 
-<p>For CPUs: - 128 cores × 10µs = 1.28 ms (acceptable, < 1% overhead) - Frequency: 1-2 shootdowns/sec (rare page faults) - Result: 0.001% overhead (negligible)</p>
+<p>For CPUs:</p>
+<ul>
+<li>128 cores × 10µs = 1.28 ms (acceptable, &lt; 1% overhead)</li>
+<li>Frequency: 1-2 shootdowns/sec (rare page faults)</li>
+<li>Result: 0.001% overhead (negligible)</li>
+</ul>
 
-<p>For GPUs: - 512 GPUs × 10µs = 5.1 ms (problematic, 3-23% overhead) - Frequency: 11-74 shootdowns/sec (frequent allocation/deallocation) - Result: 6-23% overhead (catastrophic)</p>
+<p>For GPUs:</p>
+<ul>
+<li>512 GPUs × 10µs = 5.1 ms (problematic, 3-23% overhead)</li>
+<li>Frequency: 11-74 shootdowns/sec (frequent allocation/deallocation)</li>
+<li>Result: 6-23% overhead (catastrophic)</li>
+</ul>
 
 <strong>The kernel code path is identical.</strong> No one optimized for GPU scale until GRIT exposed the problem.
 
@@ -1391,11 +1408,25 @@ GPU 2:
 
 <strong>Key Measurement Insights:</strong>
 
-<p>1. <strong>Translation Sharing:</strong> 60-80% of translations are identical across all 512 GPUs - Model weights: Same on all GPUs (data parallelism) - Framework code (PyTorch): Mapped identically - Optimizer state: Identical structure, different values (but same PTEs)</p>
+<p>1. <strong>Translation Sharing:</strong> 60-80% of translations are identical across all 512 GPUs</p>
+<ul>
+<li>Model weights: Same on all GPUs (data parallelism)</li>
+<li>Framework code (PyTorch): Mapped identically</li>
+<li>Optimizer state: Identical structure, different values (but same PTEs)</li>
+</ul>
 
-<p>2. <strong>Invalidation Locality:</strong> Most invalidations affect only 10-15% of GPUs - Gradient tensors: Only GPUs in same data-parallel group need invalidation - Temporary buffers: Often single-GPU allocations - Broadcast to all 512 is wasteful (85% don't need invalidation)</p>
+<p>2. <strong>Invalidation Locality:</strong> Most invalidations affect only 10-15% of GPUs</p>
+<ul>
+<li>Gradient tensors: Only GPUs in same data-parallel group need invalidation</li>
+<li>Temporary buffers: Often single-GPU allocations</li>
+<li>Broadcast to all 512 is wasteful (85% don't need invalidation)</li>
+</ul>
 
-<p>3. <strong>Batching Opportunity:</strong> 62% of shootdowns occur in clusters - Example: Free 10 gradient tensors → 10 shootdowns within 100µs - Could batch into 1 shootdown (10× reduction)</p>
+<p>3. <strong>Batching Opportunity:</strong> 62% of shootdowns occur in clusters</p>
+<ul>
+<li>Example: Free 10 gradient tensors → 10 shootdowns within 100µs</li>
+<li>Could batch into 1 shootdown (10× reduction)</li>
+</ul>
 
 <hr />
 
@@ -1423,7 +1454,11 @@ Annual gain (10K GPUs): 10,000 × 24.5% × $10/hr × 8760 hr/year = $214M</code>
 
 <p>GRIT's measurements drove hardware changes:</p>
 
-<p>- <strong>NVSwitch 3.0 (2024):</strong> Added hardware multicast for TLB invalidation (Section 12.2.4) - <strong>AMD MI300X:</strong> Chiplet architecture avoids cross-die shootdowns entirely - <strong>Intel Ponte Vecchio:</strong> Tile-based TLB partitioning</p>
+<ul>
+<li><strong>NVSwitch 3.0 (2024):</strong> Added hardware multicast for TLB invalidation (Section 12.2.4)</li>
+<li><strong>AMD MI300X:</strong> Chiplet architecture avoids cross-die shootdowns entirely</li>
+<li><strong>Intel Ponte Vecchio:</strong> Tile-based TLB partitioning</li>
+</ul>
 
 <p>All motivated by GRIT's demonstration that 23.7% overhead is unacceptable.</p>
 
@@ -1434,18 +1469,36 @@ Annual gain (10K GPUs): 10,000 × 24.5% × $10/hr × 8760 hr/year = $214M</code>
 <h3>7.1 Measurement Limitations</h3>
 
 <strong>What GRIT Measured:</strong>
-<p>- TLB shootdown latency (yes) - Frequency (yes) - Breakdown by phase (yes)</p>
+<ul>
+<li>TLB shootdown latency (yes)</li>
+<li>Frequency (yes)</li>
+<li>Breakdown by phase (yes)</li>
+</ul>
 
 <strong>What GRIT Did NOT Measure:</strong>
-<p>- Application-level impact (does 23.7% TLB overhead = 23.7% slower training?) - Answer: No, because GPUs pipeline computation with memory operations - Real slowdown: ~18% (measured in follow-up work) - Energy cost (shootdowns consume power but don't compute) - Network congestion (do shootdowns interfere with all-reduce traffic?)</p>
+<ul>
+<li>Application-level impact (does 23.7% TLB overhead = 23.7% slower training?)</li>
+<li>Answer: No, because GPUs pipeline computation with memory operations</li>
+<li>Real slowdown: ~18% (measured in follow-up work)</li>
+<li>Energy cost (shootdowns consume power but don't compute)</li>
+<li>Network congestion (do shootdowns interfere with all-reduce traffic?)</li>
+</ul>
 
 <h3>7.2 Workload Generality</h3>
 
 <p>GRIT tested 4 workloads (ResNet, GPT-2, BERT, DLRM). Questions:</p>
 
-<p>- <strong>Does overhead vary by model architecture?</strong> - Yes: CNNs (ResNet) show 12% overhead (fewer allocations) - Transformers (GPT-2, BERT) show 23-28% (frequent attention allocation)</p>
+<ul>
+<li><strong>Does overhead vary by model architecture?</strong></li>
+<li>Yes: CNNs (ResNet) show 12% overhead (fewer allocations)</li>
+<li>Transformers (GPT-2, BERT) show 23-28% (frequent attention allocation)</li>
+</ul>
   
-<p>- <strong>What about inference?</strong> - Not measured (GRIT focused on training) - Follow-up: Inference shows 3-5% overhead (less dynamic allocation)</p>
+<ul>
+<li><strong>What about inference?</strong></li>
+<li>Not measured (GRIT focused on training)</li>
+<li>Follow-up: Inference shows 3-5% overhead (less dynamic allocation)</li>
+</ul>
 
 <h3>7.3 Scale Limitations</h3>
 
@@ -1472,13 +1525,25 @@ Clearly, the serial protocol doesn't scale beyond 1,024 GPUs. This motivated dir
 <h3>9. Reproducibility and Open Source</h3>
 
 <strong>Code Availability:</strong>
-<p>- Kernel instrumentation patches: Available on GitHub (Linux 5.10 fork) - Profiling tools: Released as open-source (grit-profiler) - Datasets: Training configurations and scripts published</p>
+<ul>
+<li>Kernel instrumentation patches: Available on GitHub (Linux 5.10 fork)</li>
+<li>Profiling tools: Released as open-source (grit-profiler)</li>
+<li>Datasets: Training configurations and scripts published</li>
+</ul>
 
 <strong>Reproducibility Notes:</strong>
-<p>- Requires 512-GPU cluster ($$$$, limited access) - InfiniBand network (specific to this setup, different from NVLink) - Results may vary on newer GPUs (H100 has different TLB latency)</p>
+<ul>
+<li>Requires 512-GPU cluster ($$$$, limited access)</li>
+<li>InfiniBand network (specific to this setup, different from NVLink)</li>
+<li>Results may vary on newer GPUs (H100 has different TLB latency)</li>
+</ul>
 
 <strong>Community Impact:</strong>
-<p>- 12 research groups have reproduced GRIT's measurements (confirmed 20-25% overhead) - 3 groups reported <em>higher</em> overhead (30-35%) on Transformers with long sequences - 1 group reported <em>lower</em> overhead (15%) on systems with NVSwitch 2.0 (hardware broadcast)</p>
+<ul>
+<li>12 research groups have reproduced GRIT's measurements (confirmed 20-25% overhead)</li>
+<li>3 groups reported <em>higher</em> overhead (30-35%) on Transformers with long sequences</li>
+<li>1 group reported <em>lower</em> overhead (15%) on systems with NVSwitch 2.0 (hardware broadcast)</li>
+</ul>
 
 <hr />
 
@@ -1578,11 +1643,25 @@ Trans-FW (With Forwarding):
 
 <strong>Hardware Components Added:</strong>
 
-<p>1. <strong>Translation Broadcast Network</strong> - Dedicated network separate from data traffic - Low latency (target: <10µs for 512 GPUs) - Multicast capability (one message → all GPUs)</p>
+<p>1. <strong>Translation Broadcast Network</strong></p>
+<ul>
+<li>Dedicated network separate from data traffic</li>
+<li>Low latency (target: <10µs for 512 GPUs) - Multicast capability (one message → all GPUs)</li>
+</ul>
 
-<p>2. <strong>Translation Cache Coherence Protocol</strong> - Directory tracking which GPUs have which translations - Invalidation messages when page tables change - ACK collection via reduction tree</p>
+<p>2. <strong>Translation Cache Coherence Protocol</strong></p>
+<ul>
+<li>Directory tracking which GPUs have which translations</li>
+<li>Invalidation messages when page tables change</li>
+<li>ACK collection via reduction tree</li>
+</ul>
 
-<p>3. <strong>Per-GPU Translation Buffer</strong> - Temporary storage for incoming translations - 64-entry FIFO queue (empirically determined) - Asynchronous installation (doesn't block compute)</p>
+<p>3. <strong>Per-GPU Translation Buffer</strong></p>
+<ul>
+<li>Temporary storage for incoming translations</li>
+<li>64-entry FIFO queue (empirically determined)</li>
+<li>Asynchronous installation (doesn't block compute)</li>
+</ul>
 
 <strong>Modified TLB Miss Handler:</strong>
 
@@ -1608,7 +1687,11 @@ void handle_tlb_miss(virtual_address va) {
 <h3>4. Measured Results</h3>
 
 <strong>Experimental Setup:</strong>
-<p>- <strong>GPUs:</strong> 8 NVIDIA V100 GPUs (limited scale vs GRIT's 512) - <strong>Interconnect:</strong> NVLink 2.0 (intra-server), InfiniBand EDR (inter-server) - <strong>Workload:</strong> ResNet-50, BERT-Base, GPT-2 (1.5B parameters)</p>
+<ul>
+<li><strong>GPUs:</strong> 8 NVIDIA V100 GPUs (limited scale vs GRIT's 512)</li>
+<li><strong>Interconnect:</strong> NVLink 2.0 (intra-server), InfiniBand EDR (inter-server)</li>
+<li><strong>Workload:</strong> ResNet-50, BERT-Base, GPT-2 (1.5B parameters)</li>
+</ul>
 
 <strong>Key Finding: 60-80% Reduction in Redundant Walks</strong>
 
@@ -1695,7 +1778,11 @@ Correct. Trans-FW has a <strong>sweet spot</strong>:
 <p>- Broadcasts to <strong>all 512 GPUs</strong> even if only 10 need the translation</p>
 
 <strong>Directory Solution:</strong>
-<p>- Track which GPUs have which translations - Only broadcast to GPUs that <strong>don't already have it</strong> - Reduces fanout from 512 → ~15 average (IDYLL paper measured this)</p>
+<ul>
+<li>Track which GPUs have which translations</li>
+<li>Only broadcast to GPUs that <strong>don't already have it</strong></li>
+<li>Reduces fanout from 512 → ~15 average (IDYLL paper measured this)</li>
+</ul>
 
 <p>This insight directly motivated IDYLL (Section 12.2.4), which implements directory-based coherence.</p>
 
@@ -1704,13 +1791,25 @@ Correct. Trans-FW has a <strong>sweet spot</strong>:
 <h3>7. Hardware Cost Analysis</h3>
 
 <strong>Silicon Area:</strong>
-<p>- Translation broadcast network: ~2mm² (5nm process) - Translation buffer (64 entries): ~0.5mm² - Directory controller: ~1mm² - Total: 3.5mm² per GPU</p>
+<ul>
+<li>Translation broadcast network: ~2mm² (5nm process)</li>
+<li>Translation buffer (64 entries): ~0.5mm²</li>
+<li>Directory controller: ~1mm²</li>
+<li>Total: 3.5mm² per GPU</li>
+</ul>
 
 <strong>Power:</strong>
-<p>- Idle: 50mW (directory lookup) - Active broadcast: 200mW (multicast network) - Peak: 250mW per GPU × 8 GPUs = 2W system</p>
+<ul>
+<li>Idle: 50mW (directory lookup)</li>
+<li>Active broadcast: 200mW (multicast network)</li>
+<li>Peak: 250mW per GPU × 8 GPUs = 2W system</li>
+</ul>
 
 <strong>Cost:</strong>
-<p>- R&D: Estimated $50M (custom MMU redesign) - Per-chip: ~$5 added manufacturing cost (3.5mm² silicon)</p>
+<ul>
+<li>R&D: Estimated $50M (custom MMU redesign)</li>
+<li>Per-chip: ~$5 added manufacturing cost (3.5mm² silicon)</li>
+</ul>
 
 <strong>Economic Justification:</strong>
 
@@ -1728,10 +1827,18 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 <h3>8. Workload Sensitivity</h3>
 
 <strong>When Trans-FW Helps:</strong>
-<p>- Data-parallel training (all GPUs access same model weights) - Large models (>1B parameters, high translation reuse) - Framework-heavy workloads (PyTorch/TensorFlow runtime shared)</p>
+<ul>
+<li>Data-parallel training (all GPUs access same model weights)</li>
+<li>Large models (>1B parameters, high translation reuse)</li>
+<li>Framework-heavy workloads (PyTorch/TensorFlow runtime shared)</li>
+</ul>
 
 <strong>When Trans-FW Doesn't Help:</strong>
-<p>- Inference with different models per GPU (no sharing) - Model-parallel training (each GPU has unique parameters) - Sparse workloads (random memory access, low locality)</p>
+<ul>
+<li>Inference with different models per GPU (no sharing)</li>
+<li>Model-parallel training (each GPU has unique parameters)</li>
+<li>Sparse workloads (random memory access, low locality)</li>
+</ul>
 
 <strong>Measured Variance:</strong>
 
@@ -1776,7 +1883,11 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <strong>Criticism 3: Doesn't Address Shootdowns</strong>
 
-<p>Trans-FW reduces redundant walks but doesn't reduce shootdown overhead (GRIT's main bottleneck). The two problems are orthogonal: - GRIT: Reduce invalidation latency - Trans-FW: Reduce translation fetch latency</p>
+<p>Trans-FW reduces redundant walks but doesn't reduce shootdown overhead (GRIT's main bottleneck). The two problems are orthogonal:</p>
+<ul>
+<li>GRIT: Reduce invalidation latency</li>
+<li>Trans-FW: Reduce translation fetch latency</li>
+</ul>
 
 <p>Ideal solution combines both (IDYLL attempts this).</p>
 
@@ -1788,11 +1899,19 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <p>IDYLL extends Trans-FW's core insight (sharing translations) but solves the broadcast bottleneck using directories:</p>
 
-<p>- Trans-FW: Broadcast to all N GPUs (O(N) fanout) - IDYLL: Multicast only to GPUs that need it (O(log N) fanout)</p>
+<ul>
+<li>Trans-FW: Broadcast to all N GPUs (O(N) fanout)</li>
+<li>IDYLL: Multicast only to GPUs that need it (O(log N) fanout)</li>
+</ul>
 
 <strong>Trans-FW → Production Hardware:</strong>
 
-<p>As of 2026, no commodity GPU implements Trans-FW directly. However: - NVSwitch 3.0 (2024): Hardware multicast for shootdowns, inspired by Trans-FW - AMD Infinity Fabric: Chiplet interconnect enables low-latency translation sharing - Intel Ponte Vecchio: Tile-based architecture with shared L2 TLB (similar concept)</p>
+<p>As of 2026, no commodity GPU implements Trans-FW directly. However:</p>
+<ul>
+<li>NVSwitch 3.0 (2024): Hardware multicast for shootdowns, inspired by Trans-FW</li>
+<li>AMD Infinity Fabric: Chiplet interconnect enables low-latency translation sharing</li>
+<li>Intel Ponte Vecchio: Tile-based architecture with shared L2 TLB (similar concept)</li>
+</ul>
 
 <p>Trans-FW's academic contribution: <strong>Proved translation sharing is beneficial</strong>, motivating hardware vendors to invest in coherence infrastructure.</p>
 
@@ -1948,7 +2067,11 @@ void receive_invalidation(page, new_asid) {
 <h3>4. Measured Results</h3>
 
 <strong>Experimental Setup:</strong>
-<p>- <strong>System:</strong> 4-node cluster, 8 cores per node (32 cores total) - <strong>Workload:</strong> Infiniswap (disaggregated memory system) - <strong>Benchmark:</strong> Page swapping under memory pressure</p>
+<ul>
+<li><strong>System:</strong> 4-node cluster, 8 cores per node (32 cores total)</li>
+<li><strong>Workload:</strong> Infiniswap (disaggregated memory system)</li>
+<li><strong>Benchmark:</strong> Page swapping under memory pressure</li>
+</ul>
 
 <strong>Key Finding: Eliminates Shootdown Overhead</strong>
 
@@ -2067,17 +2190,39 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <strong>Acceptable Use Cases:</strong>
 
-<p>1. <strong>Best-effort systems:</strong> - Web search ranking (0.01% accuracy loss acceptable) - Recommendation systems (Netflix, YouTube) - Ad targeting (stale data minor impact)</p>
+<p>1. <strong>Best-effort systems:</strong></p>
+<ul>
+<li>Web search ranking (0.01% accuracy loss acceptable)</li>
+<li>Recommendation systems (Netflix, YouTube)</li>
+<li>Ad targeting (stale data minor impact)</li>
+</ul>
 
-<p>2. <strong>Research/development:</strong> - Exploratory model training (reproducibility less critical) - Hyperparameter search (trying many configs, stale data averages out)</p>
+<p>2. <strong>Research/development:</strong></p>
+<ul>
+<li>Exploratory model training (reproducibility less critical)</li>
+<li>Hyperparameter search (trying many configs, stale data averages out)</li>
+</ul>
 
-<p>3. <strong>Checkpointed systems:</strong> - Periodic snapshots (can roll back if corruption detected) - Redundant computation (run 3× and vote)</p>
+<p>3. <strong>Checkpointed systems:</strong></p>
+<ul>
+<li>Periodic snapshots (can roll back if corruption detected)</li>
+<li>Redundant computation (run 3× and vote)</li>
+</ul>
 
 <strong>Unacceptable Use Cases:</strong>
 
-<p>1. <strong>Mission-critical systems:</strong> - Financial transactions (no tolerance for corruption) - Healthcare AI (patient safety paramount) - Autonomous vehicles (lives at stake)</p>
+<p>1. <strong>Mission-critical systems:</strong></p>
+<ul>
+<li>Financial transactions (no tolerance for corruption)</li>
+<li>Healthcare AI (patient safety paramount)</li>
+<li>Autonomous vehicles (lives at stake)</li>
+</ul>
 
-<p>2. <strong>Production training:</strong> - Large-scale models ($10M training cost, must be reproducible) - Regulated industries (FDA, financial regulators)</p>
+<p>2. <strong>Production training:</strong></p>
+<ul>
+<li>Large-scale models ($10M training cost, must be reproducible)</li>
+<li>Regulated industries (FDA, financial regulators)</li>
+</ul>
 
 <hr />
 
@@ -2085,11 +2230,21 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <strong>Academic Citations: 52+</strong>
 
-<p>ecoTLB influenced significant follow-on work: - Inspired IDYLL's directory approach (strict coherence but optimized) - Motivated research into relaxed consistency models (ASPLOS 2022 workshop) - Demonstrated TLB coherence is a bottleneck worth optimizing</p>
+<p>ecoTLB influenced significant follow-on work:</p>
+<ul>
+<li>Inspired IDYLL's directory approach (strict coherence but optimized)</li>
+<li>Motivated research into relaxed consistency models (ASPLOS 2022 workshop)</li>
+<li>Demonstrated TLB coherence is a bottleneck worth optimizing</li>
+</ul>
 
 <strong>Production Adoption: Zero</strong>
 
-<p>As of 2026: - No commodity CPU/GPU implements ecoTLB - No cloud provider deploys eventual TLB consistency - Linux kernel still uses strict coherence</p>
+<p>As of 2026:</p>
+<ul>
+<li>No commodity CPU/GPU implements ecoTLB</li>
+<li>No cloud provider deploys eventual TLB consistency</li>
+<li>Linux kernel still uses strict coherence</li>
+</ul>
 
 <strong>Why the gap?</strong>
 
@@ -2102,14 +2257,27 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 <strong>Eventual consistency works elsewhere—why not TLBs?</strong>
 
 <strong>Successful Examples:</strong>
-<p>- DNS (stale cache acceptable, TTL mechanisms) - Web caching (stale pages minor UX impact) - Distributed databases (BASE model, eventual consistency for availability)</p>
+<ul>
+<li>DNS (stale cache acceptable, TTL mechanisms)</li>
+<li>Web caching (stale pages minor UX impact)</li>
+<li>Distributed databases (BASE model, eventual consistency for availability)</li>
+</ul>
 
 <strong>Key Difference for TLBs:</strong>
 
-<p>These systems have <strong>application-level detection</strong> of stale data: - DNS: Client retries if connection fails (auto-corrects) - Web: User refreshes page (explicit fix) - Database: Application checks timestamps (detectable)</p>
+<p>These systems have <strong>application-level detection</strong> of stale data:</p>
+<ul>
+<li>DNS: Client retries if connection fails (auto-corrects)</li>
+<li>Web: User refreshes page (explicit fix)</li>
+<li>Database: Application checks timestamps (detectable)</li>
+</ul>
 
 <strong>TLBs have no detection mechanism:</strong>
-<p>- Stale TLB access is <strong>silent</strong> (no error, no exception) - Application cannot detect or recover - Corruption discovered only when results are wrong (too late)</p>
+<ul>
+<li>Stale TLB access is <strong>silent</strong> (no error, no exception)</li>
+<li>Application cannot detect or recover</li>
+<li>Corruption discovered only when results are wrong (too late)</li>
+</ul>
 
 <hr />
 
@@ -2122,7 +2290,11 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 <p>1. <strong>Eventual consistency is safe for production</strong> (non-determinism unacceptable) 2. <strong>Stale accesses are harmless</strong> (0.01% accuracy loss may matter) 3. <strong>Verification is feasible</strong> (formal proof or exhaustive testing impractical)</p>
 
 <strong>Legacy:</strong>
-<p>- Inspired hardware solutions (IDYLL) that keep strict coherence but optimize it - Demonstrated TLB coherence as bottleneck worth $100M+ R&D investment - Established boundaries: Eventual consistency works for web caches, <strong>not for TLBs</strong></p>
+<ul>
+<li>Inspired hardware solutions (IDYLL) that keep strict coherence but optimize it</li>
+<li>Demonstrated TLB coherence as bottleneck worth $100M+ R&D investment</li>
+<li>Established boundaries: Eventual consistency works for web caches, <strong>not for TLBs</strong></li>
+</ul>
 
 <hr />
 
@@ -2142,13 +2314,25 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 <p>IDYLL applies classical cache coherence theory to TLB invalidation. The foundational work dates to 1978:</p>
 
 <strong>Censier & Feautrier (IEEE Transactions on Computers, 1978):</strong>
-<p>- First directory-based cache coherence protocol - Core insight: Track which processors cache each memory line - Invalidate only processors with cached copies (not all processors)</p>
+<ul>
+<li>First directory-based cache coherence protocol</li>
+<li>Core insight: Track which processors cache each memory line</li>
+<li>Invalidate only processors with cached copies (not all processors)</li>
+</ul>
 
 <strong>Lenoski et al. (ASPLOS 1990, Stanford DASH):</strong>
-<p>- Hierarchical directories for large-scale multiprocessors - Reduction trees for acknowledgment collection (O(log N) vs O(N)) - Scaled to 64 processors (state-of-the-art for 1990)</p>
+<ul>
+<li>Hierarchical directories for large-scale multiprocessors</li>
+<li>Reduction trees for acknowledgment collection (O(log N) vs O(N))</li>
+<li>Scaled to 64 processors (state-of-the-art for 1990)</li>
+</ul>
 
 <strong>IDYLL's Contribution:</strong>
-<p>- Applies these 40-year-old principles to modern GPU TLB coherence - Stores directory bits <strong>in page table entries</strong> (not separate structure) - Scales to 1,024 GPUs (16× larger than DASH)</p>
+<ul>
+<li>Applies these 40-year-old principles to modern GPU TLB coherence</li>
+<li>Stores directory bits <strong>in page table entries</strong> (not separate structure)</li>
+<li>Scales to 1,024 GPUs (16× larger than DASH)</li>
+</ul>
 
 <hr />
 
@@ -2260,7 +2444,11 @@ Step 4: Complete unmap
 <h3>6. Measured Results</h3>
 
 <strong>Experimental Setup:</strong>
-<p>- <strong>GPUs:</strong> 512 NVIDIA GPUs (simulation, not real hardware) - <strong>Workload:</strong> ResNet-50, BERT-Large, GPT-2 - <strong>Baseline:</strong> Serial shootdown (GRIT's measured 3.2ms per shootdown)</p>
+<ul>
+<li><strong>GPUs:</strong> 512 NVIDIA GPUs (simulation, not real hardware)</li>
+<li><strong>Workload:</strong> ResNet-50, BERT-Large, GPT-2</li>
+<li><strong>Baseline:</strong> Serial shootdown (GRIT's measured 3.2ms per shootdown)</li>
+</ul>
 
 <strong>Key Finding: 18.3× Speedup</strong>
 
@@ -2333,18 +2521,34 @@ Speedup: 640µs / 35µs = 18.3× faster</code></pre>
 <h3>7. Hardware Implementation Complexity</h3>
 
 <strong>Directory Controller:</strong>
-<p>- Silicon area: ~3.5mm² on 5nm process (the commonly-cited 5mm² figure includes the surrounding SRAM arrays and ECC logic; the directory control logic itself is smaller) - Power: 150mW idle, 400mW active - Latency: 1µs directory lookup (SRAM)</p>
+<ul>
+<li>Silicon area: ~3.5mm² on 5nm process (the commonly-cited 5mm² figure includes the surrounding SRAM arrays and ECC logic; the directory control logic itself is smaller)</li>
+<li>Power: 150mW idle, 400mW active</li>
+<li>Latency: 1µs directory lookup (SRAM)</li>
+</ul>
 
 <p><em>Note on area figures:</em> The IDYLL paper (MICRO 2023) reports directory controller area in the context of a full GPU SoC tile. The 5mm² figure that appears in simplified summaries includes the associated SRAM for 10 million PTE directory bits (10M × 1 bit = 1.25 MB at 0.7mm²/MB on 5nm) plus the controller FSM and ECC, but some secondary sources have quoted the SRAM area alone as the "directory overhead," which is misleading. The marginal silicon cost attributable to directory-based coherence versus a baseline MMU is approximately 3.5mm² per GPU die — non-trivial but feasible within the die budget of datacenter GPUs (H100 die area: ~814mm²).</p>
 
 <strong>Multicast Network:</strong>
-<p>- Requires high-radix switch (64-128 ports) - Per-port bandwidth: 200 Gbps - Hardware complexity: Custom ASIC ($500M-$1B R&D)</p>
+<ul>
+<li>Requires high-radix switch (64-128 ports)</li>
+<li>Per-port bandwidth: 200 Gbps</li>
+<li>Hardware complexity: Custom ASIC ($500M-$1B R&D)</li>
+</ul>
 
 <strong>Reduction Tree:</strong>
-<p>- Binary tree topology - Hardware support for aggregating ACKs - Latency: log2(N) hops × 5µs per hop</p>
+<ul>
+<li>Binary tree topology</li>
+<li>Hardware support for aggregating ACKs</li>
+<li>Latency: log2(N) hops × 5µs per hop</li>
+</ul>
 
 <strong>Total Cost:</strong>
-<p>- R&D: $1-2B (custom switch ASIC development) - Per-system: $50K-100K (NVSwitch-class hardware) - Justified for >1,000 GPU deployments</p>
+<ul>
+<li>R&D: $1-2B (custom switch ASIC development)</li>
+<li>Per-system: $50K-100K (NVSwitch-class hardware)</li>
+<li>Justified for >1,000 GPU deployments</li>
+</ul>
 
 <hr />
 
@@ -2402,13 +2606,23 @@ Speedup: 640µs / 35µs = 18.3× faster</code></pre>
 <strong>As of Feb 2026:</strong>
 
 <strong>Deployed:</strong>
-<p>- NVSwitch 3.0 (2024): Implements directory-like coherence for TLB shootdowns - Claimed 25× speedup vs serial (aligns with IDYLL's 25.6× at 1024 GPUs) - Details proprietary, but likely similar architecture</p>
+<ul>
+<li>NVSwitch 3.0 (2024): Implements directory-like coherence for TLB shootdowns</li>
+<li>Claimed 25× speedup vs serial (aligns with IDYLL's 25.6× at 1024 GPUs)</li>
+<li>Details proprietary, but likely similar architecture</li>
+</ul>
 
 <strong>Not Deployed:</strong>
-<p>- AMD MI300X: Uses chiplet isolation (avoids shootdowns entirely) - Intel Ponte Vecchio: Unknown (Intel has not published TLB coherence details)</p>
+<ul>
+<li>AMD MI300X: Uses chiplet isolation (avoids shootdowns entirely)</li>
+<li>Intel Ponte Vecchio: Unknown (Intel has not published TLB coherence details)</li>
+</ul>
 
 <strong>Research Systems:</strong>
-<p>- 3 academic clusters implementing IDYLL (reported in MICRO 2024 workshop) - Performance matches paper: 18-22× speedup measured</p>
+<ul>
+<li>3 academic clusters implementing IDYLL (reported in MICRO 2024 workshop)</li>
+<li>Performance matches paper: 18-22× speedup measured</li>
+</ul>
 
 <hr />
 
@@ -2619,7 +2833,13 @@ Generated code:
 
 <strong>Why Zero Overhead?</strong>
 
-<p>No runtime memory management: - No malloc/free (addresses known at compile time) - No page table walks (physical addresses hardcoded) - No TLB (no virtual memory) - No shootdowns (no coherence needed)</p>
+<p>No runtime memory management:</p>
+<ul>
+<li>No malloc/free (addresses known at compile time)</li>
+<li>No page table walks (physical addresses hardcoded)</li>
+<li>No TLB (no virtual memory)</li>
+<li>No shootdowns (no coherence needed)</li>
+</ul>
 
 <hr />
 
@@ -2667,35 +2887,78 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <strong>XLA Success Stories:</strong>
 
-<p>1. <strong>Production inference (Google Search):</strong> - Same BERT model, fixed 512-token sequences - Billions of queries, compile once - 0% overhead saves millions in servers</p>
+<p>1. <strong>Production inference (Google Search):</strong></p>
+<ul>
+<li>Same BERT model, fixed 512-token sequences</li>
+<li>Billions of queries, compile once</li>
+<li>0% overhead saves millions in servers</li>
+</ul>
 
-<p>2. <strong>Image classification:</strong> - Fixed image size (224×224) - Fixed batch size (inference: 1, training: 32) - Stable for months (no recompilation)</p>
+<p>2. <strong>Image classification:</strong></p>
+<ul>
+<li>Fixed image size (224×224)</li>
+<li>Fixed batch size (inference: 1, training: 32)</li>
+<li>Stable for months (no recompilation)</li>
+</ul>
 
-<p>3. <strong>TPU training:</strong> - TPU requires XLA (no MMU in hardware) - Forces static shapes (but performance gain worth it)</p>
+<p>3. <strong>TPU training:</strong></p>
+<ul>
+<li>TPU requires XLA (no MMU in hardware)</li>
+<li>Forces static shapes (but performance gain worth it)</li>
+</ul>
 
 <strong>XLA Failures:</strong>
 
-<p>1. <strong>Research / exploration:</strong> - Daily architecture changes (recompile takes 60 minutes) - Dynamic batch sizes (efficient hardware utilization) - Cannot tolerate recompilation overhead</p>
+<p>1. <strong>Research / exploration:</strong></p>
+<ul>
+<li>Daily architecture changes (recompile takes 60 minutes)</li>
+<li>Dynamic batch sizes (efficient hardware utilization)</li>
+<li>Cannot tolerate recompilation overhead</li>
+</ul>
 
-<p>2. <strong>NLP with variable lengths:</strong> - Sequence lengths: 10 - 10,000 tokens - Cannot pad to 10,000 (wastes 99% compute) - Dynamic shapes essential</p>
+<p>2. <strong>NLP with variable lengths:</strong></p>
+<ul>
+<li>Sequence lengths: 10 - 10,000 tokens</li>
+<li>Cannot pad to 10,000 (wastes 99% compute)</li>
+<li>Dynamic shapes essential</li>
+</ul>
 
-<p>3. <strong>Reinforcement learning:</strong> - Episode lengths vary - Data-dependent control flow - XLA's static model doesn't fit</p>
+<p>3. <strong>Reinforcement learning:</strong></p>
+<ul>
+<li>Episode lengths vary</li>
+<li>Data-dependent control flow</li>
+<li>XLA's static model doesn't fit</li>
+</ul>
 
 <hr />
 
 <h3>8. Production Deployment</h3>
 
 <strong>Google TPU (2016-2026):</strong>
-<p>- XLA required (TPU has no MMU hardware) - Powers Google Search, Translate, Photos - Estimated savings: $500M/year in server costs</p>
+<ul>
+<li>XLA required (TPU has no MMU hardware)</li>
+<li>Powers Google Search, Translate, Photos</li>
+<li>Estimated savings: $500M/year in server costs</li>
+</ul>
 
 <strong>TensorFlow:</strong>
-<p>- XLA optional (can enable with <code>tf.function(jit_compile=True)</code>) - Adoption: ~30% of TensorFlow models use XLA - Speedup: 1.2-1.5× for compatible models</p>
+<ul>
+<li>XLA optional (can enable with <code>tf.function(jit_compile=True)</code>)</li>
+<li>Adoption: ~30% of TensorFlow models use XLA</li>
+<li>Speedup: 1.2-1.5× for compatible models</li>
+</ul>
 
 <strong>JAX:</strong>
-<p>- XLA mandatory (JAX is built on XLA) - Growing adoption in research (NumPy-like API)</p>
+<ul>
+<li>XLA mandatory (JAX is built on XLA)</li>
+<li>Growing adoption in research (NumPy-like API)</li>
+</ul>
 
 <strong>PyTorch:</strong>
-<p>- TorchScript compiler (similar to XLA) - Optional, lower adoption (~10% of models)</p>
+<ul>
+<li>TorchScript compiler (similar to XLA)</li>
+<li>Optional, lower adoption (~10% of models)</li>
+</ul>
 
 <hr />
 
@@ -2746,16 +3009,29 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 <p>1. <strong>0% overhead is achievable</strong> (eliminate MMU entirely) 2. <strong>Liveness analysis works at scale</strong> (42% memory savings measured) 3. <strong>Compile-time allocation is practical</strong> (for static workloads)</p>
 
 <strong>When to Use XLA:</strong>
-<p>- Production inference (stable models, fixed shapes) - TPU training (no choice, hardware requires it) - Cost-sensitive deployments ($500M/year savings justifies constraints)</p>
+<ul>
+<li>Production inference (stable models, fixed shapes)</li>
+<li>TPU training (no choice, hardware requires it)</li>
+<li>Cost-sensitive deployments ($500M/year savings justifies constraints)</li>
+</ul>
 
 <strong>When NOT to Use XLA:</strong>
-<p>- Research (daily changes, 60-min recompilation unacceptable) - Dynamic workloads (variable sequences, control flow) - Rapid iteration (flexibility > 20% performance gain)</p>
+<ul>
+<li>Research (daily changes, 60-min recompilation unacceptable)</li>
+<li>Dynamic workloads (variable sequences, control flow)</li>
+<li>Rapid iteration (flexibility > 20% performance gain)</li>
+</ul>
 
 <strong>The Bigger Picture:</strong>
 
 <p>XLA represents <strong>one extreme</strong> (zero overhead, zero flexibility). IDYLL represents <strong>the middle</strong> (5% overhead, full flexibility). Serial shootdown represents <strong>the other extreme</strong> (47% overhead, full flexibility).</p>
 
-<p>The right choice depends on workload: - Google Search → XLA (stability worth it) - AI research → IDYLL or bare-metal (flexibility needed) - Small-scale (<64 GPUs) → Serial acceptable</p>
+<p>The right choice depends on workload:</p>
+<ul>
+<li>Google Search → XLA (stability worth it)</li>
+<li>AI research → IDYLL or bare-metal (flexibility needed)</li>
+<li>Small-scale (<64 GPUs) → Serial acceptable</li>
+</ul>
 
 <hr />
 
@@ -3016,7 +3292,13 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <strong>Why This Matters:</strong>
 
-<p>Memory access patterns leak sensitive information: - <strong>Model architecture:</strong> Different models (BERT vs GPT-2) have distinct access patterns - <strong>Batch size:</strong> Larger batches → more memory accesses → different TLB pressure - <strong>Input data:</strong> Sequence length affects KV-cache access patterns - <strong>Inference latency:</strong> Timing reveals which model is running</p>
+<p>Memory access patterns leak sensitive information:</p>
+<ul>
+<li><strong>Model architecture:</strong> Different models (BERT vs GPT-2) have distinct access patterns</li>
+<li><strong>Batch size:</strong> Larger batches → more memory accesses → different TLB pressure</li>
+<li><strong>Input data:</strong> Sequence length affects KV-cache access patterns</li>
+<li><strong>Inference latency:</strong> Timing reveals which model is running</li>
+</ul>
 
 <hr />
 
@@ -3321,16 +3603,30 @@ for the initial MIG implementation."
 <strong>Defenses Deployed:</strong>
 
 <strong>Defense 1: Disable MIG (Cloud provider solution)</strong>
-<p>- Effective: 100% (no shared TLB if full GPU per customer) - Cost: 7× reduction in density</p>
+<ul>
+<li>Effective: 100% (no shared TLB if full GPU per customer)</li>
+<li>Cost: 7× reduction in density</li>
+</ul>
 
 <strong>Defense 2: Partition L3 TLB (Blackwell solution)</strong>
-<p>- Effective: Prevents cross-instance access - Cost: 5-7% performance overhead</p>
+<ul>
+<li>Effective: Prevents cross-instance access</li>
+<li>Cost: 5-7% performance overhead</li>
+</ul>
 
 <strong>Defense 3: TLB Flushing on Context Switch</strong>
-<p>- Mechanism: Flush TLB when switching between MIG instances - Effectiveness: Partial (doesn't prevent concurrent attack) - Overhead: 10-15% (frequent flushes disrupt compute)</p>
+<ul>
+<li>Mechanism: Flush TLB when switching between MIG instances</li>
+<li>Effectiveness: Partial (doesn't prevent concurrent attack)</li>
+<li>Overhead: 10-15% (frequent flushes disrupt compute)</li>
+</ul>
 
 <strong>Defense 4: Noise Injection</strong>
-<p>- Mechanism: Random TLB entries to obscure victim's pattern - Effectiveness: Reduces accuracy from 97% → 78% (still problematic) - Overhead: 3-5% (additional memory accesses)</p>
+<ul>
+<li>Mechanism: Random TLB entries to obscure victim's pattern</li>
+<li>Effectiveness: Reduces accuracy from 97% → 78% (still problematic)</li>
+<li>Overhead: 3-5% (additional memory accesses)</li>
+</ul>
 
 <strong>Recommended Defense (as of 2026):</strong>
 
@@ -3383,7 +3679,12 @@ for the initial MIG implementation."
 
 <strong>Lesson:</strong> "Partitioned compute and memory" ≠ "Perfect isolation"
 
-<p>True isolation requires: - ✅ Separate physical dies (AMD MI300X chiplet approach) - ✅ OR complete partitioning of all shared resources (Blackwell L3 TLB partitioning) - ❌ NOT just compute/memory partitioning while sharing microarchitecture</p>
+<p>True isolation requires:</p>
+<ul>
+<li>✅ Separate physical dies (AMD MI300X chiplet approach)</li>
+<li>✅ OR complete partitioning of all shared resources (Blackwell L3 TLB partitioning)</li>
+<li>❌ NOT just compute/memory partitioning while sharing microarchitecture</li>
+</ul>
 
 <hr />
 
@@ -3586,13 +3887,24 @@ AMD (Chiplet):
 <h4>5. Real-World Deployment Choices</h4>
 
 <strong>AWS (as of 2026):</strong>
-<p>- p4d (A100): Full GPU only (MIG disabled due to TunneLs) - p5 (H100): Full GPU only (awaiting Blackwell for partitioned MIG) - Future (Blackwell): Will enable MIG with partitioned TLB</p>
+<ul>
+<li>p4d (A100): Full GPU only (MIG disabled due to TunneLs)</li>
+<li>p5 (H100): Full GPU only (awaiting Blackwell for partitioned MIG)</li>
+<li>Future (Blackwell): Will enable MIG with partitioned TLB</li>
+</ul>
 
 <strong>Azure:</strong>
-<p>- NCads_A100_v4: Full GPU only - NC H100v5: Full GPU only - Strategy: Wait for hardware-partitioned solution</p>
+<ul>
+<li>NCads_A100_v4: Full GPU only</li>
+<li>NC H100v5: Full GPU only</li>
+<li>Strategy: Wait for hardware-partitioned solution</li>
+</ul>
 
 <strong>Google Cloud:</strong>
-<p>- A100: Full GPU only (never enabled MIG) - MI300X: Evaluating chiplet isolation for highest-security workloads</p>
+<ul>
+<li>A100: Full GPU only (never enabled MIG)</li>
+<li>MI300X: Evaluating chiplet isolation for highest-security workloads</li>
+</ul>
 
 <hr />
 
@@ -3600,7 +3912,11 @@ AMD (Chiplet):
 
 <p>Each architecture makes explicit trade-offs:</p>
 
-<p>- <strong>Shared TLB:</strong> 100% performance, 0% isolation (unacceptable post-TunneLs) - <strong>Partitioned TLB:</strong> 95% performance, 99% isolation (cloud default 2026+) - <strong>Chiplet:</strong> 100% performance, 100% isolation, but 30% higher manufacturing cost</p>
+<ul>
+<li><strong>Shared TLB:</strong> 100% performance, 0% isolation (unacceptable post-TunneLs)</li>
+<li><strong>Partitioned TLB:</strong> 95% performance, 99% isolation (cloud default 2026+)</li>
+<li><strong>Chiplet:</strong> 100% performance, 100% isolation, but 30% higher manufacturing cost</li>
+</ul>
 
 <p>The "right" choice depends on threat model and economic constraints.</p>
 
@@ -3692,10 +4008,16 @@ Result: ~18% throughput reduction (measured)</code></pre>
 <h4>4. Security Analysis</h4>
 
 <strong>What CryptoMMU Prevents:</strong>
-<p>- TunneLs-style timing attacks (attacker sees encrypted VAs, learns nothing) - Physical address leakage (encrypted PAs meaningless)</p>
+<ul>
+<li>TunneLs-style timing attacks (attacker sees encrypted VAs, learns nothing)</li>
+<li>Physical address leakage (encrypted PAs meaningless)</li>
+</ul>
 
 <strong>What CryptoMMU Does NOT Prevent:</strong>
-<p>- DRAM controller timing (occurs after decryption) - Cache timing (L3 cache still sees plaintext PAs)</p>
+<ul>
+<li>DRAM controller timing (occurs after decryption)</li>
+<li>Cache timing (L3 cache still sees plaintext PAs)</li>
+</ul>
 
 <strong>Residual Attack Surface:</strong> ~5% (DRAM/cache only, vs 97% for shared TLB)
 
@@ -3704,7 +4026,11 @@ Result: ~18% throughput reduction (measured)</code></pre>
 <h4>5. Why Not Deployed</h4>
 
 <strong>Hardware Complexity:</strong>
-<p>- AES encryption units required (2× silicon area vs traditional TLB) - Key management (per-tenant keys, rotation) - Performance: 18% overhead vs 5-7% for partitioned TLB</p>
+<ul>
+<li>AES encryption units required (2× silicon area vs traditional TLB)</li>
+<li>Key management (per-tenant keys, rotation)</li>
+<li>Performance: 18% overhead vs 5-7% for partitioned TLB</li>
+</ul>
 
 <strong>Comparison:</strong>
 
@@ -4033,7 +4359,12 @@ Overhead: (320 - 80) / 320 = 75% throughput loss</code></pre>
 
 <strong>Why Does This Happen?</strong>
 
-<p>Traditional OS page fault handlers were designed for CPUs with: - Sequential access patterns (few concurrent faults) - Independent threads (one fault doesn't block others) - Low thread count (8-128 threads typical)</p>
+<p>Traditional OS page fault handlers were designed for CPUs with:</p>
+<ul>
+<li>Sequential access patterns (few concurrent faults)</li>
+<li>Independent threads (one fault doesn't block others)</li>
+<li>Low thread count (8-128 threads typical)</li>
+</ul>
 
 <p>GPUs violate all these assumptions:</p>
 
@@ -4737,23 +5068,44 @@ Verdict: DMT is 18× cheaper ($32K vs $575K) but 1.8× slower
 <h4>5. When DMT Makes Sense</h4>
 
 <strong>Use Case 1: Research Exploration</strong>
-<p>- Budget: $50K (cannot afford 23 GPUs) - Goal: Train GPT-3 to test hypothesis - Timeline: 1 month (2× slower acceptable) - Verdict: DMT enables research that would otherwise be impossible</p>
+<ul>
+<li>Budget: $50K (cannot afford 23 GPUs)</li>
+<li>Goal: Train GPT-3 to test hypothesis</li>
+<li>Timeline: 1 month (2× slower acceptable)</li>
+<li>Verdict: DMT enables research that would otherwise be impossible</li>
+</ul>
 
 <strong>Use Case 2: Production Training</strong>
-<p>- Budget: $5M (can afford 100+ GPUs) - Goal: Train production model (time is money) - Timeline: 1 week (cannot tolerate 2× slower) - Verdict: Use model parallelism (faster, worth cost)</p>
+<ul>
+<li>Budget: $5M (can afford 100+ GPUs)</li>
+<li>Goal: Train production model (time is money)</li>
+<li>Timeline: 1 week (cannot tolerate 2× slower)</li>
+<li>Verdict: Use model parallelism (faster, worth cost)</li>
+</ul>
 
 <hr />
 
 <h4>6. Summary: DMT</h4>
 
 <strong>What DMT Enables:</strong>
-<p>- Train models larger than GPU memory (175B parameters on 80 GB GPU) - 45% overhead vs theoretical (1.8× slower than all-HBM) - 18× cheaper than model parallelism ($32K vs $575K)</p>
+<ul>
+<li>Train models larger than GPU memory (175B parameters on 80 GB GPU)</li>
+<li>45% overhead vs theoretical (1.8× slower than all-HBM)</li>
+<li>18× cheaper than model parallelism ($32K vs $575K)</li>
+</ul>
 
 <strong>When to Use:</strong>
-<p>- Research (budget-constrained) - Exploratory training (speed less critical) - Models that don't fit in multi-GPU setup</p>
+<ul>
+<li>Research (budget-constrained)</li>
+<li>Exploratory training (speed less critical)</li>
+<li>Models that don't fit in multi-GPU setup</li>
+</ul>
 
 <strong>When NOT to Use:</strong>
-<p>- Production (time is money, prefer model parallelism) - Latency-critical (45% overhead unacceptable)</p>
+<ul>
+<li>Production (time is money, prefer model parallelism)</li>
+<li>Latency-critical (45% overhead unacceptable)</li>
+</ul>
 
 <hr />
 
@@ -4814,7 +5166,11 @@ HugeGPT:
 <strong>Problem:</strong> Requires OS cooperation to allocate guest page tables on host huge pages.
 
 <strong>Status (2026):</strong>
-<p>- Linux kernel patches: Submitted (pending review) - Hypervisors: KVM experimental support - Production: Not deployed (still research)</p>
+<ul>
+<li>Linux kernel patches: Submitted (pending review)</li>
+<li>Hypervisors: KVM experimental support</li>
+<li>Production: Not deployed (still research)</li>
+</ul>
 
 <hr />
 
@@ -5118,13 +5474,25 @@ HugeGPT:
 
 <strong>No universal winner.</strong> 
 
-<p>- Serial broadcast: Simple but doesn't scale beyond 256 GPUs (47% overhead unacceptable) - Directory coherence (IDYLL): Scales to 10,000+ GPUs at 5% overhead, but requires $1-2B R&D for custom ASIC - Static compilation (XLA): Zero overhead but sacrifices flexibility (cannot handle dynamic shapes, requires 60-min recompilation)</p>
+<ul>
+<li>Serial broadcast: Simple but doesn't scale beyond 256 GPUs (47% overhead unacceptable)</li>
+<li>Directory coherence (IDYLL): Scales to 10,000+ GPUs at 5% overhead, but requires $1-2B R&D for custom ASIC</li>
+<li>Static compilation (XLA): Zero overhead but sacrifices flexibility (cannot handle dynamic shapes, requires 60-min recompilation)</li>
+</ul>
 
 <strong>Workload determines the right choice:</strong>
-<p>- <strong>Dynamic research workloads:</strong> Directory coherence (IDYLL) provides transparency with acceptable overhead - <strong>Production inference:</strong> Static compilation (XLA) achieves zero overhead for stable, known workloads - <strong>Small scale (<64 GPUs):</strong> Serial broadcast acceptable (5-10% overhead tolerable)</p>
+<ul>
+<li><strong>Dynamic research workloads:</strong> Directory coherence (IDYLL) provides transparency with acceptable overhead</li>
+<li><strong>Production inference:</strong> Static compilation (XLA) achieves zero overhead for stable, known workloads</li>
+<li><strong>Small scale (<64 GPUs):</strong> Serial broadcast acceptable (5-10% overhead tolerable)</li>
+</ul>
 
 <strong>Production Deployment (2026):</strong>
-<p>- NVSwitch 3.0: Implements directory-like coherence (claimed 25× speedup) - Google TPU: Requires XLA static compilation (0% overhead) - Academic clusters: Use serial broadcast (limited scale, no custom hardware)</p>
+<ul>
+<li>NVSwitch 3.0: Implements directory-like coherence (claimed 25× speedup)</li>
+<li>Google TPU: Requires XLA static compilation (0% overhead)</li>
+<li>Academic clusters: Use serial broadcast (limited scale, no custom hardware)</li>
+</ul>
 
 <hr />
 
@@ -5178,7 +5546,12 @@ HugeGPT:
 
 <strong>Workload security requirements determine the right choice:</strong>
 
-<p>- <strong>Single-tenant (research):</strong> Shared TLB acceptable (no adversary) - <strong>General cloud:</strong> Partitioned TLB (5-7% overhead for 99% isolation) - <strong>Finance/healthcare:</strong> Chiplet isolation (regulatory compliance requires perfect isolation) - <strong>Future:</strong> CryptoMMU if overhead reduces below partitioned TLB</p>
+<ul>
+<li><strong>Single-tenant (research):</strong> Shared TLB acceptable (no adversary)</li>
+<li><strong>General cloud:</strong> Partitioned TLB (5-7% overhead for 99% isolation)</li>
+<li><strong>Finance/healthcare:</strong> Chiplet isolation (regulatory compliance requires perfect isolation)</li>
+<li><strong>Future:</strong> CryptoMMU if overhead reduces below partitioned TLB</li>
+</ul>
 
 <strong>Real-World Evolution:</strong>
 
@@ -5281,16 +5654,32 @@ Scenario 4: Research (Larger-than-Memory)
 <p>The "best" design depends on:</p>
 
 <strong>Workload characteristics:</strong>
-<p>- Static vs dynamic (XLA vs directory) - Sensitive vs public (chiplet vs partitioned) - Known vs exploratory (pinned vs UVM)</p>
+<ul>
+<li>Static vs dynamic (XLA vs directory)</li>
+<li>Sensitive vs public (chiplet vs partitioned)</li>
+<li>Known vs exploratory (pinned vs UVM)</li>
+</ul>
 
 <strong>Scale:</strong>
-<p>- 64 GPUs: Serial broadcast acceptable (10% overhead) - 512 GPUs: Directory coherence needed (23% → 5%) - 10,000 GPUs: Must use directory or static compilation</p>
+<ul>
+<li>64 GPUs: Serial broadcast acceptable (10% overhead)</li>
+<li>512 GPUs: Directory coherence needed (23% → 5%)</li>
+<li>10,000 GPUs: Must use directory or static compilation</li>
+</ul>
 
 <strong>Security requirements:</strong>
-<p>- Single-tenant: Shared TLB acceptable - Multi-tenant cloud: Partitioned TLB mandatory - Regulated industries: Chiplet isolation required</p>
+<ul>
+<li>Single-tenant: Shared TLB acceptable</li>
+<li>Multi-tenant cloud: Partitioned TLB mandatory</li>
+<li>Regulated industries: Chiplet isolation required</li>
+</ul>
 
 <strong>Economic constraints:</strong>
-<p>- Startup budget: DMT tiering (cheap but slow) - Production revenue: Custom ASIC (expensive but fast) - Research grant: Software optimization (free but expert time)</p>
+<ul>
+<li>Startup budget: DMT tiering (cheap but slow)</li>
+<li>Production revenue: Custom ASIC (expensive but fast)</li>
+<li>Research grant: Software optimization (free but expert time)</li>
+</ul>
 
 <hr />
 
@@ -5301,13 +5690,24 @@ Scenario 4: Research (Larger-than-Memory)
 <p>The future (Chapters 14-16) lies in <strong>specialized approaches</strong>:</p>
 
 <strong>Chapter 14: Software-Managed Memory</strong>
-<p>- Exploit workload knowledge for zero overhead - vLLM PagedAttention: 99.998% → 0.002% TLB miss rate - Software page tables: Application controls allocation</p>
+<ul>
+<li>Exploit workload knowledge for zero overhead</li>
+<li>vLLM PagedAttention: 99.998% → 0.002% TLB miss rate</li>
+<li>Software page tables: Application controls allocation</li>
+</ul>
 
 <strong>Chapter 15: Photonic Interconnects</strong>
-<p>- Eliminate coherence overhead via new physics - Optical circuit switching: <1ns propagation (vs 5µs InfiniBand) - Translation at fabric level (not per-GPU)</p>
+<ul>
+<li>Eliminate coherence overhead via new physics</li>
+<li>Optical circuit switching: <1ns propagation (vs 5µs InfiniBand) - Translation at fabric level (not per-GPU)</li>
+</ul>
 
 <strong>Chapter 16: Synthesis</strong>
-<p>- When to use hardware vs software approaches - Economic analysis (R&D cost vs operational savings) - Roadmap for next-generation memory systems</p>
+<ul>
+<li>When to use hardware vs software approaches</li>
+<li>Economic analysis (R&D cost vs operational savings)</li>
+<li>Roadmap for next-generation memory systems</li>
+</ul>
 
 <hr />
 

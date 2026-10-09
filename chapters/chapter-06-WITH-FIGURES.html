@@ -1284,37 +1284,37 @@ Flags:
 </thead>
 <tbody>
 <tr>
-<td>**Read permission**</td>
+<td><strong>Read permission</strong></td>
 <td>Implicit with Present</td>
 <td>AP bits</td>
 <td>R bit</td>
 </tr>
 <tr>
-<td>**Write permission**</td>
+<td><strong>Write permission</strong></td>
 <td>R/W bit</td>
 <td>AP bits</td>
 <td>W bit</td>
 </tr>
 <tr>
-<td>**Execute permission**</td>
+<td><strong>Execute permission</strong></td>
 <td>XD bit (negative)</td>
 <td>XN/PXN bits</td>
 <td>X bit</td>
 </tr>
 <tr>
-<td>**User/Kernel**</td>
+<td><strong>User/Kernel</strong></td>
 <td>U/S bit</td>
 <td>AP bits</td>
 <td>U bit</td>
 </tr>
 <tr>
-<td>**Execute-only**</td>
+<td><strong>Execute-only</strong></td>
 <td>❌ No</td>
 <td>❌ No</td>
 <td>✅ Yes</td>
 </tr>
 <tr>
-<td>**Write-only**</td>
+<td><strong>Write-only</strong></td>
 <td>❌ No</td>
 <td>❌ No</td>
 <td>❌ No</td>
@@ -2465,61 +2465,61 @@ static inline unsigned long read_csr_safe(int csr) {
 </thead>
 <tbody>
 <tr>
-<td>**Privilege Levels**</td>
+<td><strong>Privilege Levels</strong></td>
 <td>4 (0-3)</td>
 <td>4 (EL0-EL3)</td>
 <td>3-4 (U/S/H/M)</td>
 </tr>
 <tr>
-<td>**Actually Used**</td>
+<td><strong>Actually Used</strong></td>
 <td>2 (Ring 0, 3)</td>
 <td>2-4 (all used)</td>
 <td>2-3 (U/S/M)</td>
 </tr>
 <tr>
-<td>**User Level**</td>
+<td><strong>User Level</strong></td>
 <td>Ring 3</td>
 <td>EL0</td>
 <td>U-mode</td>
 </tr>
 <tr>
-<td>**Kernel Level**</td>
+<td><strong>Kernel Level</strong></td>
 <td>Ring 0</td>
 <td>EL1</td>
 <td>S-mode</td>
 </tr>
 <tr>
-<td>**Hypervisor**</td>
+<td><strong>Hypervisor</strong></td>
 <td>VMX root Ring 0</td>
 <td>EL2</td>
 <td>HS-mode (optional)</td>
 </tr>
 <tr>
-<td>**Secure Boot**</td>
+<td><strong>Secure Boot</strong></td>
 <td>SMM (legacy)</td>
 <td>EL3</td>
 <td>M-mode</td>
 </tr>
 <tr>
-<td>**Wasted Levels**</td>
+<td><strong>Wasted Levels</strong></td>
 <td>Ring 1-2 unused</td>
 <td>None</td>
 <td>None</td>
 </tr>
 <tr>
-<td>**Transition Inst**</td>
+<td><strong>Transition Inst</strong></td>
 <td>SYSCALL/SYSRET</td>
 <td>SVC/ERET</td>
 <td>ECALL/SRET/MRET</td>
 </tr>
 <tr>
-<td>**Transition Cost**</td>
+<td><strong>Transition Cost</strong></td>
 <td>~100-300 cycles</td>
 <td>~50-150 cycles</td>
 <td>~50-100 cycles</td>
 </tr>
 <tr>
-<td>**Design Year**</td>
+<td><strong>Design Year</strong></td>
 <td>1985 (80286)</td>
 <td>2011 (ARMv8)</td>
 <td>2010s</td>
@@ -3699,62 +3699,62 @@ void benchmark_sgx(void) {
 </thead>
 <tbody>
 <tr>
-<td>**Granularity**</td>
+<td><strong>Granularity</strong></td>
 <td>System-wide</td>
 <td>Per-application</td>
 </tr>
 <tr>
-<td>**Trust Model**</td>
+<td><strong>Trust Model</strong></td>
 <td>Trust Secure World OS</td>
 <td>Trust only CPU</td>
 </tr>
 <tr>
-<td>**Protected Memory**</td>
+<td><strong>Protected Memory</strong></td>
 <td>GB+ (entire regions)</td>
 <td>64-256 MB (EPC)</td>
 </tr>
 <tr>
-<td>**Memory Encryption**</td>
+<td><strong>Memory Encryption</strong></td>
 <td>Optional (implementation)</td>
 <td>Always (MEE)</td>
 </tr>
 <tr>
-<td>**World Switch**</td>
+<td><strong>World Switch</strong></td>
 <td>2-5 μs (SMC)</td>
 <td>8-12K cycles (ECALL)</td>
 </tr>
 <tr>
-<td>**OS Trust**</td>
+<td><strong>OS Trust</strong></td>
 <td>Requires trusted OS</td>
 <td>No trust needed</td>
 </tr>
 <tr>
-<td>**Deployment**</td>
+<td><strong>Deployment</strong></td>
 <td>10+ billion devices</td>
 <td>Limited (server-only now)</td>
 </tr>
 <tr>
-<td>**Use Case**</td>
+<td><strong>Use Case</strong></td>
 <td>Mobile, embedded</td>
 <td>Cloud, datacenter</td>
 </tr>
 <tr>
-<td>**Multiple TEEs**</td>
+<td><strong>Multiple TEEs</strong></td>
 <td>One Secure World</td>
 <td>Many enclaves</td>
 </tr>
 <tr>
-<td>**Side Channels**</td>
+<td><strong>Side Channels</strong></td>
 <td>Less vulnerable</td>
 <td>Highly vulnerable</td>
 </tr>
 <tr>
-<td>**Attestation**</td>
+<td><strong>Attestation</strong></td>
 <td>Device attestation</td>
 <td>Enclave attestation</td>
 </tr>
 <tr>
-<td>**Typical Overhead**</td>
+<td><strong>Typical Overhead</strong></td>
 <td><1% (infrequent switch)</td>
 <td>5-15% (encryption)</td>
 </tr>
@@ -4538,27 +4538,27 @@ int create_sev_snp_vm(void) {
 </thead>
 <tbody>
 <tr>
-<td>**Encryption**</td>
+<td><strong>Encryption</strong></td>
 <td>AES-128</td>
 <td>MKTME (AES-XTS-128)</td>
 </tr>
 <tr>
-<td>**CPU Privilege**</td>
+<td><strong>CPU Privilege</strong></td>
 <td>PSP (separate processor)</td>
 <td>SEAM (new CPU mode)</td>
 </tr>
 <tr>
-<td>**Page Tables**</td>
+<td><strong>Page Tables</strong></td>
 <td>RMP</td>
 <td>SEPT (Secure EPT)</td>
 </tr>
 <tr>
-<td>**Shared Memory**</td>
+<td><strong>Shared Memory</strong></td>
 <td>Via encryption</td>
 <td>Explicit shared pages</td>
 </tr>
 <tr>
-<td>**Overhead**</td>
+<td><strong>Overhead</strong></td>
 <td>1-5%</td>
 <td>2-5%</td>
 </tr>
@@ -4712,27 +4712,27 @@ void sme_encrypt_block(uint8_t *plaintext, uint64_t phys_addr,
 </thead>
 <tbody>
 <tr>
-<td>**Scope**</td>
+<td><strong>Scope</strong></td>
 <td>System-wide</td>
 <td>Per-VM</td>
 </tr>
 <tr>
-<td>**Keys**</td>
+<td><strong>Keys</strong></td>
 <td>1 key for entire system</td>
 <td>Unique key per VM</td>
 </tr>
 <tr>
-<td>**Hypervisor**</td>
+<td><strong>Hypervisor</strong></td>
 <td>Can decrypt</td>
 <td>Cannot decrypt guest memory</td>
 </tr>
 <tr>
-<td>**Use Case**</td>
+<td><strong>Use Case</strong></td>
 <td>Physical security</td>
 <td>Cloud multi-tenancy</td>
 </tr>
 <tr>
-<td>**Performance**</td>
+<td><strong>Performance</strong></td>
 <td><1%</td>
 <td>1-3%</td>
 </tr>
@@ -4891,37 +4891,37 @@ void *dma_alloc_coherent(struct device *dev, size_t size) {
 </thead>
 <tbody>
 <tr>
-<td>**First Appeared**</td>
+<td><strong>First Appeared</strong></td>
 <td>2017 (Zen)</td>
 <td>2019 (Ice Lake)</td>
 </tr>
 <tr>
-<td>**Encryption**</td>
+<td><strong>Encryption</strong></td>
 <td>AES-128-XTS</td>
 <td>AES-XTS-128/256</td>
 </tr>
 <tr>
-<td>**Granularity**</td>
+<td><strong>Granularity</strong></td>
 <td>Per-page (C-bit)</td>
 <td>Per-page (KeyID)</td>
 </tr>
 <tr>
-<td>**VM Isolation**</td>
+<td><strong>VM Isolation</strong></td>
 <td>SEV/SEV-ES/SEV-SNP</td>
 <td>TDX</td>
 </tr>
 <tr>
-<td>**Keys**</td>
+<td><strong>Keys</strong></td>
 <td>PSP manages</td>
 <td>CPU manages</td>
 </tr>
 <tr>
-<td>**Integrity**</td>
+<td><strong>Integrity</strong></td>
 <td>SEV-SNP only</td>
 <td>TDX includes</td>
 </tr>
 <tr>
-<td>**Performance**</td>
+<td><strong>Performance</strong></td>
 <td><1-5%</td>
 <td>1-5%</td>
 </tr>
@@ -5271,49 +5271,49 @@ void riscv_aes_encrypt(uint8_t *plaintext, uint8_t *key, uint8_t *ciphertext) {
 </thead>
 <tbody>
 <tr>
-<td>**Privilege Levels**</td>
+<td><strong>Privilege Levels</strong></td>
 <td>M/S/U (H optional)</td>
 <td>Ring 0-3</td>
 <td>EL0-EL3</td>
 </tr>
 <tr>
-<td>**Memory Protection**</td>
+<td><strong>Memory Protection</strong></td>
 <td>PMP (M-mode only)</td>
 <td>Page tables</td>
 <td>Page tables + TrustZone</td>
 </tr>
 <tr>
-<td>**TEE**</td>
+<td><strong>TEE</strong></td>
 <td>Keystone (open)</td>
 <td>SGX (deprecated)</td>
 <td>TrustZone (built-in)</td>
 </tr>
 <tr>
-<td>**Memory Encryption**</td>
+<td><strong>Memory Encryption</strong></td>
 <td>Extension needed</td>
 <td>TME/TDX</td>
 <td>MTE (tagging)</td>
 </tr>
 <tr>
-<td>**Crypto Accel**</td>
+<td><strong>Crypto Accel</strong></td>
 <td>Zk* (optional)</td>
 <td>AES-NI (standard)</td>
 <td>Crypto extensions</td>
 </tr>
 <tr>
-<td>**Flexibility**</td>
+<td><strong>Flexibility</strong></td>
 <td>High (modular)</td>
 <td>Low (fixed)</td>
 <td>Medium</td>
 </tr>
 <tr>
-<td>**Maturity**</td>
+<td><strong>Maturity</strong></td>
 <td>Developing</td>
 <td>Mature</td>
 <td>Mature</td>
 </tr>
 <tr>
-<td>**Open Source**</td>
+<td><strong>Open Source</strong></td>
 <td>Fully open</td>
 <td>Proprietary</td>
 <td>Some open</td>
@@ -5497,27 +5497,27 @@ void process_data_gpu(void *sensitive_data) {
 </thead>
 <tbody>
 <tr>
-<td>**MMU**</td>
+<td><strong>MMU</strong></td>
 <td>Full page-based protection</td>
 <td>Limited/none</td>
 </tr>
 <tr>
-<td>**Address Space**</td>
+<td><strong>Address Space</strong></td>
 <td>Per-process isolation</td>
 <td>Shared global memory</td>
 </tr>
 <tr>
-<td>**Privilege Levels**</td>
+<td><strong>Privilege Levels</strong></td>
 <td>Ring 0/3, EL0-3, etc.</td>
 <td>Minimal (user/kernel mode)</td>
 </tr>
 <tr>
-<td>**Memory Encryption**</td>
+<td><strong>Memory Encryption</strong></td>
 <td>SME/TME</td>
 <td>None (standard GPUs)</td>
 </tr>
 <tr>
-<td>**IOMMU**</td>
+<td><strong>IOMMU</strong></td>
 <td>Can isolate from other devices</td>
 <td>GPU itself not isolated</td>
 </tr>
@@ -5882,61 +5882,61 @@ bool attest_heterogeneous_system(struct system_attestation *attest) {
 </thead>
 <tbody>
 <tr>
-<td>**NX/XD/XN Bit**</td>
+<td><strong>NX/XD/XN Bit</strong></td>
 <td>~0%</td>
 <td>✅ Always</td>
 <td>Never disable</td>
 </tr>
 <tr>
-<td>**SMEP**</td>
+<td><strong>SMEP</strong></td>
 <td><1%</td>
 <td>✅ Always</td>
 <td>Never disable</td>
 </tr>
 <tr>
-<td>**SMAP**</td>
+<td><strong>SMAP</strong></td>
 <td><1%</td>
 <td>✅ Always</td>
 <td>Never disable</td>
 </tr>
 <tr>
-<td>**PAN (ARM)**</td>
+<td><strong>PAN (ARM)</strong></td>
 <td><1%</td>
 <td>✅ Always</td>
 <td>Never disable</td>
 </tr>
 <tr>
-<td>**KPTI**</td>
+<td><strong>KPTI</strong></td>
 <td>5-30%</td>
 <td>⚠️ If vulnerable CPU</td>
 <td>Disable on patched CPUs</td>
 </tr>
 <tr>
-<td>**MPK**</td>
+<td><strong>MPK</strong></td>
 <td><1%</td>
 <td>✅ When available</td>
 <td>App-specific</td>
 </tr>
 <tr>
-<td>**MTE (ARM)**</td>
+<td><strong>MTE (ARM)</strong></td>
 <td>5-15%</td>
 <td>🤔 Depends</td>
 <td>Development/critical systems</td>
 </tr>
 <tr>
-<td>**BTI (ARM)**</td>
+<td><strong>BTI (ARM)</strong></td>
 <td><1%</td>
 <td>✅ Always</td>
 <td>Never disable</td>
 </tr>
 <tr>
-<td>**SME/SEV**</td>
+<td><strong>SME/SEV</strong></td>
 <td><1-5%</td>
 <td>✅ Cloud/untrusted</td>
 <td>Disable on trusted hardware</td>
 </tr>
 <tr>
-<td>**GPU Encryption**</td>
+<td><strong>GPU Encryption</strong></td>
 <td>5-15%</td>
 <td>🤔 Depends</td>
 <td>Sensitive data only</td>

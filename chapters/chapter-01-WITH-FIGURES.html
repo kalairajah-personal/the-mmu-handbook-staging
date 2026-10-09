@@ -722,22 +722,34 @@ Lustig, 2017].</p>
 each program its own <strong>private view</strong> of the computer's
 memory. According to Bhattacharjee &amp; Lustig (2017), virtual memory
 provides several critical benefits:</p>
-<p><strong>1. Simplified Programming (Abstraction)</strong> - Programs
-use simple addresses starting from 0 - No need to know physical memory
-size or layout - Memory appears as one large array - Code is portable
-across different hardware</p>
-<p><strong>2. Memory Protection and Isolation</strong> - Each program
-has its own address space - Programs cannot access each other's memory -
-Operating system memory is protected from user programs - Security:
-malicious code can't read passwords from other programs</p>
-<p><strong>3. Memory Overcommitment</strong> - Total virtual memory
-across all programs can exceed physical RAM - Programs can use address
-spaces larger than physical memory - Inactive data can be stored on disk
-- Efficient memory sharing between programs</p>
-<p><strong>4. Flexibility in Memory Allocation</strong> - Programs can
-be loaded anywhere in physical memory - Memory doesn't need to be
-contiguous in physical RAM - Easy to relocate programs - Simplifies
-dynamic memory allocation</p>
+<p><strong>1. Simplified Programming (Abstraction)</strong></p>
+<ul>
+<li>Programs use simple addresses starting from 0</li>
+<li>No need to know physical memory size or layout</li>
+<li>Memory appears as one large array</li>
+<li>Code is portable across different hardware</li>
+</ul>
+<p><strong>2. Memory Protection and Isolation</strong></p>
+<ul>
+<li>Each program has its own address space</li>
+<li>Programs cannot access each other's memory</li>
+<li>Operating system memory is protected from user programs</li>
+<li>Security: malicious code can't read passwords from other programs</li>
+</ul>
+<p><strong>3. Memory Overcommitment</strong></p>
+<ul>
+<li>Total virtual memory across all programs can exceed physical RAM</li>
+<li>Programs can use address spaces larger than physical memory</li>
+<li>Inactive data can be stored on disk</li>
+<li>Efficient memory sharing between programs</li>
+</ul>
+<p><strong>4. Flexibility in Memory Allocation</strong></p>
+<ul>
+<li>Programs can be loaded anywhere in physical memory</li>
+<li>Memory doesn't need to be contiguous in physical RAM</li>
+<li>Easy to relocate programs</li>
+<li>Simplifies dynamic memory allocation</li>
+</ul>
 <h3 id="the-core-mechanism-address-translation">The Core Mechanism:
 Address Translation</h3>
 <p>Virtual memory works through <strong>address translation</strong>.
@@ -754,15 +766,20 @@ address</strong>--a number your program uses to refer to a memory
 location. But this is not where <code>x</code> actually lives in the
 physical RAM chips.</p>
 <p><strong>Two Types of Addresses:</strong></p>
-<p><strong>Virtual Address (VA)</strong> - What your program sees and
-uses - Example: <code>0x7ffe5c3d4a8c</code> - Every program has its own
-virtual addresses starting from 0 - Abstract, not tied to physical
-hardware</p>
-<p><strong>Physical Address (PA)</strong><br />
-- Where data actually resides in RAM chips - Example:
-<code>0x12A4B000</code> (completely different!) - Only one set of
-physical addresses in the entire system - Corresponds to actual hardware
-locations</p>
+<p><strong>Virtual Address (VA)</strong></p>
+<ul>
+<li>What your program sees and uses</li>
+<li>Example: <code>0x7ffe5c3d4a8c</code></li>
+<li>Every program has its own virtual addresses starting from 0</li>
+<li>Abstract, not tied to physical hardware</li>
+</ul>
+<p><strong>Physical Address (PA)</strong><br /></p>
+<ul>
+<li>Where data actually resides in RAM chips</li>
+<li>Example: <code>0x12A4B000</code> (completely different!)</li>
+<li>Only one set of physical addresses in the entire system</li>
+<li>Corresponds to actual hardware locations</li>
+</ul>
 <p><strong>The Translation:</strong></p>
 <p>When your program accesses virtual address
 <code>0x7ffe5c3d4a8c</code>, hardware automatically translates it to the
@@ -910,38 +927,57 @@ knows it's using virtual addresses.</p>
 Challenges</h3>
 <p>While virtual memory elegantly solves programming and protection
 problems, it introduces new challenges that the MMU must address:</p>
-<p><strong>Challenge 1: Translation Performance</strong> - Modern CPUs
-execute ~4 billion instructions per second - Many instructions access
-memory multiple times - That's billions of translations per second -
-Each translation must be fast (sub-nanosecond) or the CPU stalls</p>
-<p><strong>Challenge 2: Translation Overhead</strong> - Translation
-requires looking up tables in memory - But those table lookups
-themselves require memory access - This could create infinite recursion
-- The translation mechanism itself consumes memory</p>
-<p><strong>Challenge 3: The Memory Wall</strong> - Memory access takes
-~70 nanoseconds - During that time, CPU could execute 280 instructions -
-Most CPU time is spent waiting for memory - Virtual memory must not make
-this worse</p>
-<p><strong>How These Are Solved:</strong> - <strong>Translation
-Lookaside Buffer (TLB)</strong>: A cache that remembers recent
-translations, making most translations instant - <strong>Hardware Page
-Table Walker</strong>: Dedicated logic to quickly traverse translation
-tables - <strong>Multi-level page tables</strong>: Hierarchical
-structure that reduces memory overhead - <strong>Large pages</strong>:
-Reducing the number of translations needed</p>
+<p><strong>Challenge 1: Translation Performance</strong></p>
+<ul>
+<li>Modern CPUs execute ~4 billion instructions per second</li>
+<li>Many instructions access memory multiple times</li>
+<li>That's billions of translations per second</li>
+<li>Each translation must be fast (sub-nanosecond) or the CPU stalls</li>
+</ul>
+<p><strong>Challenge 2: Translation Overhead</strong></p>
+<ul>
+<li>Translation requires looking up tables in memory</li>
+<li>But those table lookups themselves require memory access</li>
+<li>This could create infinite recursion</li>
+<li>The translation mechanism itself consumes memory</li>
+</ul>
+<p><strong>Challenge 3: The Memory Wall</strong></p>
+<ul>
+<li>Memory access takes ~70 nanoseconds</li>
+<li>During that time, CPU could execute 280 instructions</li>
+<li>Most CPU time is spent waiting for memory</li>
+<li>Virtual memory must not make this worse</li>
+</ul>
+<p><strong>How These Are Solved:</strong></p>
+<ul>
+<li><strong>Translation Lookaside Buffer (TLB)</strong>: A cache that remembers recent translations, making most translations instant</li>
+<li><strong>Hardware Page Table Walker</strong>: Dedicated logic to quickly traverse translation tables</li>
+<li><strong>Multi-level page tables</strong>: Hierarchical structure that reduces memory overhead</li>
+<li><strong>Large pages</strong>: Reducing the number of translations needed</li>
+</ul>
 <h3 id="what-this-chapter-covers">What This Chapter Covers</h3>
 <p>Understanding virtual memory requires understanding the interplay
 between hardware and software:</p>
-<p><strong>Hardware (MMU):</strong> - How address translation works
-(page tables) - How to make translation fast (TLBs, page table walkers)
-- Different architectures' approaches (x86, ARM, RISC-V)</p>
-<p><strong>Operating System:</strong> - Managing page tables for all
-processes - Handling page faults (when data isn't in RAM) - Deciding
-what to keep in physical memory - Implementing memory protection
-policies</p>
-<p><strong>Together:</strong> - How hardware and OS cooperate -
-Performance implications - Security considerations - Modern challenges
-and solutions</p>
+<p><strong>Hardware (MMU):</strong></p>
+<ul>
+<li>How address translation works (page tables)</li>
+<li>How to make translation fast (TLBs, page table walkers)</li>
+<li>Different architectures' approaches (x86, ARM, RISC-V)</li>
+</ul>
+<p><strong>Operating System:</strong></p>
+<ul>
+<li>Managing page tables for all processes</li>
+<li>Handling page faults (when data isn't in RAM)</li>
+<li>Deciding what to keep in physical memory</li>
+<li>Implementing memory protection policies</li>
+</ul>
+<p><strong>Together:</strong></p>
+<ul>
+<li>How hardware and OS cooperate</li>
+<li>Performance implications</li>
+<li>Security considerations</li>
+<li>Modern challenges and solutions</li>
+</ul>
 <p>By the end of this chapter, you'll understand how modern computers
 provide every program with the illusion of having abundant, fast,
 private memory--even though physical memory is limited, slow, and
@@ -1057,9 +1093,13 @@ could run at a time.</p>
 0200:  7200    CLA      ; Clear accumulator  
 0201:  1234    TAD 234  ; Load from absolute address 234
 0202:  3456    DCA 456  ; Store to absolute address 456</code></pre>
-<p><strong>Limitations:</strong> - No multitasking - No protection -
-Manual memory layout by programmer - Physical memory size limited
-program size</p>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>No multitasking</li>
+<li>No protection</li>
+<li>Manual memory layout by programmer</li>
+<li>Physical memory size limited program size</li>
+</ul>
 <h3 id="base-and-bounds-registers-1960s">1.3.2 Base and Bounds Registers
 (1960s)</h3>
 <figure id="fig-1-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
@@ -1257,10 +1297,13 @@ Physical address: 0x100000 + 0x1234 = 0x101234 ✓ (within bounds)
 
 Program accesses: 0x20000  
 0x20000 &gt; 0x010000 → PROTECTION FAULT</code></pre>
-<p><strong>Limitations:</strong> - Still required contiguous physical
-memory - Relocation required copying entire program in memory - External
-fragmentation: gaps between programs - No sharing of code between
-processes</p>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Still required contiguous physical memory</li>
+<li>Relocation required copying entire program in memory</li>
+<li>External fragmentation: gaps between programs</li>
+<li>No sharing of code between processes</li>
+</ul>
 <h3 id="segmentation-1960s-1970s">1.3.3 Segmentation (1960s-1970s)</h3>
 <figure id="fig-1-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
@@ -1567,13 +1610,19 @@ Segment 2: Stack     (read-write, grows down)
 Segment 3: Heap      (read-write, grows up)</code></pre>
 <p><strong>Virtual Address Format (Segmented):</strong></p>
 
-<p><strong>Advantages:</strong> - Logical program structure - Easy
-sharing (share code segment) - Different protection for different
-segments - No internal fragmentation</p>
-<p><strong>Disadvantages:</strong> - <strong>External
-fragmentation:</strong> Segments of varying sizes left gaps in physical
-memory - Required compaction (expensive memory copying) - Large segments
-still needed contiguous physical memory</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Logical program structure</li>
+<li>Easy sharing (share code segment)</li>
+<li>Different protection for different segments</li>
+<li>No internal fragmentation</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li><strong>External fragmentation:</strong> Segments of varying sizes left gaps in physical memory</li>
+<li>Required compaction (expensive memory copying)</li>
+<li>Large segments still needed contiguous physical memory</li>
+</ul>
 <p><strong>Historical Example: Intel 8086 (1978)</strong> The 8086 used
 segmentation to address 1 MB of memory with 16-bit registers:</p>
 <pre><code>Physical Address = (Segment x 16) + Offset</code></pre>
@@ -1727,11 +1776,13 @@ fixed-size blocks called <em>pages</em> (virtual) and <em>frames</em>
 (physical) [Fotheringham, 1961; Kilburn et al., 1962].</p>
 <p><strong>Key Insight:</strong> With fixed-size pages, any page can map
 to any frame. No external fragmentation!</p>
-<p><strong>Typical Page Sizes:</strong> - <strong>4 KB</strong>:
-Standard on x86/x64, ARM, RISC-V - <strong>16 KB</strong>: Option on ARM
-- <strong>64 KB</strong>: Option on ARM, used by some UNIX variants -
-<strong>2 MB/1 GB</strong>: "Huge pages" for reducing translation
-overhead</p>
+<p><strong>Typical Page Sizes:</strong></p>
+<ul>
+<li><strong>4 KB</strong>: Standard on x86/x64, ARM, RISC-V</li>
+<li><strong>16 KB</strong>: Option on ARM</li>
+<li><strong>64 KB</strong>: Option on ARM, used by some UNIX variants</li>
+<li><strong>2 MB/1 GB</strong>: "Huge pages" for reducing translation overhead</li>
+</ul>
 <figure id="fig-1-8" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
@@ -1942,10 +1993,11 @@ After a system runs for 24 hours with frequent allocations and
 deallocations, 20-40% of memory can become unusable due to
 fragmentation. A system might show 4 GB "free" but be unable to allocate
 even 100 MB contiguously.</p>
-<p><strong>Solutions:</strong> - <strong>Compaction:</strong> Move
-allocated blocks to consolidate free space (expensive - requires
-copying) - <strong>Paging:</strong> Use fixed-size blocks to eliminate
-external fragmentation entirely</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li><strong>Compaction:</strong> Move allocated blocks to consolidate free space (expensive - requires copying)</li>
+<li><strong>Paging:</strong> Use fixed-size blocks to eliminate external fragmentation entirely</li>
+</ul>
 <h4
 id="internal-fragmentation-the-problem-with-fixed-size-pages">Internal
 Fragmentation (The Problem with Fixed-Size Pages)</h4>
@@ -1984,10 +2036,12 @@ needed, wasting space <strong>within</strong> the allocated block.</p>
 </tbody>
 </table>
 <p><strong>Real-World Impact:</strong><br />
-On a system with 16 GB RAM, 4 KB pages, and 100 processes: - Average
-internal fragmentation per process: ~500 KB - Total wasted memory: ~50
-MB (0.3% of RAM) - This is <strong>predictable and
-acceptable</strong></p>
+On a system with 16 GB RAM, 4 KB pages, and 100 processes:</p>
+<ul>
+<li>Average internal fragmentation per process: ~500 KB</li>
+<li>Total wasted memory: ~50 MB (0.3% of RAM)</li>
+<li>This is <strong>predictable and acceptable</strong></li>
+</ul>
 <p>Compare this to external fragmentation which can waste 20-40% of RAM
 unpredictably.</p>
 <h4 id="side-by-side-comparison">Side-by-Side Comparison</h4>
@@ -2242,13 +2296,14 @@ Early CPUs like the Motorola 68020 had optional external MMU chips
 
 <h3 id="operating-system-level-the-virtual-memory-manager">1.4.2
 Operating System Level: The Virtual Memory Manager</h3>
-<p>The OS kernel manages: - <strong>Page table maintenance:</strong>
-Creating/updating page tables for processes - <strong>Page fault
-handling:</strong> Loading pages from disk when absent - <strong>Page
-replacement:</strong> Choosing which pages to evict under memory
-pressure - <strong>Swapping:</strong> Moving entire processes to/from
-disk - <strong>Memory allocation:</strong> Allocating frames to
-processes</p>
+<p>The OS kernel manages:</p>
+<ul>
+<li><strong>Page table maintenance:</strong> Creating/updating page tables for processes</li>
+<li><strong>Page fault handling:</strong> Loading pages from disk when absent</li>
+<li><strong>Page replacement:</strong> Choosing which pages to evict under memory pressure</li>
+<li><strong>Swapping:</strong> Moving entire processes to/from disk</li>
+<li><strong>Memory allocation:</strong> Allocating frames to processes</li>
+</ul>
 <p><strong>Key OS Data Structures:</strong></p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Linux kernel mm_struct (simplified)</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> mm_struct <span class="op">{</span></span>
@@ -2306,10 +2361,13 @@ they use allocation libraries:</p>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>                    MAP_PRIVATE<span class="op">|</span>MAP_ANONYMOUS<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Behind the Scenes:</strong> - Small allocations (&lt;128 KB):
-Use heap via <code>brk()</code> system call - Large allocations: Use
-<code>mmap()</code> to map anonymous memory - Free list management
-(bins, arenas) - Metadata overhead (headers, footers)</p>
+<p><strong>Behind the Scenes:</strong></p>
+<ul>
+<li>Small allocations (&lt;128 KB): Use heap via <code>brk()</code> system call</li>
+<li>Large allocations: Use <code>mmap()</code> to map anonymous memory</li>
+<li>Free list management (bins, arenas)</li>
+<li>Metadata overhead (headers, footers)</li>
+</ul>
 <p><strong>Memory Allocation Hierarchy:</strong></p>
 <pre><code>Application calls malloc()
         ↓
@@ -2336,9 +2394,13 @@ all memory)</p>
 Memory</h3>
 <h4 id="benefit-1-simplified-programming-model">Benefit 1: Simplified
 Programming Model</h4>
-<p>Programmers can assume: - Memory starts at address 0 - Memory is
-contiguous - Pointers just work (within the valid address space) - No
-need to manage physical memory locations</p>
+<p>Programmers can assume:</p>
+<ul>
+<li>Memory starts at address 0</li>
+<li>Memory is contiguous</li>
+<li>Pointers just work (within the valid address space)</li>
+<li>No need to manage physical memory locations</li>
+</ul>
 <h4 id="benefit-2-memory-overcommitment">Benefit 2: Memory
 Overcommitment</h4>
 <p>Physical memory can be overcommitted--the sum of all virtual address
@@ -2349,9 +2411,12 @@ Process 1:    8 GB virtual
 Process 2:    8 GB virtual  
 Process 3:    8 GB virtual
 Total:       24 GB virtual   → More than physical!</code></pre>
-<p>This works because: - Not all virtual pages are actually in use -
-Pages can be swapped to disk - Many pages are shared (code,
-libraries)</p>
+<p>This works because:</p>
+<ul>
+<li>Not all virtual pages are actually in use</li>
+<li>Pages can be swapped to disk</li>
+<li>Many pages are shared (code, libraries)</li>
+</ul>
 <h4 id="benefit-3-security-and-isolation">Benefit 3: Security and
 Isolation</h4>
 <p>Each process has its own page table. Process A cannot access Process
@@ -2674,8 +2739,12 @@ Address Translation</h2>
 </figure>
 <p>Let's trace a complete memory access from virtual address to physical
 address.</p>
-<p><strong>System Configuration:</strong> - 32-bit address space - 4 KB
-(2^12 byte) pages - 1 GB (2^30 byte) physical RAM = 256K frames</p>
+<p><strong>System Configuration:</strong></p>
+<ul>
+<li>32-bit address space</li>
+<li>4 KB (2^12 byte) pages</li>
+<li>1 GB (2^30 byte) physical RAM = 256K frames</li>
+</ul>
 <p><strong>Virtual Address:</strong> 0x12345678</p>
 <p><strong>Step 1: Split address into page number and
 offset</strong></p>
@@ -3165,14 +3234,19 @@ avoid the slow page table walk entirely.</p>
 (content-addressable memory):</p>
 <p><strong>Entry Format:</strong></p>
 
-<p>Each entry stores: - <strong>Virtual Page Number (VPN):</strong> The
-tag to match against - <strong>Physical Frame Number (PFN):</strong> The
-translation result - <strong>Valid bit:</strong> Whether this entry
-contains valid data - <strong>Flags:</strong> Permissions
-(read/write/execute) from the PTE</p>
-<p><strong>Size Example:</strong> A typical L1 TLB might have: - 64
-entries for 4 KB pages - Covers: 64 x 4 KB = 256 KB of address space -
-Only 256 KB of "working set" can be accessed without misses!</p>
+<p>Each entry stores:</p>
+<ul>
+<li><strong>Virtual Page Number (VPN):</strong> The tag to match against</li>
+<li><strong>Physical Frame Number (PFN):</strong> The translation result</li>
+<li><strong>Valid bit:</strong> Whether this entry contains valid data</li>
+<li><strong>Flags:</strong> Permissions (read/write/execute) from the PTE</li>
+</ul>
+<p><strong>Size Example:</strong> A typical L1 TLB might have:</p>
+<ul>
+<li>64 entries for 4 KB pages</li>
+<li>Covers: 64 x 4 KB = 256 KB of address space</li>
+<li>Only 256 KB of "working set" can be accessed without misses!</li>
+</ul>
 <p>This limited coverage is called <strong>TLB reach</strong> and is a
 critical factor in system performance. Programs with larger working sets
 will experience more TLB misses.</p>
@@ -3201,14 +3275,17 @@ will experience more TLB misses.</p>
 <h4 id="when-does-the-tlb-get-updated">When Does the TLB Get
 Updated?</h4>
 <p>The TLB is automatically managed by the hardware MMU:</p>
-<p><strong>TLB is updated on:</strong> - Every TLB miss (new entry
-added) - Page table updates by the OS (corresponding entry
-invalidated)</p>
-<p><strong>TLB is flushed (cleared) on:</strong> - Context switch
-between processes (different address spaces) - Explicit flush
-instruction (e.g., when kernel updates page tables) - Some CPUs support
-ASID (Address Space Identifier) to avoid flushing on context
-switches</p>
+<p><strong>TLB is updated on:</strong></p>
+<ul>
+<li>Every TLB miss (new entry added)</li>
+<li>Page table updates by the OS (corresponding entry invalidated)</li>
+</ul>
+<p><strong>TLB is flushed (cleared) on:</strong></p>
+<ul>
+<li>Context switch between processes (different address spaces)</li>
+<li>Explicit flush instruction (e.g., when kernel updates page tables)</li>
+<li>Some CPUs support ASID (Address Space Identifier) to avoid flushing on context switches</li>
+</ul>
 <h4 id="why-the-tlb-matters">Why the TLB Matters</h4>
 <p>The TLB is arguably the most important performance component in
 virtual memory systems:</p>
@@ -3221,10 +3298,12 @@ randomly suffer more TLB misses</li>
 pages increases TLB reach by 512x</li>
 </ol>
 <p><strong>Real-World Example:</strong></p>
-<p>Consider a database scanning a 1 GB table with random access: - With
-4 KB pages: 262,144 pages, typical TLB: 64 entries - TLB covers: 256 KB
-(0.025% of data) - Result: ~99.975% TLB miss rate = catastrophic
-performance</p>
+<p>Consider a database scanning a 1 GB table with random access:</p>
+<ul>
+<li>With 4 KB pages: 262,144 pages, typical TLB: 64 entries</li>
+<li>TLB covers: 256 KB (0.025% of data)</li>
+<li>Result: ~99.975% TLB miss rate = catastrophic performance</li>
+</ul>
 <ul>
 <li>With 2 MB pages: 512 pages, same TLB: 64 entries<br />
 </li>
@@ -3370,13 +3449,18 @@ vast address spaces, this becomes completely impractical.</p>
 <h4 id="the-problem-single-level-page-tables-dont-scale">The Problem:
 Single-Level Page Tables Don't Scale</h4>
 <p>Consider a 64-bit system with 4 KB pages:</p>
-<p><strong>Address Space Calculation:</strong> - Virtual address space:
-2^48 bits = 256 TB (typical implementation) - Page size: 4 KB = 2^12
-bytes - Number of pages: 256 TB / 4 KB = <strong>68,719,476,736
-pages</strong></p>
-<p><strong>Page Table Size:</strong> - Entries needed: 68.7 billion
-entries - Entry size: 8 bytes (64-bit PTE) - <strong>Total page table
-size: 512 GB per process!</strong></p>
+<p><strong>Address Space Calculation:</strong></p>
+<ul>
+<li>Virtual address space: 2^48 bits = 256 TB (typical implementation)</li>
+<li>Page size: 4 KB = 2^12 bytes</li>
+<li>Number of pages: 256 TB / 4 KB = <strong>68,719,476,736 pages</strong></li>
+</ul>
+<p><strong>Page Table Size:</strong></p>
+<ul>
+<li>Entries needed: 68.7 billion entries</li>
+<li>Entry size: 8 bytes (64-bit PTE)</li>
+<li><strong>Total page table size: 512 GB per process!</strong></li>
+</ul>
 <p>This is absurd. The page table alone would consume more memory than
 most systems have, and we haven't even allocated memory for the actual
 program yet!</p>
@@ -3558,9 +3642,11 @@ Hierarchical Page Tables</h4>
 table into a tree structure, allocating page table memory <strong>only
 for regions of the address space that are actually in use</strong>.</p>
 <p><strong>Concept:</strong> Instead of one huge table, create a
-hierarchy: - Level 1: <strong>Page Directory</strong> (small, always
-present) - Level 2: <strong>Page Tables</strong> (only created for used
-regions)</p>
+hierarchy:</p>
+<ul>
+<li>Level 1: <strong>Page Directory</strong> (small, always present)</li>
+<li>Level 2: <strong>Page Tables</strong> (only created for used regions)</li>
+</ul>
 
 <h4 id="example-two-level-page-tables">Example: Two-Level Page
 Tables</h4>
@@ -3602,16 +3688,24 @@ Tables</h4>
 
 4. Access physical memory at 0x001B7A7C</code></pre>
 <h4 id="memory-savings">Memory Savings</h4>
-<p><strong>Single-Level Page Table (32-bit system):</strong> - Pages
-needed: 4 GB / 4 KB = 1,048,576 entries - Entry size: 4 bytes -
-<strong>Total size: 4 MB per process</strong> (always)</p>
-<p><strong>Two-Level Page Table:</strong> - Page Directory: 1,024
-entries x 4 bytes = <strong>4 KB</strong> (always present) - Page
-Tables: Only allocated for used regions</p>
-<p><strong>Example Program Using 268 MB:</strong> - Used pages: 268 MB /
-4 KB = 68,608 pages - Page tables needed: 68,608 / 1,024 = 67 tables -
-Size: 67 x 4 KB = <strong>268 KB</strong> - <strong>Plus directory: 268
-KB + 4 KB = 272 KB total</strong></p>
+<p><strong>Single-Level Page Table (32-bit system):</strong></p>
+<ul>
+<li>Pages needed: 4 GB / 4 KB = 1,048,576 entries</li>
+<li>Entry size: 4 bytes</li>
+<li><strong>Total size: 4 MB per process</strong> (always)</li>
+</ul>
+<p><strong>Two-Level Page Table:</strong></p>
+<ul>
+<li>Page Directory: 1,024 entries x 4 bytes = <strong>4 KB</strong> (always present)</li>
+<li>Page Tables: Only allocated for used regions</li>
+</ul>
+<p><strong>Example Program Using 268 MB:</strong></p>
+<ul>
+<li>Used pages: 268 MB / 4 KB = 68,608 pages</li>
+<li>Page tables needed: 68,608 / 1,024 = 67 tables</li>
+<li>Size: 67 x 4 KB = <strong>268 KB</strong></li>
+<li><strong>Plus directory: 268 KB + 4 KB = 272 KB total</strong></li>
+</ul>
 <p><strong>Savings: 4 MB → 272 KB (93% reduction!)</strong></p>
 <p>For a 64-bit system with sparse usage, the savings are even more
 dramatic.</p>
@@ -3686,11 +3780,12 @@ present)</p>
 <h4 id="tlb-becomes-even-more-critical">TLB Becomes Even More
 Critical</h4>
 <p>With multi-level page tables, a TLB miss becomes expensive:</p>
-<p><strong>Cost of Address Translation:</strong> - <strong>TLB
-hit:</strong> 1 cycle (~0.3 ns) - <strong>TLB miss with 2-level
-PT:</strong> 2 memory accesses (~200 ns) = <strong>667x slower</strong>
-- <strong>TLB miss with 4-level PT:</strong> 4 memory accesses (~400 ns)
-= <strong>1,333x slower</strong></p>
+<p><strong>Cost of Address Translation:</strong></p>
+<ul>
+<li><strong>TLB hit:</strong> 1 cycle (~0.3 ns)</li>
+<li><strong>TLB miss with 2-level PT:</strong> 2 memory accesses (~200 ns) = <strong>667x slower</strong></li>
+<li><strong>TLB miss with 4-level PT:</strong> 4 memory accesses (~400 ns) = <strong>1,333x slower</strong></li>
+</ul>
 <p>This makes the TLB's caching function absolutely critical. A program
 with a 99% TLB hit rate will be dramatically faster than one with a 95%
 hit rate, especially on systems with deep page table hierarchies.</p>
@@ -3720,10 +3815,13 @@ options. We'll explore these architecture-specific details in Part III:
 MMU in Modern Architectures.</p>
 <hr />
 <p><strong>This completes our introduction to the fundamental mechanisms
-of address translation.</strong> We've covered: - The basic concept of
-pages and page tables - How address translation works (virtual →
-physical) - The critical role of the TLB in making translation fast -
-How multi-level page tables make large address spaces practical</p>
+of address translation.</strong> We've covered:</p>
+<ul>
+<li>The basic concept of pages and page tables</li>
+<li>How address translation works (virtual → physical)</li>
+<li>The critical role of the TLB in making translation fast</li>
+<li>How multi-level page tables make large address spaces practical</li>
+</ul>
 <p>In the next section, we'll look at real-world examples of how these
 mechanisms impact system performance and security.</p>
 <h2 id="section-1.10">1.10 Why MMU Matters:
@@ -3939,17 +4037,25 @@ TLB Misses</h3>
 </figure>
 <p><strong>Scenario:</strong> Database performing random lookups in a
 100 GB dataset on a system with 32 GB RAM.</p>
-<p><strong>Analysis:</strong> - Page size: 4 KB - Total pages: 25
-million (100 GB / 4 KB) - Physical frames: 8 million (32 GB / 4 KB) -
-TLB size: 1,536 entries (Intel Xeon) - TLB coverage: 6 MB (1,536 x 4
-KB)</p>
+<p><strong>Analysis:</strong></p>
+<ul>
+<li>Page size: 4 KB</li>
+<li>Total pages: 25 million (100 GB / 4 KB)</li>
+<li>Physical frames: 8 million (32 GB / 4 KB)</li>
+<li>TLB size: 1,536 entries (Intel Xeon)</li>
+<li>TLB coverage: 6 MB (1,536 x 4 KB)</li>
+</ul>
 <p><strong>Result:</strong><br />
 With random access patterns, TLB hit rate drops to ~5%. Each TLB miss
 requires a page table walk (4 memory accesses for 4-level paging).
 Performance can degrade by 60-80% compared to sequential access.</p>
 <p><strong>Solution:</strong><br />
-Use 2 MB huge pages: - TLB coverage: 3 GB (1,536 x 2 MB) - TLB hit rate
-improves to 60% - Performance increase: 2-3x for this workload</p>
+Use 2 MB huge pages:</p>
+<ul>
+<li>TLB coverage: 3 GB (1,536 x 2 MB)</li>
+<li>TLB hit rate improves to 60%</li>
+<li>Performance increase: 2-3x for this workload</li>
+</ul>
 <h3 id="case-study-2-spectre-and-meltdown">Case Study 2: Spectre and
 Meltdown</h3>
 <p>In 2018, researchers discovered that speculative execution in modern
@@ -3970,9 +4076,12 @@ is out of bounds, kernel memory) 2. CPU loads
 3. Page brought into TLB/cache 4. Speculation was wrong → discard
 results 5. BUT TLB/cache still contains traces of kernel memory! 6.
 Attacker measures TLB/cache timing to infer kernel data</p>
-<p><strong>Impact:</strong> - Affected billions of CPUs (Intel, AMD,
-ARM) - Required OS patches (KPTI: Kernel Page Table Isolation) -
-Performance overhead: 5-30% depending on workload</p>
+<p><strong>Impact:</strong></p>
+<ul>
+<li>Affected billions of CPUs (Intel, AMD, ARM)</li>
+<li>Required OS patches (KPTI: Kernel Page Table Isolation)</li>
+<li>Performance overhead: 5-30% depending on workload</li>
+</ul>
 <p><strong>Lesson:</strong><br />
 Memory management isn't just about performance--it's critical to
 security. The MMU is part of the security perimeter.</p>
@@ -3993,9 +4102,12 @@ security vulnerability [Kim et al., 2014].</p>
 translation to: 1. Determine which virtual addresses map to adjacent
 physical rows 2. Bypass MMU protection to corrupt page tables 3. Gain
 kernel privileges</p>
-<p><strong>Impact:</strong> - Demonstrated in 2015 (Google Project Zero)
-- Exploitable from JavaScript (no native code needed) - Led to TRR
-(Target Row Refresh) in DRAM</p>
+<p><strong>Impact:</strong></p>
+<ul>
+<li>Demonstrated in 2015 (Google Project Zero)</li>
+<li>Exploitable from JavaScript (no native code needed)</li>
+<li>Led to TRR (Target Row Refresh) in DRAM</li>
+</ul>
 <hr /><h2 id="section-1.11">1.11 Chapter Summary</h2>
 <p><strong>Key Takeaways:</strong></p>
 <ol type="1">
@@ -4155,10 +4267,14 @@ the entire virtual memory model?</p></li>
   </figcaption>
 </figure>
 <p>This chapter has introduced the fundamental concepts of memory
-management: - The memory wall and why management is necessary -
-Evolution from simple base/bounds to modern paging - The role of
-hardware (MMU), OS, and applications - Virtual memory abstraction and
-its benefits - Real-world security and performance implications</p>
+management:</p>
+<ul>
+<li>The memory wall and why management is necessary</li>
+<li>Evolution from simple base/bounds to modern paging</li>
+<li>The role of hardware (MMU), OS, and applications</li>
+<li>Virtual memory abstraction and its benefits</li>
+<li>Real-world security and performance implications</li>
+</ul>
 <p><strong>In the chapters ahead:</strong></p>
 <p><strong>Chapter 2:</strong> Virtual memory concepts in depth--demand
 paging, page replacement algorithms, working sets, thrashing</p>

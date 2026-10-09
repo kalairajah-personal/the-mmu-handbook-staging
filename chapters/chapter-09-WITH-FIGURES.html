@@ -1148,10 +1148,13 @@ Study: Cloud VM Consolidation</h3>
 <p>A production deployment at a medium-sized cloud provider provides
 concrete numbers. The infrastructure team ran KSM on compute nodes
 hosting customer VMs.</p>
-<p><strong>Setup:</strong> - Physical hosts: Dual-socket Intel Xeon Gold
-6258R (28 cores/socket, 56 total) - Memory: 512 GB DDR4-2933 - Workload:
-60 Ubuntu 20.04 VMs, 6 GB each (360 GB total requested) - Each VM: Web
-server + database (read-heavy workload)</p>
+<p><strong>Setup:</strong></p>
+<ul>
+<li>Physical hosts: Dual-socket Intel Xeon Gold 6258R (28 cores/socket, 56 total)</li>
+<li>Memory: 512 GB DDR4-2933</li>
+<li>Workload: 60 Ubuntu 20.04 VMs, 6 GB each (360 GB total requested)</li>
+<li>Each VM: Web server + database (read-heavy workload)</li>
+</ul>
 <p><strong>Without KSM:</strong></p>
 <pre><code>Total memory allocated: 360 GB
 Page table overhead: 11.2 GB (3.1%)
@@ -1648,8 +1651,7 @@ parallel faulting—say, 128 threads all accessing a memory-mapped file
 for the first time—you get serialization at the PTE level even though
 the I/O could be parallelized. This is one reason database systems often
 use explicit I/O rather than relying on mmap.</p>
-<p>[Continuing in next message due to length…] ### RCU for Lockless Page
-Table Walks</p>
+<h3 id="rcu-for-lockless-page-table-walks">RCU for Lockless Page Table Walks</h3>
 <p>The locking strategy described above works, but it has a cost:
 spinlocks aren't free. Even uncontended spinlock acquisition costs 10-20
 cycles. On a page walk that might touch four locks (one per page table
@@ -1748,15 +1750,17 @@ synchronization overhead, making DMA setup orders of magnitude
 faster.</p>
 <h4 id="when-rcu-helps-vs.-when-it-doesnt">When RCU Helps vs. When It
 Doesn't</h4>
-<p>RCU shines for: - <strong>DMA operations</strong> where the kernel
-frequently needs to translate user virtual addresses to physical
-addresses for hardware devices - <strong>System calls</strong> like
-read()/write() on files that might require page table walks -
-<strong>Fork</strong> where the child process needs to read parent page
-tables to set up COW mappings</p>
-<p>RCU struggles for: - <strong>Write-heavy</strong> workloads where
-synchronize_rcu() cost dominates - <strong>Real-time</strong> systems
-where the worst-case synchronize_rcu() latency is unacceptable</p>
+<p>RCU shines for:</p>
+<ul>
+<li><strong>DMA operations</strong> where the kernel frequently needs to translate user virtual addresses to physical addresses for hardware devices</li>
+<li><strong>System calls</strong> like read()/write() on files that might require page table walks</li>
+<li><strong>Fork</strong> where the child process needs to read parent page tables to set up COW mappings</li>
+</ul>
+<p>RCU struggles for:</p>
+<ul>
+<li><strong>Write-heavy</strong> workloads where synchronize_rcu() cost dominates</li>
+<li><strong>Real-time</strong> systems where the worst-case synchronize_rcu() latency is unacceptable</li>
+</ul>
 <h3 id="batched-tlb-shootdown-optimization">Batched TLB Shootdown
 Optimization</h3>
 <p>We've discussed TLB shootdowns in previous chapters, but the
@@ -1883,9 +1887,13 @@ Contention</h3>
 of page table locking. PostgreSQL's process model creates a new process
 via fork() for each client connection. Each fork() must copy (or set up
 COW for) all parent page tables.</p>
-<p><strong>Scenario:</strong> - Server: 2× Intel Xeon Platinum 8380 (40
-cores each, 80 total) - RAM: 512 GB - Database: 200 GB working set -
-Load: 1000 new connections per second (peak traffic)</p>
+<p><strong>Scenario:</strong></p>
+<ul>
+<li>Server: 2× Intel Xeon Platinum 8380 (40 cores each, 80 total)</li>
+<li>RAM: 512 GB</li>
+<li>Database: 200 GB working set</li>
+<li>Load: 1000 new connections per second (peak traffic)</li>
+</ul>
 <p><strong>Problem:</strong> Each fork() took the mmap_lock in write
 mode, blocking all page faults in the parent process:</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Simplified fork() implementation</span></span>
@@ -2492,8 +2500,7 @@ total) costs:</p>
 <pre><code>1000 × 8 µs = 8 milliseconds of compaction overhead</code></pre>
 <p>This happens synchronously during THP allocation, directly adding
 latency to the faulting thread.</p>
-<p>[Content continues in next file due to length…] ### Compaction
-Strategies</p>
+<h3 id="compaction-strategies">Compaction Strategies</h3>
 <p>Linux offers three THP allocation strategies:</p>
 <div class="sourceCode" id="cb72"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># always: Always try THP, compact synchronously if needed</span></span>
@@ -2543,9 +2550,13 @@ over time as kcompactd creates blocks. For most workloads,
 Tuning: Database Workload Case Study</h3>
 <p>A production PostgreSQL deployment illustrates the tuning
 process.</p>
-<p><strong>Setup:</strong> - Server: 2× AMD EPYC 7763 (64 cores/socket,
-128 total) - RAM: 1 TB DDR4-3200 - Workload: TPC-C @ 5000 warehouses
-(~200 GB database) - SLA: 99th percentile latency &lt; 100 ms</p>
+<p><strong>Setup:</strong></p>
+<ul>
+<li>Server: 2× AMD EPYC 7763 (64 cores/socket, 128 total)</li>
+<li>RAM: 1 TB DDR4-3200</li>
+<li>Workload: TPC-C @ 5000 warehouses (~200 GB database)</li>
+<li>SLA: 99th percentile latency &lt; 100 ms</li>
+</ul>
 <p><strong>Initial configuration (defaults):</strong></p>
 <div class="sourceCode" id="cb76"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /sys/kernel/mm/transparent_hugepage/enabled</span>
@@ -2565,9 +2576,12 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb77-1"><a href=
 <span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> grep compact /proc/vmstat</span>
 <span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a><span class="ex">compact_stall</span> 234,567  <span class="co"># Synchronous compaction events</span></span>
 <span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a><span class="ex">compact_fail</span> 189,012   <span class="co"># 81% compaction failure rate</span></span></code></pre></div>
-<p>High compact_stall with frequent failures means: - Page faults
-triggering synchronous compaction - Compaction often failing to create 2
-MB blocks - High latency variance</p>
+<p>High compact_stall with frequent failures means:</p>
+<ul>
+<li>Page faults triggering synchronous compaction</li>
+<li>Compaction often failing to create 2 MB blocks</li>
+<li>High latency variance</li>
+</ul>
 <p><strong>Performance impact:</strong></p>
 <pre><code>Query latency distribution:
   Median (p50): 8 ms
@@ -2664,19 +2678,33 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb86-1"><a href=
 <span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Application gets huge pages automatically</span></span>
 <span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a><span class="ex">void</span> <span class="pp">*</span>ptr = malloc<span class="er">(</span><span class="fu">size</span><span class="kw">);</span>  <span class="co"># May use huge pages</span></span></code></pre></div>
 <p>When to use each:</p>
-<p><strong>HugeTLB strengths:</strong> - Guaranteed allocation (reserved
-at boot) - No fragmentation issues (never compacted) - Predictable
-behavior (no promotion/demotion) - Lower overhead (no khugepaged
-scanning)</p>
-<p><strong>HugeTLB weaknesses:</strong> - Requires pre-reservation
-(wastes memory if not used) - Application changes needed (explicit mmap)
-- Inflexible (can't easily adjust size)</p>
-<p><strong>THP strengths:</strong> - No application changes needed -
-Dynamic (adapts to workload) - No wasted reservations - Works for any
-allocation</p>
-<p><strong>THP weaknesses:</strong> - Fragmentation-dependent (may fail)
-- Compaction overhead (latency spikes) - Unpredictable coverage -
-khugepaged CPU overhead</p>
+<p><strong>HugeTLB strengths:</strong></p>
+<ul>
+<li>Guaranteed allocation (reserved at boot)</li>
+<li>No fragmentation issues (never compacted)</li>
+<li>Predictable behavior (no promotion/demotion)</li>
+<li>Lower overhead (no khugepaged scanning)</li>
+</ul>
+<p><strong>HugeTLB weaknesses:</strong></p>
+<ul>
+<li>Requires pre-reservation (wastes memory if not used)</li>
+<li>Application changes needed (explicit mmap)</li>
+<li>Inflexible (can't easily adjust size)</li>
+</ul>
+<p><strong>THP strengths:</strong></p>
+<ul>
+<li>No application changes needed</li>
+<li>Dynamic (adapts to workload)</li>
+<li>No wasted reservations</li>
+<li>Works for any allocation</li>
+</ul>
+<p><strong>THP weaknesses:</strong></p>
+<ul>
+<li>Fragmentation-dependent (may fail)</li>
+<li>Compaction overhead (latency spikes)</li>
+<li>Unpredictable coverage</li>
+<li>khugepaged CPU overhead</li>
+</ul>
 <p><strong>Decision matrix:</strong></p>
 <pre><code>Use HugeTLB when:
   - Memory size known at startup (e.g., database shared buffers)
@@ -3247,7 +3275,7 @@ Parallel (new approach):
   Faults/sec: 533,333 (7.7× faster!)</code></pre>
 <p>The improvement scales with core count—more cores means more
 parallelism benefit.</p>
-<p>[Content continues…] ### Batched mmap/munmap Operations</p>
+<h3 id="batched-mmap-munmap-operations">Batched mmap/munmap Operations</h3>
 <p>Applications that repeatedly allocate and free memory can benefit
 from batching:</p>
 <div class="sourceCode" id="cb104"><pre
@@ -3656,10 +3684,12 @@ disk (cache overflow)</li>
 max_pool_percent.</p>
 <h3 id="case-study-container-host-with-zswap">Case Study: Container Host
 with zswap</h3>
-<p><strong>Setup:</strong> - Physical: 2× Intel Xeon Gold 6248R (24
-cores/socket, 48 total), 192 GB RAM - Workload: 150 containers running
-microservices - Memory: Containers request 200 GB total (1.04×
-overcommit)</p>
+<p><strong>Setup:</strong></p>
+<ul>
+<li>Physical: 2× Intel Xeon Gold 6248R (24 cores/socket, 48 total), 192 GB RAM</li>
+<li>Workload: 150 containers running microservices</li>
+<li>Memory: Containers request 200 GB total (1.04× overcommit)</li>
+</ul>
 <p><strong>Without zswap:</strong></p>
 <pre><code>Memory usage approaches 192 GB limit:
   Active: 165 GB
@@ -3709,10 +3739,13 @@ Production Case Study: Cloud Provider Memory Optimization Stack</h2>
 a real-world optimization project at a cloud hosting provider. This case
 study synthesizes multiple strategies covered in this chapter into a
 cohesive optimization stack.</p>
-<p><strong>Initial State:</strong> - Infrastructure: 1,000 compute
-hosts, dual AMD EPYC 7763 (64 cores/socket) - RAM: 512 GB per host -
-Workload: ~50,000 containers (average 50 per host) - Problem: Memory
-utilization at 92%, limiting container density</p>
+<p><strong>Initial State:</strong></p>
+<ul>
+<li>Infrastructure: 1,000 compute hosts, dual AMD EPYC 7763 (64 cores/socket)</li>
+<li>RAM: 512 GB per host</li>
+<li>Workload: ~50,000 containers (average 50 per host)</li>
+<li>Problem: Memory utilization at 92%, limiting container density</li>
+</ul>
 <p><strong>Symptom Analysis:</strong></p>
 <div class="sourceCode" id="cb124"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Per-host memory breakdown</span></span>

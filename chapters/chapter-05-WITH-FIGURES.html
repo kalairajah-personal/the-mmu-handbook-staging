@@ -846,9 +846,12 @@ copy data!</p>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Device autonomously writes to memory</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// CPU is free to do other work</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">// Device generates interrupt when complete</span></span></code></pre></div>
-<p><strong>DMA Benefits:</strong> - CPU overhead: 50,000 cycles → 500
-cycles (100× improvement) - CPU can do useful work while transfer
-proceeds - Essential for high-performance I/O</p>
+<p><strong>DMA Benefits:</strong></p>
+<ul>
+<li>CPU overhead: 50,000 cycles → 500 cycles (100× improvement)</li>
+<li>CPU can do useful work while transfer proceeds</li>
+<li>Essential for high-performance I/O</li>
+</ul>
 <p><strong>How DMA Works:</strong></p>
 <pre><code>1. CPU programs device with physical memory address
 2. Device initiates memory bus transaction
@@ -1200,17 +1203,27 @@ Many devices don&#39;t support retry!</code></pre>
 AMD, ARM</h3>
 <p>Modern processors from all major vendors include IOMMU support:</p>
 <p><strong>Intel VT-d (Virtualization Technology for Directed
-I/O)</strong> - First introduced: 2008 (Nehalem) - Current version: VT-d
-4.0 (2020+) - Features: Scalable Mode, PASID, Posted Interrupts - Used
-in: Xeon, Core i7/i9 (server/desktop)</p>
-<p><strong>AMD IOMMU (also called AMD-Vi)</strong> - First introduced:
-2006 (Pacifica) - Current version: IOMMUv2 (2011+) - Features:
-Multi-level page tables, nested translation - Used in: EPYC, Ryzen,
-Threadripper</p>
-<p><strong>ARM SMMU (System Memory Management Unit)</strong> - First
-introduced: ~2010 - Current version: SMMUv3 (2016+) - Features:
-Two-stage translation, stream IDs - Used in: ARM Cortex-A, Neoverse,
-Apple Silicon</p>
+I/O)</strong></p>
+<ul>
+<li>First introduced: 2008 (Nehalem)</li>
+<li>Current version: VT-d 4.0 (2020+)</li>
+<li>Features: Scalable Mode, PASID, Posted Interrupts</li>
+<li>Used in: Xeon, Core i7/i9 (server/desktop)</li>
+</ul>
+<p><strong>AMD IOMMU (also called AMD-Vi)</strong></p>
+<ul>
+<li>First introduced: 2006 (Pacifica)</li>
+<li>Current version: IOMMUv2 (2011+)</li>
+<li>Features: Multi-level page tables, nested translation</li>
+<li>Used in: EPYC, Ryzen, Threadripper</li>
+</ul>
+<p><strong>ARM SMMU (System Memory Management Unit)</strong></p>
+<ul>
+<li>First introduced: ~2010</li>
+<li>Current version: SMMUv3 (2016+)</li>
+<li>Features: Two-stage translation, stream IDs</li>
+<li>Used in: ARM Cortex-A, Neoverse, Apple Silicon</li>
+</ul>
 <p><strong>We'll explore each in depth in Sections 5.3-5.5.</strong></p>
 <h3 id="chapter-roadmap">5.1.7 Chapter Roadmap</h3>
 <p>This chapter provides comprehensive IOMMU coverage:</p>
@@ -1225,9 +1238,11 @@ security<br />
 <strong>Integration (5.10-5.11):</strong> OS support, best
 practices<br />
 <strong>Future (5.12-5.13):</strong> Emerging technologies, summary</p>
-<p><strong>Prerequisites refresher:</strong> - Chapter 3: Page table
-structures (IOMMU uses similar structures) - Chapter 4: TLB architecture
-(IOTLB parallels CPU TLB)</p>
+<p><strong>Prerequisites refresher:</strong></p>
+<ul>
+<li>Chapter 3: Page table structures (IOMMU uses similar structures)</li>
+<li>Chapter 4: TLB architecture (IOTLB parallels CPU TLB)</li>
+</ul>
 <p>Let's begin with IOMMU architectural fundamentals.</p>
 <hr />
 <h2 id="section-5.2">5.2 IOMMU Architecture
@@ -1444,8 +1459,12 @@ expensive page table walks.</p>
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Miss - must walk page tables</span></span>
 <span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> IOTLB_MISS<span class="op">;</span></span>
 <span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Typical IOTLB Sizes:</strong> - Intel VT-d: 512-2048 entries
-- AMD IOMMU: ~1024 entries - ARM SMMU: 512-1024 entries</p>
+<p><strong>Typical IOTLB Sizes:</strong></p>
+<ul>
+<li>Intel VT-d: 512-2048 entries</li>
+<li>AMD IOMMU: ~1024 entries</li>
+<li>ARM SMMU: 512-1024 entries</li>
+</ul>
 <p><strong>Performance Impact:</strong></p>
 <pre><code>IOTLB Hit:  ~10-50 ns
 IOTLB Miss: ~100-500 ns (page walk from DRAM)
@@ -1537,9 +1556,12 @@ Different platforms use different identification schemes.</p>
 Example: 0001:00:1f.2
   Segment: 1
   BDF: 00:1f.2</code></pre>
-<p><strong>Limitations:</strong> - Maximum 256 buses × 32 devices × 8
-functions = 65,536 devices - Fixed hierarchy (bus topology) - Not all
-devices are PCI (what about on-SoC devices?)</p>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Maximum 256 buses × 32 devices × 8 functions = 65,536 devices</li>
+<li>Fixed hierarchy (bus topology)</li>
+<li>Not all devices are PCI (what about on-SoC devices?)</li>
+</ul>
 <h4 id="stream-id-arm-smmu">Stream ID (ARM SMMU)</h4>
 <p><strong>Used by:</strong> ARM SMMU</p>
 <p><strong>Purpose:</strong> More flexible device identification than
@@ -1558,9 +1580,13 @@ PCI BDF.</p>
   USB3 Host:     Stream ID = 0x20
   PCIe 00:00.0:  Stream ID = 0x100
   PCIe 00:01.0:  Stream ID = 0x101</code></pre>
-<p><strong>Advantages:</strong> - Flexible assignment - Works for
-non-PCI devices - Can group related devices - Scales beyond 65K
-devices</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Flexible assignment</li>
+<li>Works for non-PCI devices</li>
+<li>Can group related devices</li>
+<li>Scales beyond 65K devices</li>
+</ul>
 <h4 id="comparison">Comparison</h4>
 <table>
 <thead>
@@ -1975,12 +2001,18 @@ Context Table Lookup:
 Mode</h3>
 <p>Modern VT-d supports two modes with different capabilities.</p>
 <h4 id="legacy-mode-vt-d-1.0-2.0">Legacy Mode (VT-d 1.0-2.0)</h4>
-<p><strong>Characteristics:</strong> - One page table per device (via
-Context Entry) - Simple domain isolation - Compatible with older
-software</p>
-<p><strong>Limitations:</strong> - No PASID support (one address space
-per device) - Limited scalability for SR-IOV - Simpler interrupt
-remapping</p>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>One page table per device (via Context Entry)</li>
+<li>Simple domain isolation</li>
+<li>Compatible with older software</li>
+</ul>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>No PASID support (one address space per device)</li>
+<li>Limited scalability for SR-IOV</li>
+<li>Simpler interrupt remapping</li>
+</ul>
 <h4 id="scalable-mode-vt-d-3.0">Scalable Mode (VT-d 3.0+)</h4>
 <p><strong>Enabled via:</strong> VT-d Extended Capability Register</p>
 <p><strong>Key Enhancements:</strong></p>
@@ -2438,11 +2470,17 @@ IOTLB Miss Rates:
   1GB pages: 0.01%</code></pre>
 <hr />
 <p><strong>Section 5.3 Complete!</strong> (~3,700 words)</p>
-<p>We've covered Intel VT-d comprehensively: - ✅ Root and Context
-tables - ✅ Legacy vs Scalable Mode - ✅ PASID (Process Address Space
-ID) - ✅ Page table structures - ✅ IOTLB architecture - ✅ Interrupt
-remapping - ✅ Posted interrupts - ✅ Real hardware specs (Sapphire
-Rapids)</p>
+<p>We've covered Intel VT-d comprehensively:</p>
+<ul>
+<li>✅ Root and Context tables</li>
+<li>✅ Legacy vs Scalable Mode</li>
+<li>✅ PASID (Process Address Space ID)</li>
+<li>✅ Page table structures</li>
+<li>✅ IOTLB architecture</li>
+<li>✅ Interrupt remapping</li>
+<li>✅ Posted interrupts</li>
+<li>✅ Real hardware specs (Sapphire Rapids)</li>
+</ul>
 <hr />
 <h2 id="section-5.4">5.4 AMD IOMMU (AMD-Vi)</h2>
 <p>AMD's IOMMU implementation, also called AMD-Vi (AMD Virtualization
@@ -2531,9 +2569,12 @@ Context structure.</p>
 <span id="cb92-17"><a href="#cb92-17" aria-hidden="true" tabindex="-1"></a>page_table_root <span class="op">=</span> dte<span class="op">-&gt;</span>page_table_root<span class="op">;</span></span>
 <span id="cb92-18"><a href="#cb92-18" aria-hidden="true" tabindex="-1"></a>page_table_levels <span class="op">=</span> dte<span class="op">-&gt;</span>pt_levels<span class="op">;</span></span>
 <span id="cb92-19"><a href="#cb92-19" aria-hidden="true" tabindex="-1"></a>domain_id <span class="op">=</span> dte<span class="op">-&gt;</span>domain_id<span class="op">;</span></span></code></pre></div>
-<p><strong>Advantages vs Intel:</strong> - Simpler: One lookup instead
-of two - Faster: One memory read vs two - Direct indexing: No bus-based
-indirection</p>
+<p><strong>Advantages vs Intel:</strong></p>
+<ul>
+<li>Simpler: One lookup instead of two</li>
+<li>Faster: One memory read vs two</li>
+<li>Direct indexing: No bus-based indirection</li>
+</ul>
 <p><strong>Disadvantage:</strong> - Fixed size: 65,536 entries × 32
 bytes = 2 MB always allocated</p>
 <h3 id="amd-io-page-tables">5.4.3 AMD I/O Page Tables</h3>
@@ -2764,8 +2805,12 @@ Performance (10 GbE Network):
   IOTLB Miss Rate:
     4KB pages: 10-12%
     2MB pages: 0.5-1%</code></pre>
-<p><strong>Advantages:</strong> - Simpler device table lookup - Flexible
-page table levels - Competitive performance</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Simpler device table lookup</li>
+<li>Flexible page table levels</li>
+<li>Competitive performance</li>
+</ul>
 <hr />
 <h2 id="section-5.5">5.5 ARM SMMU (System
 Memory Management Unit)</h2>
@@ -3061,10 +3106,19 @@ paging.</p>
 │  Sequence Number: From PRI event         │
 │  Response Code: Success/Failure          │
 └──────────────────────────────────────────┘</code></pre>
-<p><strong>Use Cases:</strong> - Shared Virtual Memory (SVM) -
-Overcommitted device memory - Lazy allocation - Memory migration</p>
-<p><strong>Challenges:</strong> - Device must support retry - High
-latency (~10,000-100,000 cycles) - Complexity in drivers</p>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>Shared Virtual Memory (SVM)</li>
+<li>Overcommitted device memory</li>
+<li>Lazy allocation</li>
+<li>Memory migration</li>
+</ul>
+<p><strong>Challenges:</strong></p>
+<ul>
+<li>Device must support retry</li>
+<li>High latency (~10,000-100,000 cycles)</li>
+<li>Complexity in drivers</li>
+</ul>
 <h3 id="smmuv3-enhancements">5.5.7 SMMUv3 Enhancements</h3>
 <h4 id="substream-ids-smmuv3.1">Substream IDs (SMMUv3.1+)</h4>
 <p>Similar to Intel PASID, enables multiple address spaces per Stream
@@ -3677,11 +3731,20 @@ Mapping (Passthrough)</h4>
 <span id="cb165-4"><a href="#cb165-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Now: DVA = PA (no translation!)</span></span>
 <span id="cb165-5"><a href="#cb165-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Latency: ~5 ns (no IOMMU overhead)</span></span>
 <span id="cb165-6"><a href="#cb165-6" aria-hidden="true" tabindex="-1"></a><span class="co">// But: No isolation! Use carefully.</span></span></code></pre></div>
-<p><strong>When to use:</strong> - Trusted device - Maximum performance
-critical - Single-tenant system - Development/debugging</p>
-<p><strong>When NOT to use:</strong> - Untrusted devices - Multi-tenant
-systems - Devices from untrusted users - Security-critical
-environments</p>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>Trusted device</li>
+<li>Maximum performance critical</li>
+<li>Single-tenant system</li>
+<li>Development/debugging</li>
+</ul>
+<p><strong>When NOT to use:</strong></p>
+<ul>
+<li>Untrusted devices</li>
+<li>Multi-tenant systems</li>
+<li>Devices from untrusted users</li>
+<li>Security-critical environments</li>
+</ul>
 <h3 id="real-world-performance-analysis">5.7.5 Real-World Performance
 Analysis</h3>
 <p><strong>Case Study: High-Frequency Trading System</strong></p>
@@ -4913,9 +4976,11 @@ Solution:
     <a href="https://doi.org/10.1145/1629575.1629579" target="_blank" rel="noopener">DOI: 10.1145/1629575.1629579</a></li>
 ><h2 id="section-5.11">5.11 Chapter Summary</h2>
 <h3 id="core-concepts-recap">5.9.1 Core Concepts Recap</h3>
-<p><strong>The IOMMU Problem:</strong> - Traditional DMA: Security
-nightmare, virtualization impossible - IOMMU Solution: Virtual addresses
-for devices, isolation, security</p>
+<p><strong>The IOMMU Problem:</strong></p>
+<ul>
+<li>Traditional DMA: Security nightmare, virtualization impossible</li>
+<li>IOMMU Solution: Virtual addresses for devices, isolation, security</li>
+</ul>
 <p><strong>Key Components:</strong> 1. Device Table/Context Table: Maps
 devices to translation contexts 2. IOMMU Page Tables: DVA → PA mappings
 (hierarchical) 3. IOTLB: Caches translations (critical for performance)
@@ -4988,46 +5053,80 @@ Summary</h3>
 <p><strong>All three are production-ready and performant for modern
 workloads.</strong></p>
 <h3 id="performance-guidelines">5.9.3 Performance Guidelines</h3>
-<p><strong>When IOMMU overhead is acceptable (&lt;5%):</strong> - Large
-pages (2MB/1GB) - Persistent mappings - ATS enabled devices - Modern
-hardware (2020+)</p>
-<p><strong>When IOMMU overhead is significant (&gt;10%):</strong> -
-Small pages (4KB) with large working sets - Frequent map/unmap
-operations - Many simultaneous devices - Older hardware</p>
+<p><strong>When IOMMU overhead is acceptable (&lt;5%):</strong></p>
+<ul>
+<li>Large pages (2MB/1GB)</li>
+<li>Persistent mappings</li>
+<li>ATS enabled devices</li>
+<li>Modern hardware (2020+)</li>
+</ul>
+<p><strong>When IOMMU overhead is significant (&gt;10%):</strong></p>
+<ul>
+<li>Small pages (4KB) with large working sets</li>
+<li>Frequent map/unmap operations</li>
+<li>Many simultaneous devices</li>
+<li>Older hardware</li>
+</ul>
 <p><strong>Optimization Priorities:</strong> 1. <strong>Use large
 pages</strong> (biggest impact: 50-300% improvement) 2.
 <strong>Persistent mappings</strong> (avoid invalidation storms) 3.
 <strong>Enable ATS</strong> (if device supports) 4. <strong>Batch
 invalidations</strong> (200× faster than per-page)</p>
 <h3 id="security-considerations">5.9.4 Security Considerations</h3>
-<p><strong>IOMMU Provides:</strong> - ✅ DMA attack prevention
-(malicious devices blocked) - ✅ Device isolation (multi-tenant safety)
-- ✅ Interrupt injection prevention (interrupt remapping) - ✅ VM escape
-prevention (strict domain isolation)</p>
-<p><strong>IOMMU Cannot Prevent:</strong> - ❌ Side-channel attacks
-(timing, speculation) - ❌ Physical attacks (DMA before OS boots) - ❌
-Firmware vulnerabilities (RMRR, BMC) - ❌ Device-specific bugs</p>
-<p><strong>Best Practices:</strong> - Enable IOMMU in firmware
-(BIOS/UEFI) - Use interrupt remapping (always) - Monitor IOMMU fault
-events (security logging) - Minimize bypass regions (RMRR on Intel) -
-Keep firmware updated (security patches)</p>
+<p><strong>IOMMU Provides:</strong></p>
+<ul>
+<li>✅ DMA attack prevention (malicious devices blocked)</li>
+<li>✅ Device isolation (multi-tenant safety)</li>
+<li>✅ Interrupt injection prevention (interrupt remapping)</li>
+<li>✅ VM escape prevention (strict domain isolation)</li>
+</ul>
+<p><strong>IOMMU Cannot Prevent:</strong></p>
+<ul>
+<li>❌ Side-channel attacks (timing, speculation)</li>
+<li>❌ Physical attacks (DMA before OS boots)</li>
+<li>❌ Firmware vulnerabilities (RMRR, BMC)</li>
+<li>❌ Device-specific bugs</li>
+</ul>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Enable IOMMU in firmware (BIOS/UEFI)</li>
+<li>Use interrupt remapping (always)</li>
+<li>Monitor IOMMU fault events (security logging)</li>
+<li>Minimize bypass regions (RMRR on Intel)</li>
+<li>Keep firmware updated (security patches)</li>
+</ul>
 <h3 id="use-case-decision-matrix">5.9.5 Use Case Decision Matrix</h3>
-<p><strong>When to use IOMMU:</strong> - ✅ Multi-tenant virtualization
-- ✅ Untrusted devices (USB, Thunderbolt) - ✅ Device passthrough to VMs
-- ✅ Security-critical environments - ✅ Systems with &gt; 4GB RAM and
-32-bit devices</p>
-<p><strong>When passthrough might be acceptable:</strong> - ⚠️
-Single-tenant trusted environment - ⚠️ Physical security guaranteed - ⚠️
-Maximum performance critical (HFT, HPC) - ⚠️ Development/testing
-systems</p>
-<p><strong>Never disable IOMMU for:</strong> - ❌ Internet-facing
-servers - ❌ Multi-user systems - ❌ Systems handling sensitive data -
-❌ Production cloud environments</p>
+<p><strong>When to use IOMMU:</strong></p>
+<ul>
+<li>✅ Multi-tenant virtualization</li>
+<li>✅ Untrusted devices (USB, Thunderbolt)</li>
+<li>✅ Device passthrough to VMs</li>
+<li>✅ Security-critical environments</li>
+<li>✅ Systems with &gt; 4GB RAM and 32-bit devices</li>
+</ul>
+<p><strong>When passthrough might be acceptable:</strong></p>
+<ul>
+<li>⚠️ Single-tenant trusted environment</li>
+<li>⚠️ Physical security guaranteed</li>
+<li>⚠️ Maximum performance critical (HFT, HPC)</li>
+<li>⚠️ Development/testing systems</li>
+</ul>
+<p><strong>Never disable IOMMU for:</strong></p>
+<ul>
+<li>❌ Internet-facing servers</li>
+<li>❌ Multi-user systems</li>
+<li>❌ Systems handling sensitive data</li>
+<li>❌ Production cloud environments</li>
+</ul>
 <h3 id="future-directions">5.9.6 Future Directions</h3>
-<p><strong>Emerging Technologies:</strong> - CXL (Compute Express Link)
-with IOMMU integration - Confidential computing (SEV-SNP, TDX with
-IOMMU) - Hardware-accelerated ML/AI with IOMMU - Elastic IOMMUs (dynamic
-resource allocation) - Improved nested translation performance</p>
+<p><strong>Emerging Technologies:</strong></p>
+<ul>
+<li>CXL (Compute Express Link) with IOMMU integration</li>
+<li>Confidential computing (SEV-SNP, TDX with IOMMU)</li>
+<li>Hardware-accelerated ML/AI with IOMMU</li>
+<li>Elastic IOMMUs (dynamic resource allocation)</li>
+<li>Improved nested translation performance</li>
+</ul>
 <p><strong>The IOMMU is essential infrastructure for modern
 computing.</strong></p>
 <hr />
@@ -5153,12 +5252,24 @@ Challenges:
   
 Future IOMMU security features</code></pre>
 <h3 id="industry-trends">5.12.6 Industry Trends</h3>
-<p><strong>2024-2026:</strong> - CXL adoption accelerating -
-Confidential computing mainstream - AI accelerator proliferation</p>
-<p><strong>2026-2028:</strong> - Scalable IOV deployment - CXL memory
-pooling common - Enhanced IOMMU performance</p>
-<p><strong>2028-2030:</strong> - Quantum-safe features - ML-assisted
-optimization - Ubiquitous device encryption</p>
+<p><strong>2024-2026:</strong></p>
+<ul>
+<li>CXL adoption accelerating</li>
+<li>Confidential computing mainstream</li>
+<li>AI accelerator proliferation</li>
+</ul>
+<p><strong>2026-2028:</strong></p>
+<ul>
+<li>Scalable IOV deployment</li>
+<li>CXL memory pooling common</li>
+<li>Enhanced IOMMU performance</li>
+</ul>
+<p><strong>2028-2030:</strong></p>
+<ul>
+<li>Quantum-safe features</li>
+<li>ML-assisted optimization</li>
+<li>Ubiquitous device encryption</li>
+</ul>
 <p><strong>The IOMMU will remain essential infrastructure, evolving with
 computing needs.</strong></p>
 <hr />

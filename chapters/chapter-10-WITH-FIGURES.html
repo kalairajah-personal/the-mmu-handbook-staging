@@ -1261,7 +1261,7 @@ Compare to CPU TLB miss:
   
 IOMMU is 6× slower!</code></pre>
 <p>This latency makes the IOTLB critical.</p>
-<p>[Content continues…] #### IOTLB Structure and Behavior</p>
+<h4 id="iotlb-structure-and-behavior">IOTLB Structure and Behavior</h4>
 <p>The IOTLB caches recent translations, avoiding expensive page table
 walks:</p>
 <pre><code>Intel VT-d IOTLB (typical high-end configuration):
@@ -1348,10 +1348,12 @@ multiply IOTLB effectiveness.</p>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Device now uses physical addresses directly</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Zero IOMMU overhead</span></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">// But: Security isolation lost</span></span></code></pre></div>
-<p>Passthrough is appropriate for: - Devices in single-tenant systems
-(no isolation needed) - Devices with hardware memory protection (e.g.,
-some SR-IOV NICs) - Performance-critical devices where IOMMU overhead is
-unacceptable</p>
+<p>Passthrough is appropriate for:</p>
+<ul>
+<li>Devices in single-tenant systems (no isolation needed)</li>
+<li>Devices with hardware memory protection (e.g., some SR-IOV NICs)</li>
+<li>Performance-critical devices where IOMMU overhead is unacceptable</li>
+</ul>
 <p>But it's inappropriate for multi-tenant cloud environments where
 isolation is mandatory.</p>
 <h4 id="iotlb-invalidation">IOTLB Invalidation</h4>
@@ -1438,9 +1440,13 @@ complexity.</p>
 NVMe with IOMMU</h3>
 <p>Let's examine real-world NVMe storage performance with various IOMMU
 configurations.</p>
-<p><strong>Setup:</strong> - Intel Xeon Gold 6248R (24 cores @ 3.0 GHz)
-- Intel Optane P5800X (1.6 TB NVMe SSD, 1.5M IOPS capable) - Workload:
-Random 4KB reads - Block: 256 outstanding I/Os</p>
+<p><strong>Setup:</strong></p>
+<ul>
+<li>Intel Xeon Gold 6248R (24 cores @ 3.0 GHz)</li>
+<li>Intel Optane P5800X (1.6 TB NVMe SSD, 1.5M IOPS capable)</li>
+<li>Workload: Random 4KB reads</li>
+<li>Block: 256 outstanding I/Os</li>
+</ul>
 <p><strong>Configuration A: IOMMU Disabled</strong></p>
 <div class="sourceCode" id="cb20"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Boot with iommu=off</span></span>
@@ -2032,18 +2038,23 @@ Total: 50-500 µs (vs 1-2 µs for normal DMA)</code></pre>
 <span id="cb45-59"><a href="#cb45-59" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
 <span id="cb45-60"><a href="#cb45-60" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb45-61"><a href="#cb45-61" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>The complexity is significant. The device must: - Queue pending
-requests (can't block) - Handle timeouts (page faults might take
-milliseconds) - Implement retry logic (transient failures) - Coordinate
-with other pending DMAs (ordering)</p>
+<p>The complexity is significant. The device must:</p>
+<ul>
+<li>Queue pending requests (can't block)</li>
+<li>Handle timeouts (page faults might take milliseconds)</li>
+<li>Implement retry logic (transient failures)</li>
+<li>Coordinate with other pending DMAs (ordering)</li>
+</ul>
 <p>This is why PRI support is uncommon in consumer devices.</p>
-<p>[Content continues in next section…] ### Performance Analysis: RDMA
-with ATS</p>
+<h3 id="performance-analysis-rdma-with-ats">Performance Analysis: RDMA with ATS</h3>
 <p>A production deployment at a financial services firm provides
 concrete data on ATS effectiveness.</p>
-<p><strong>Setup:</strong> - Mellanox ConnectX-5 100 Gbps NIC (ATS
-capable) - Workload: RDMA Write throughput test - Buffer size: 8 GB
-(spread across many connections)</p>
+<p><strong>Setup:</strong></p>
+<ul>
+<li>Mellanox ConnectX-5 100 Gbps NIC (ATS capable)</li>
+<li>Workload: RDMA Write throughput test</li>
+<li>Buffer size: 8 GB (spread across many connections)</li>
+</ul>
 <p><strong>Configuration A: Traditional (Pinned Memory, no
 IOMMU)</strong>:</p>
 <pre><code>Memory registration time: 180 ms (one-time cost)
@@ -2507,15 +2518,20 @@ ODP</h3>
 <span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
 <span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a>    buf <span class="op">=</span> malloc<span class="op">(</span>size<span class="op">);</span>  <span class="co">// ODP handles registration</span></span>
 <span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>This provides: - <strong>Predictable latency</strong> for hot path
-(no page faults) - <strong>Flexibility</strong> for cold path (ODP
-handles arbitrary allocations) - <strong>Memory efficiency</strong>
-(only hot data pinned)</p>
+<p>This provides:</p>
+<ul>
+<li><strong>Predictable latency</strong> for hot path (no page faults)</li>
+<li><strong>Flexibility</strong> for cold path (ODP handles arbitrary allocations)</li>
+<li><strong>Memory efficiency</strong> (only hot data pinned)</li>
+</ul>
 <h3 id="case-study-redis-with-rdma">Case Study: Redis with RDMA</h3>
 <p>A production Redis deployment illustrates the trade-offs.</p>
-<p><strong>Setup:</strong> - Redis with RDMA-enabled GET operations -
-Workload: 80% hits (cached), 20% misses (from disk) - Value sizes: 100
-bytes to 10 MB (long tail distribution)</p>
+<p><strong>Setup:</strong></p>
+<ul>
+<li>Redis with RDMA-enabled GET operations</li>
+<li>Workload: 80% hits (cached), 20% misses (from disk)</li>
+<li>Value sizes: 100 bytes to 10 MB (long tail distribution)</li>
+</ul>
 <p><strong>Traditional approach (pinned memory):</strong></p>
 <pre><code>At startup:
   Register 32 GB buffer pool
@@ -2972,8 +2988,7 @@ capabilities (packet processing, not compute-intensive) 2. Flow tables
 fit in DPU memory (with host memory fallback) 3. Latency improvement (50
 µs → 15 µs) enhanced customer experience 4. Host CPU freed for
 revenue-generating workloads</p>
-<p>[Continue with sections 10.6-10.10 in next file…] ## 10.6 FPGA
-Coherent Accelerators</p>
+<h3 id="fpga-coherent-accelerators">FPGA Coherent Accelerators</h3>
 <p>Field-Programmable Gate Arrays (FPGAs) offer reconfigurable hardware
 acceleration for custom algorithms. Traditional FPGA designs require
 explicit data movement—copy data from CPU memory to FPGA memory, process

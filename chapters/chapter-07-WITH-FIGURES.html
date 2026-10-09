@@ -858,31 +858,41 @@ that would otherwise take hours to track down.</p>
 paging-generated exceptions</strong>—the faults that occur during
 address translation and memory access due to the memory management
 hardware. We will cover:</p>
-<p><strong>Core Page Fault Mechanisms (7.2-7.5):</strong> - Page fault
-fundamentals: minor, major, invalid, and COW faults - x86-64 page fault
-exception (#PF): error codes, CR2 register, and handling - ARM64
-synchronous exceptions: Data Aborts, Instruction Aborts, and ESR
-decoding - ARM RME (Realm Management Extension): MECID violations and
-Granule Protection faults - RISC-V page faults: software TLB management
-and exception codes</p>
-<p><strong>TLB and Page Table Issues (7.6-7.7):</strong> - TLB-related
-exceptions: misses on software-managed TLBs, multi-hit exceptions, TLB
-conflicts - Page table walk failures: invalid PTEs at each level, nested
-page table faults</p>
-<p><strong>Memory Aliasing and Protection (7.8-7.9):</strong> - Page
-overlapping and aliasing faults: PAT conflicts, cache aliasing,
-attribute mismatches - Permission violations: R/W/X violations,
-SMEP/SMAP/PAN, protection keys</p>
-<p><strong>Fault Handling and Performance (7.10-7.11):</strong> - Page
-fault handler implementation: demand paging, COW, stack growth -
-Performance implications: fault costs, profiling, and optimization</p>
-<p><strong>Architecture Diversity (7.12-7.13):</strong> - Historical
-architectures: SPARC, MIPS, PowerPC exception mechanisms - Modern
-architecture comparison: x86-64 vs ARM64 vs RISC-V - Debugging
-techniques and common patterns</p>
-<p><strong>Advanced Topics (7.14):</strong> - Asynchronous page faults
-in virtualization - User-space page fault handling (userfaultfd) -
-Fault-tolerant systems and error recovery</p>
+<p><strong>Core Page Fault Mechanisms (7.2-7.5):</strong></p>
+<ul>
+<li>Page fault fundamentals: minor, major, invalid, and COW faults</li>
+<li>x86-64 page fault exception (#PF): error codes, CR2 register, and handling</li>
+<li>ARM64 synchronous exceptions: Data Aborts, Instruction Aborts, and ESR decoding</li>
+<li>ARM RME (Realm Management Extension): MECID violations and Granule Protection faults</li>
+<li>RISC-V page faults: software TLB management and exception codes</li>
+</ul>
+<p><strong>TLB and Page Table Issues (7.6-7.7):</strong></p>
+<ul>
+<li>TLB-related exceptions: misses on software-managed TLBs, multi-hit exceptions, TLB conflicts</li>
+<li>Page table walk failures: invalid PTEs at each level, nested page table faults</li>
+</ul>
+<p><strong>Memory Aliasing and Protection (7.8-7.9):</strong></p>
+<ul>
+<li>Page overlapping and aliasing faults: PAT conflicts, cache aliasing, attribute mismatches</li>
+<li>Permission violations: R/W/X violations, SMEP/SMAP/PAN, protection keys</li>
+</ul>
+<p><strong>Fault Handling and Performance (7.10-7.11):</strong></p>
+<ul>
+<li>Page fault handler implementation: demand paging, COW, stack growth</li>
+<li>Performance implications: fault costs, profiling, and optimization</li>
+</ul>
+<p><strong>Architecture Diversity (7.12-7.13):</strong></p>
+<ul>
+<li>Historical architectures: SPARC, MIPS, PowerPC exception mechanisms</li>
+<li>Modern architecture comparison: x86-64 vs ARM64 vs RISC-V</li>
+<li>Debugging techniques and common patterns</li>
+</ul>
+<p><strong>Advanced Topics (7.14):</strong></p>
+<ul>
+<li>Asynchronous page faults in virtualization</li>
+<li>User-space page fault handling (userfaultfd)</li>
+<li>Fault-tolerant systems and error recovery</li>
+</ul>
 <h3 id="what-we-exclude">What We Exclude</h3>
 <p>This chapter does <strong>NOT</strong> cover general CPU exceptions
 unrelated to memory management:</p>
@@ -989,12 +999,14 @@ faulting instruction can be restarted</li>
 <li><strong>Transparent (usually):</strong> User code doesn't see the
 fault—it just experiences a delay</li>
 </ol>
-<p>The MMU generates a page fault when: - The page table entry has
-Present bit = 0 - The access violates protection bits (write to
-read-only, execute from NX page) - The access violates privilege
-requirements (user accessing supervisor page) - Reserved bits in the PTE
-are set incorrectly - On RISC-V: TLB miss with no valid page table
-entry</p>
+<p>The MMU generates a page fault when:</p>
+<ul>
+<li>The page table entry has Present bit = 0</li>
+<li>The access violates protection bits (write to read-only, execute from NX page)</li>
+<li>The access violates privilege requirements (user accessing supervisor page)</li>
+<li>Reserved bits in the PTE are set incorrectly</li>
+<li>On RISC-V: TLB miss with no valid page table entry</li>
+</ul>
 <h3 id="page-fault-causes">7.2.2 Page Fault Causes</h3>
 <p>Page faults occur for many reasons. Understanding the cause is
 essential for the OS to handle the fault appropriately:</p>
@@ -1070,13 +1082,13 @@ how they should be handled:</p>
 <p>The page is already in physical memory, but the page table just needs
 to be updated. These are relatively fast (1-5 microseconds) because no
 disk I/O is required.</p>
-<p><em>Examples:</em> - <strong>First access after fork():</strong> COW
-page that hasn't been written yet—shared physical page exists -
-<strong>Page cache hit:</strong> File-backed page that's in the page
-cache but not mapped in this process - <strong>Stack growth:</strong>
-Physical pages exist; just need to update page tables - <strong>Demand
-zero:</strong> Need to allocate a zeroed page (common for BSS segment
-and heap)</p>
+<p><em>Examples:</em></p>
+<ul>
+<li><strong>First access after fork():</strong> COW page that hasn't been written yet—shared physical page exists</li>
+<li><strong>Page cache hit:</strong> File-backed page that's in the page cache but not mapped in this process</li>
+<li><strong>Stack growth:</strong> Physical pages exist; just need to update page tables</li>
+<li><strong>Demand zero:</strong> Need to allocate a zeroed page (common for BSS segment and heap)</li>
+</ul>
 <div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Minor fault handling pseudo-code</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> handle_minor_fault<span class="op">(</span>virt_addr_t fault_addr<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Find or allocate physical page</span></span>
@@ -1101,11 +1113,12 @@ and heap)</p>
 <p><strong>Major Page Faults:</strong></p>
 <p>The page must be read from disk. These are extremely expensive (1-10
 milliseconds) because of disk I/O latency.</p>
-<p><em>Examples:</em> - <strong>Swapped page:</strong> Page was evicted
-to swap space due to memory pressure - <strong>File-backed page not in
-cache:</strong> mmap'd file page that must be read from disk -
-<strong>Executable load:</strong> First execution of program code not
-yet in page cache</p>
+<p><em>Examples:</em></p>
+<ul>
+<li><strong>Swapped page:</strong> Page was evicted to swap space due to memory pressure</li>
+<li><strong>File-backed page not in cache:</strong> mmap'd file page that must be read from disk</li>
+<li><strong>Executable load:</strong> First execution of program code not yet in page cache</li>
+</ul>
 <div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Major fault handling pseudo-code</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> handle_major_fault<span class="op">(</span>virt_addr_t fault_addr<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Allocate physical page</span></span>
@@ -1132,14 +1145,15 @@ yet in page cache</p>
 <p>The address is not mapped in the process's address space at all, or
 the access violates permissions in a way that can't be fixed. These
 result in process termination (SIGSEGV).</p>
-<p><em>Examples:</em> - <strong>Null pointer dereference:</strong>
-Address 0x0 (or near 0) - <strong>Random garbage pointer:</strong>
-Address has never been mapped - <strong>Buffer overflow:</strong>
-Accessing beyond allocated region - <strong>Use-after-free:</strong>
-Accessing memory that's been freed - <strong>Stack overflow:</strong> SP
-far beyond stack limit (not just a page or two) - <strong>Security
-violation:</strong> Attempting to bypass protection (e.g., SMEP/SMAP
-violation)</p>
+<p><em>Examples:</em></p>
+<ul>
+<li><strong>Null pointer dereference:</strong> Address 0x0 (or near 0)</li>
+<li><strong>Random garbage pointer:</strong> Address has never been mapped</li>
+<li><strong>Buffer overflow:</strong> Accessing beyond allocated region</li>
+<li><strong>Use-after-free:</strong> Accessing memory that's been freed</li>
+<li><strong>Stack overflow:</strong> SP far beyond stack limit (not just a page or two)</li>
+<li><strong>Security violation:</strong> Attempting to bypass protection (e.g., SMEP/SMAP violation)</li>
+</ul>
 <div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Invalid fault handling pseudo-code</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> handle_invalid_fault<span class="op">(</span>virt_addr_t fault_addr<span class="op">,</span> <span class="dt">uint32_t</span> error_code<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Check if address is in any valid VMA (Virtual Memory Area)</span></span>
@@ -1465,12 +1479,17 @@ Bit 2:     U/S - User/Supervisor (1 = user mode, 0 = supervisor mode)
 Bit 1:     W/R - Write/Read (1 = write, 0 = read)
 Bit 0:     P - Present (1 = protection violation, 0 = not present)</code></pre>
 <p>Let's examine each bit in detail:</p>
-<p><strong>Bit 0 (P - Present):</strong> - <strong>0:</strong> Page not
-present (Present bit = 0 in PTE) - This is demand paging, swap in, or
-invalid address - Handler must check if address is valid and handle
-accordingly - <strong>1:</strong> Page is present but access violated
-protection - Write to read-only page - Execute from NX page<br />
-- User accessing supervisor page - SMEP or SMAP violation</p>
+<p><strong>Bit 0 (P - Present):</strong></p>
+<ul>
+<li><strong>0:</strong> Page not present (Present bit = 0 in PTE)</li>
+<li>This is demand paging, swap in, or invalid address</li>
+<li>Handler must check if address is valid and handle accordingly</li>
+<li><strong>1:</strong> Page is present but access violated protection</li>
+<li>Write to read-only page</li>
+<li>Execute from NX page<br /></li>
+<li>User accessing supervisor page</li>
+<li>SMEP or SMAP violation</li>
+</ul>
 <div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Checking Present bit</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> check_present_bit<span class="op">(</span><span class="dt">uint32_t</span> error_code<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!(</span>error_code <span class="op">&amp;</span> <span class="bn">0x1</span><span class="op">))</span> <span class="op">{</span></span>
@@ -1481,9 +1500,11 @@ protection - Write to read-only page - Execute from NX page<br />
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        printk<span class="op">(</span><span class="st">&quot;Page present but access violated protection</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Bit 1 (W/R - Write/Read):</strong> - <strong>0:</strong> Read
-or execute access (load instruction or instruction fetch) -
-<strong>1:</strong> Write access (store instruction)</p>
+<p><strong>Bit 1 (W/R - Write/Read):</strong></p>
+<ul>
+<li><strong>0:</strong> Read or execute access (load instruction or instruction fetch)</li>
+<li><strong>1:</strong> Write access (store instruction)</li>
+</ul>
 <p>This is crucial for Copy-on-Write: if P=1 (present) and W/R=1
 (write), the handler checks if this is a COW page.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Determining access type</span></span>
@@ -1495,9 +1516,11 @@ or execute access (load instruction or instruction fetch) -
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        printk<span class="op">(</span><span class="st">&quot;Read or execute access</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Bit 2 (U/S - User/Supervisor):</strong> - <strong>0:</strong>
-Fault occurred in supervisor mode (kernel, ring 0) - <strong>1:</strong>
-Fault occurred in user mode (application, ring 3)</p>
+<p><strong>Bit 2 (U/S - User/Supervisor):</strong></p>
+<ul>
+<li><strong>0:</strong> Fault occurred in supervisor mode (kernel, ring 0)</li>
+<li><strong>1:</strong> Fault occurred in user mode (application, ring 3)</li>
+</ul>
 <p>This helps determine if the fault is in kernel code or user code,
 which affects how it's handled.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Checking privilege level</span></span>
@@ -1510,9 +1533,11 @@ which affects how it's handled.</p>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Kernel bug - more serious!</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Bit 3 (RSVD - Reserved):</strong> - <strong>1:</strong> A
-reserved bit in a PTE was set to 1 - This usually indicates corruption
-or a software bug</p>
+<p><strong>Bit 3 (RSVD - Reserved):</strong></p>
+<ul>
+<li><strong>1:</strong> A reserved bit in a PTE was set to 1</li>
+<li>This usually indicates corruption or a software bug</li>
+</ul>
 <div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Checking for reserved bit violation</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> check_reserved<span class="op">(</span><span class="dt">uint32_t</span> error_code<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>error_code <span class="op">&amp;</span> <span class="bn">0x8</span><span class="op">)</span> <span class="op">{</span></span>
@@ -1521,9 +1546,11 @@ or a software bug</p>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        panic<span class="op">(</span><span class="st">&quot;Corrupted page table&quot;</span><span class="op">);</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Bit 4 (I/D - Instruction/Data):</strong> -
-<strong>0:</strong> Data access (load or store) - <strong>1:</strong>
-Instruction fetch</p>
+<p><strong>Bit 4 (I/D - Instruction/Data):</strong></p>
+<ul>
+<li><strong>0:</strong> Data access (load or store)</li>
+<li><strong>1:</strong> Instruction fetch</li>
+</ul>
 <p>Combined with NX bit checking, this helps identify execute-from-data
 attempts:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Checking if instruction fetch</span></span>
@@ -1538,9 +1565,11 @@ attempts:</p>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Bit 5 (PK - Protection Key):</strong> - <strong>1:</strong>
-Memory Protection Keys (MPK) violation - Page's protection key is
-disabled in PKRU register (Chapter 6, Section 6.7)</p>
+<p><strong>Bit 5 (PK - Protection Key):</strong></p>
+<ul>
+<li><strong>1:</strong> Memory Protection Keys (MPK) violation</li>
+<li>Page's protection key is disabled in PKRU register (Chapter 6, Section 6.7)</li>
+</ul>
 <div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Checking MPK violation</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> check_mpk<span class="op">(</span><span class="dt">uint32_t</span> error_code<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>error_code <span class="op">&amp;</span> <span class="bn">0x20</span><span class="op">)</span> <span class="op">{</span></span>
@@ -1551,10 +1580,12 @@ disabled in PKRU register (Chapter 6, Section 6.7)</p>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Handler can then enforce domain-specific policy</span></span>
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Bit 15 (SGX - Software Guard Extensions):</strong> -
-<strong>1:</strong> SGX enclave-related violation - Attempting to access
-enclave memory from outside enclave - See Intel SGX documentation for
-details</p>
+<p><strong>Bit 15 (SGX - Software Guard Extensions):</strong></p>
+<ul>
+<li><strong>1:</strong> SGX enclave-related violation</li>
+<li>Attempting to access enclave memory from outside enclave</li>
+<li>See Intel SGX documentation for details</li>
+</ul>
 <h3 id="cr2-register-the-faulting-address">7.3.3 CR2 Register: The
 Faulting Address</h3>
 <p>The CR2 (Control Register 2) is a 64-bit register that holds the
@@ -2065,15 +2096,20 @@ SPSR_ELn (Saved Program Status Register):
 Abort</h3>
 <p>ARM64 distinguishes between data access faults and instruction fetch
 faults:</p>
-<p><strong>Data Abort:</strong> - Caused by load/store instructions
-(LDR, STR, etc.) - Exception Class (EC) = 0x24 (Data Abort from lower
-EL) or 0x25 (Data Abort from same EL) - ESR_EL1.ISS contains Data Fault
-Status Code (DFSC) - FAR_EL1 contains the faulting virtual address</p>
-<p><strong>Instruction Abort:</strong> - Caused by instruction fetch -
-Exception Class (EC) = 0x20 (Instruction Abort from lower EL) or 0x21
-(Instruction Abort from same EL) - ESR_EL1.ISS contains Instruction
-Fault Status Code (IFSC) - FAR_EL1 contains the faulting virtual
-address</p>
+<p><strong>Data Abort:</strong></p>
+<ul>
+<li>Caused by load/store instructions (LDR, STR, etc.)</li>
+<li>Exception Class (EC) = 0x24 (Data Abort from lower EL) or 0x25 (Data Abort from same EL)</li>
+<li>ESR_EL1.ISS contains Data Fault Status Code (DFSC)</li>
+<li>FAR_EL1 contains the faulting virtual address</li>
+</ul>
+<p><strong>Instruction Abort:</strong></p>
+<ul>
+<li>Caused by instruction fetch</li>
+<li>Exception Class (EC) = 0x20 (Instruction Abort from lower EL) or 0x21 (Instruction Abort from same EL)</li>
+<li>ESR_EL1.ISS contains Instruction Fault Status Code (IFSC)</li>
+<li>FAR_EL1 contains the faulting virtual address</li>
+</ul>
 <h3 id="exception-syndrome-register-esr_el1">7.4.3 Exception Syndrome
 Register (ESR_EL1)</h3>
 <p>The ESR is ARM64's equivalent to x86-64's error code, but it's much
@@ -2136,9 +2172,13 @@ algorithms.</p>
 0b001101 (0x0D): Permission fault, level 1
 0b001110 (0x0E): Permission fault, level 2
 0b001111 (0x0F): Permission fault, level 3</code></pre>
-<p>These occur when: - Write to read-only page (AP bits = 0b11) -
-Execute from non-executable page (UXN/PXN bits set) - EL0 access to EL1
-page - EL1 access with PAN enabled</p>
+<p>These occur when:</p>
+<ul>
+<li>Write to read-only page (AP bits = 0b11)</li>
+<li>Execute from non-executable page (UXN/PXN bits set)</li>
+<li>EL0 access to EL1 page</li>
+<li>EL1 access with PAN enabled</li>
+</ul>
 <p><strong>Address Size Fault:</strong></p>
 <pre><code>0b000000 (0x00): Address size fault, level 0
 0b000001 (0x01): Address size fault, level 1
@@ -2358,11 +2398,13 @@ isolation for confidential workloads, similar to Intel TDX and AMD
 SEV-SNP but with ARM's approach.</p>
 <p><strong>RME Security States:</strong></p>
 <p>RME extends ARM's traditional Secure/Non-secure worlds with two new
-states: - <strong>Root:</strong> Highest privilege (Realm Management
-Monitor) - <strong>Realm:</strong> Confidential VMs (protected from
-Normal world and Hypervisor) - <strong>Secure:</strong> Traditional
-TrustZone secure world - <strong>Non-secure (Normal):</strong>
-Traditional normal world (hypervisor, OS, apps)</p>
+states:</p>
+<ul>
+<li><strong>Root:</strong> Highest privilege (Realm Management Monitor)</li>
+<li><strong>Realm:</strong> Confidential VMs (protected from Normal world and Hypervisor)</li>
+<li><strong>Secure:</strong> Traditional TrustZone secure world</li>
+<li><strong>Non-secure (Normal):</strong> Traditional normal world (hypervisor, OS, apps)</li>
+</ul>
 <p><strong>Granule Protection Table (GPT):</strong></p>
 <p>Physical memory is divided into 4KB granules, each tagged with a
 security state in the GPT. Every memory access checks the GPT:</p>
@@ -2567,14 +2609,19 @@ terminate)</li>
 exception</strong>, even if the page is perfectly valid and present in
 memory. This is very different from x86-64/ARM64 where TLB misses are
 handled transparently by hardware.</p>
-<p><strong>Advantages of Software TLB Management:</strong> - Hardware is
-simpler (smaller die area, lower power) - OS has complete flexibility in
-page table format - Can implement custom page table structures beyond
-standard radix trees - Easier to extend with new features (OS just
-updates software)</p>
-<p><strong>Disadvantages:</strong> - Higher TLB miss overhead (trap to
-software vs hardware walk) - More complex OS kernel code - Performance
-depends heavily on software optimization</p>
+<p><strong>Advantages of Software TLB Management:</strong></p>
+<ul>
+<li>Hardware is simpler (smaller die area, lower power)</li>
+<li>OS has complete flexibility in page table format</li>
+<li>Can implement custom page table structures beyond standard radix trees</li>
+<li>Easier to extend with new features (OS just updates software)</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Higher TLB miss overhead (trap to software vs hardware walk)</li>
+<li>More complex OS kernel code</li>
+<li>Performance depends heavily on software optimization</li>
+</ul>
 <h3 id="risc-v-exception-codes">7.5.2 RISC-V Exception Codes</h3>
 <p>RISC-V uses the <code>scause</code> CSR (Control and Status Register)
 to indicate the exception type. For page faults, there are three
@@ -2723,9 +2770,12 @@ sfence.vma zero, a1     # a1 contains ASID
 
 # Flush TLB entries for specific VA and ASID
 sfence.vma a0, a1       # a0=VA, a1=ASID</code></pre>
-<p><strong>When to use SFENCE.VMA:</strong> - After modifying any PTE -
-After changing satp (page table root) - Before accessing memory with new
-translation</p>
+<p><strong>When to use SFENCE.VMA:</strong></p>
+<ul>
+<li>After modifying any PTE</li>
+<li>After changing satp (page table root)</li>
+<li>Before accessing memory with new translation</li>
+</ul>
 <div class="sourceCode" id="cb54"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Update PTE and flush TLB</span></span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> update_pte_and_flush<span class="op">(</span><span class="dt">uint64_t</span> va<span class="op">,</span> pte_t new_pte<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    pte_t <span class="op">*</span>pte <span class="op">=</span> walk_page_table<span class="op">(</span>va<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
@@ -2940,10 +2990,11 @@ Memory Protection (PMP)</h3>
 Protection (PMP), which operates at machine mode (M-mode) and can
 generate access faults that look similar to page faults but occur at a
 different level.</p>
-<p><strong>PMP vs MMU:</strong> - <strong>MMU:</strong> Translates
-virtual→physical, enforces page-level permissions -
-<strong>PMP:</strong> Protects physical address ranges, enforced by
-M-mode</p>
+<p><strong>PMP vs MMU:</strong></p>
+<ul>
+<li><strong>MMU:</strong> Translates virtual→physical, enforces page-level permissions</li>
+<li><strong>PMP:</strong> Protects physical address ranges, enforced by M-mode</li>
+</ul>
 <p>PMP can cause "access faults" that appear similar to page faults:</p>
 <pre><code>Exception Code 1: Instruction access fault (PMP violation)
 Exception Code 5: Load access fault (PMP violation)
@@ -2964,10 +3015,11 @@ indicate the physical address violated M-mode protection rules:</p>
 <span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Usually fatal - M-mode firmware prevents access</span></span>
 <span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>    panic<span class="op">(</span><span class="st">&quot;PMP violation&quot;</span><span class="op">);</span></span>
 <span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Key Difference:</strong> - <strong>Page faults
-(12/13/15):</strong> Virtual address translation issues, handled by OS -
-<strong>Access faults (1/5/7):</strong> Physical address protection,
-enforced by M-mode firmware</p>
+<p><strong>Key Difference:</strong></p>
+<ul>
+<li><strong>Page faults (12/13/15):</strong> Virtual address translation issues, handled by OS</li>
+<li><strong>Access faults (1/5/7):</strong> Physical address protection, enforced by M-mode firmware</li>
+</ul>
 <h3 id="risc-v-performance-considerations">7.5.9 RISC-V Performance
 Considerations</h3>
 <p><strong>TLB Miss Overhead:</strong></p>
@@ -2998,15 +3050,18 @@ due to trap overhead.</p>
 <span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a><span class="co">// 4. Optimize page table walk code</span></span>
 <span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Keep page tables in L1/L2 cache</span></span>
 <span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Use compiler optimizations for hot path</span></span></code></pre></div>
-<p><strong>When Software TLB Management Works Well:</strong> -
-<strong>Embedded systems:</strong> Small working sets, predictable
-access patterns - <strong>Real-time systems:</strong> Deterministic TLB
-miss handling - <strong>Custom page tables:</strong> OS can implement
-novel page table structures</p>
-<p><strong>When It's a Challenge:</strong> - <strong>Servers:</strong>
-Large working sets, many TLB misses - <strong>Databases:</strong> Random
-access patterns, poor TLB hit rates - <strong>Virtualization:</strong>
-Nested page tables amplify TLB miss cost</p>
+<p><strong>When Software TLB Management Works Well:</strong></p>
+<ul>
+<li><strong>Embedded systems:</strong> Small working sets, predictable access patterns</li>
+<li><strong>Real-time systems:</strong> Deterministic TLB miss handling</li>
+<li><strong>Custom page tables:</strong> OS can implement novel page table structures</li>
+</ul>
+<p><strong>When It's a Challenge:</strong></p>
+<ul>
+<li><strong>Servers:</strong> Large working sets, many TLB misses</li>
+<li><strong>Databases:</strong> Random access patterns, poor TLB hit rates</li>
+<li><strong>Virtualization:</strong> Nested page tables amplify TLB miss cost</li>
+</ul>
 <hr />
 <h2 id="section-7.6">7.6 TLB-Related Exceptions</h2>
 <p>While most page faults relate to page table entries or permissions,
@@ -3193,9 +3248,12 @@ entry wasn't properly invalidated</li>
 <span id="cb66-20"><a href="#cb66-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>x86-64 Handling:</strong></p>
 <p>x86-64 doesn't have an explicit "TLB multi-hit" exception. Instead,
-the behavior is undefined—hardware might: - Use one of the entries
-(which one is unpredictable) - Generate a machine check exception -
-Cause silent data corruption</p>
+the behavior is undefined—hardware might:</p>
+<ul>
+<li>Use one of the entries (which one is unpredictable)</li>
+<li>Generate a machine check exception</li>
+<li>Cause silent data corruption</li>
+</ul>
 <p>Therefore, x86-64 software must be extremely careful to never create
 TLB conflicts.</p>
 <p><strong>Prevention Strategies:</strong></p>
@@ -3262,9 +3320,12 @@ inter-processor interrupts (IPIs) that interrupt remote CPUs:</p>
 <span id="cb68-37"><a href="#cb68-37" aria-hidden="true" tabindex="-1"></a><span class="co">/* Based on Linux kernel arch/x86/mm/tlb.c</span></span>
 <span id="cb68-38"><a href="#cb68-38" aria-hidden="true" tabindex="-1"></a><span class="co">   Reference: Linux kernel v6.5, flush_tlb_mm_range() */</span></span></code></pre></div>
 <p><strong>Performance Impact:</strong></p>
-<p>TLB shootdown can be expensive: - IPI latency: ~1-5 microseconds per
-remote CPU - Remote TLB flush: ~1-10 microseconds - Total: ~10-50
-microseconds for 8 CPUs</p>
+<p>TLB shootdown can be expensive:</p>
+<ul>
+<li>IPI latency: ~1-5 microseconds per remote CPU</li>
+<li>Remote TLB flush: ~1-10 microseconds</li>
+<li>Total: ~10-50 microseconds for 8 CPUs</li>
+</ul>
 <p>For frequently updated pages (e.g., COW pages), shootdown overhead
 can dominate:</p>
 <div class="sourceCode" id="cb69"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: fork() + exec() causes massive TLB shootdown</span></span>
@@ -3359,9 +3420,12 @@ Understanding where the walk failed helps diagnose the problem.</p>
 <h3 id="multi-level-page-table-failures">7.7.1 Multi-Level Page Table
 Failures</h3>
 <p>Recall from Chapter 3 that modern architectures use multi-level page
-tables: - <strong>x86-64:</strong> 4 levels (PML4, PDPT, PD, PT) or 5
-levels - <strong>ARM64:</strong> 4 levels (L0, L1, L2, L3) for 48-bit VA
-- <strong>RISC-V:</strong> 3 levels (L2, L1, L0) for Sv39</p>
+tables:</p>
+<ul>
+<li><strong>x86-64:</strong> 4 levels (PML4, PDPT, PD, PT) or 5 levels</li>
+<li><strong>ARM64:</strong> 4 levels (L0, L1, L2, L3) for 48-bit VA</li>
+<li><strong>RISC-V:</strong> 3 levels (L2, L1, L0) for Sv39</li>
+</ul>
 <p>A page fault can occur at any level if an intermediate PTE is
 invalid:</p>
 <div class="sourceCode" id="cb75"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Page table walk showing failures at each level</span></span>
@@ -3486,12 +3550,22 @@ Guest Physical Address (GPA)
          |
          v
 Host Physical Address (HPA)</code></pre>
-<p><strong>Stage 1 Failure (Guest Page Fault):</strong> - Guest OS
-handles it normally - Allocates guest physical page - Updates guest page
-tables - No VM exit to hypervisor (unless configured)</p>
-<p><strong>Stage 2 Failure (EPT/NPT Fault):</strong> - VM exit to
-hypervisor - Hypervisor handles: - Allocate host physical page - Map GPA
-→ HPA in EPT/NPT - Resume guest - Guest is unaware (transparent)</p>
+<p><strong>Stage 1 Failure (Guest Page Fault):</strong></p>
+<ul>
+<li>Guest OS handles it normally</li>
+<li>Allocates guest physical page</li>
+<li>Updates guest page tables</li>
+<li>No VM exit to hypervisor (unless configured)</li>
+</ul>
+<p><strong>Stage 2 Failure (EPT/NPT Fault):</strong></p>
+<ul>
+<li>VM exit to hypervisor</li>
+<li>Hypervisor handles:</li>
+<li>Allocate host physical page</li>
+<li>Map GPA → HPA in EPT/NPT</li>
+<li>Resume guest</li>
+<li>Guest is unaware (transparent)</li>
+</ul>
 <p><strong>Both Stages Fail:</strong></p>
 <div class="sourceCode" id="cb80"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Nested page fault handler (hypervisor)</span></span>
 <span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> handle_nested_page_fault<span class="op">(</span><span class="dt">uint64_t</span> gpa<span class="op">,</span> <span class="dt">uint32_t</span> error_code<span class="op">)</span> <span class="op">{</span></span>
@@ -3598,10 +3672,12 @@ mappings</li>
 <li><strong>Malicious:</strong> Exploit attempting to bypass security
 checks</li>
 </ol>
-<p>The danger comes when: - Different virtual addresses have
-<strong>different permissions</strong> - Different virtual addresses
-have <strong>different caching attributes</strong><br />
-- TLB or cache coherency is violated</p>
+<p>The danger comes when:</p>
+<ul>
+<li>Different virtual addresses have <strong>different permissions</strong></li>
+<li>Different virtual addresses have <strong>different caching attributes</strong><br /></li>
+<li>TLB or cache coherency is violated</li>
+</ul>
 <h3 id="x86-64-pat-page-attribute-table-conflicts">7.8.2 x86-64 PAT
 (Page Attribute Table) Conflicts</h3>
 <p>x86-64 uses the Page Attribute Table (PAT) to specify caching
@@ -3693,9 +3769,13 @@ Normal-WB:     Normal memory, Write-Back</code></pre>
 the same memory type and cacheability attributes" — ARM Architecture
 Reference Manual ARMv8</p>
 </blockquote>
-<p>Violation is <strong>UNPREDICTABLE</strong> and can cause: -
-Synchronous External Abort - Data corruption - TLB conflicts -
-Implementation-defined behavior</p>
+<p>Violation is <strong>UNPREDICTABLE</strong> and can cause:</p>
+<ul>
+<li>Synchronous External Abort</li>
+<li>Data corruption</li>
+<li>TLB conflicts</li>
+<li>Implementation-defined behavior</li>
+</ul>
 <p><strong>Example Conflict:</strong></p>
 <div class="sourceCode" id="cb90"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ARM64: Conflicting memory attributes</span></span>
 <span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> arm_attr_conflict<span class="op">(</span><span class="dt">uint64_t</span> phys_addr<span class="op">)</span> <span class="op">{</span></span>
@@ -3773,8 +3853,12 @@ Different indices (0x040 vs 0x140) for SAME physical data!</code></pre>
 <span id="cb94-11"><a href="#cb94-11" aria-hidden="true" tabindex="-1"></a>                          <span class="co">// value != &#39;A&#39; !!</span></span>
 <span id="cb94-12"><a href="#cb94-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb94-13"><a href="#cb94-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Two cache lines for same physical data - incoherent!</span></span></code></pre></div>
-<p><strong>Consequences:</strong> - Processes see inconsistent data -
-Write to one VA not visible to other VA - Silent data corruption</p>
+<p><strong>Consequences:</strong></p>
+<ul>
+<li>Processes see inconsistent data</li>
+<li>Write to one VA not visible to other VA</li>
+<li>Silent data corruption</li>
+</ul>
 <h3 id="detecting-and-preventing-virtual-aliasing">7.8.5 Detecting and
 Preventing Virtual Aliasing</h3>
 <p><strong>ARM: Cache Coloring</strong></p>
@@ -3903,9 +3987,12 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb100-1"><a href="#cb1
 <span id="cb100-11"><a href="#cb100-11" aria-hidden="true" tabindex="-1"></a><span class="co">// 1. Both VAs map to same physical page</span></span>
 <span id="cb100-12"><a href="#cb100-12" aria-hidden="true" tabindex="-1"></a><span class="co">// 2. Both VAs have same cache attributes</span></span>
 <span id="cb100-13"><a href="#cb100-13" aria-hidden="true" tabindex="-1"></a><span class="co">// 3. No cache aliasing (VAs differ only in bits not used for cache indexing)</span></span></code></pre></div>
-<p><strong>Key Requirements:</strong> - Same memory type
-(cached/uncached) - Same permissions (both writable, or both read-only)
-- If VIPT cache: VAs must not alias in cache</p>
+<p><strong>Key Requirements:</strong></p>
+<ul>
+<li>Same memory type (cached/uncached)</li>
+<li>Same permissions (both writable, or both read-only)</li>
+<li>If VIPT cache: VAs must not alias in cache</li>
+</ul>
 <hr />
 <h2 id="section-7.9">7.9 Permission Violations</h2>
 <p>Permission violations are page faults caused by accessing memory in a
@@ -4887,30 +4974,43 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb130-1"><a href="#cb1
 <p>Now that we understand when and why page faults occur, let's examine
 how operating systems handle them. The page fault handler is one of the
 most critical and frequently executed pieces of OS code.</p>
-<h3 id="hardware-steps-architecture-independent">7.10.1 Hardware Steps
+<h3 id="hardware-steps-architecture-independent">7.10.11 Hardware Steps
 (Architecture-Independent)</h3>
 <p>Before software can handle a page fault, the hardware must detect and
 report it. This sequence is remarkably similar across architectures:</p>
-<p><strong>Step 1: Fault Detection</strong> - MMU detects fault
-condition during address translation - Could be: Present=0, permission
-violation, reserved bit set, etc.</p>
-<p><strong>Step 2: Stop Instruction</strong> - CPU stops the faulting
-instruction <strong>before</strong> it completes - Critical for
-restartability—instruction can be retried after fix - All previous
-instructions in program order have completed</p>
-<p><strong>Step 3: Save Context</strong> - Save processor state
-(registers, flags) - Save faulting address (CR2 on x86, FAR_EL1 on ARM,
-stval on RISC-V) - Save error information (error code, ESR, scause) -
-Save faulting instruction address (EIP/RIP, ELR, sepc)</p>
-<p><strong>Step 4: Mode Switch</strong> - Switch to supervisor mode
-(ring 0, EL1, S-mode) - Switch to kernel stack - Disable interrupts
-(usually)</p>
-<p><strong>Step 5: Vector to Handler</strong> - x86-64: Jump to IDT
-entry 14 (page fault vector) - ARM64: Jump to vector table entry for
-Data/Instruction Abort - RISC-V: Jump to address in stvec register</p>
+<p><strong>Step 1: Fault Detection</strong></p>
+<ul>
+<li>MMU detects fault condition during address translation</li>
+<li>Could be: Present=0, permission violation, reserved bit set, etc.</li>
+</ul>
+<p><strong>Step 2: Stop Instruction</strong></p>
+<ul>
+<li>CPU stops the faulting instruction <strong>before</strong> it completes</li>
+<li>Critical for restartability—instruction can be retried after fix</li>
+<li>All previous instructions in program order have completed</li>
+</ul>
+<p><strong>Step 3: Save Context</strong></p>
+<ul>
+<li>Save processor state (registers, flags)</li>
+<li>Save faulting address (CR2 on x86, FAR_EL1 on ARM, stval on RISC-V)</li>
+<li>Save error information (error code, ESR, scause)</li>
+<li>Save faulting instruction address (EIP/RIP, ELR, sepc)</li>
+</ul>
+<p><strong>Step 4: Mode Switch</strong></p>
+<ul>
+<li>Switch to supervisor mode (ring 0, EL1, S-mode)</li>
+<li>Switch to kernel stack</li>
+<li>Disable interrupts (usually)</li>
+</ul>
+<p><strong>Step 5: Vector to Handler</strong></p>
+<ul>
+<li>x86-64: Jump to IDT entry 14 (page fault vector)</li>
+<li>ARM64: Jump to vector table entry for Data/Instruction Abort</li>
+<li>RISC-V: Jump to address in stvec register</li>
+</ul>
 <p><strong>Step 6: Push Additional Context (x86-64)</strong> - x86
 pushes: error code, CS, RIP, RFLAGS, SS, RSP</p>
-<h3 id="software-handler-steps">7.10.2 Software Handler Steps</h3>
+<h3 id="software-handler-steps">7.10.12 Software Handler Steps</h3>
 <p>Once in the page fault handler, the OS must diagnose and handle the
 fault:</p>
 <p><strong>Step 1: Extract Fault Information</strong></p>
@@ -4990,7 +5090,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb133-1"><a href="#cb1
 <p><strong>Step 4: Handle the Fault</strong></p>
 <p>This is where the real work happens—allocate pages, swap in, or
 terminate.</p>
-<h3 id="demand-paging-implementation-1">7.10.3 Demand Paging
+<h3 id="demand-paging-implementation-1">7.10.13 Demand Paging
 Implementation</h3>
 <p>Demand paging allocates physical pages only when first accessed:</p>
 <div class="sourceCode" id="cb134"><pre
@@ -5050,7 +5150,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb135-1"><a href="#cb1
 <span id="cb135-9"><a href="#cb135-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Performance optimization: Use &quot;zero page&quot; for read-only</span></span>
 <span id="cb135-10"><a href="#cb135-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Many processes read from zero-initialized memory</span></span>
 <span id="cb135-11"><a href="#cb135-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Can share single zero page, copy-on-write when written</span></span></code></pre></div>
-<h3 id="copy-on-write-cow-implementation-1">7.10.4 Copy-on-Write (COW)
+<h3 id="copy-on-write-cow-implementation-1">7.10.14 Copy-on-Write (COW)
 Implementation</h3>
 <p>COW is a critical optimization for <code>fork()</code>:</p>
 <div class="sourceCode" id="cb136"><pre
@@ -5132,7 +5232,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb137-1"><a href="#cb1
 <span id="cb137-16"><a href="#cb137-16" aria-hidden="true" tabindex="-1"></a><span class="co">// - Most pages never written by child (if exec() called)</span></span>
 <span id="cb137-17"><a href="#cb137-17" aria-hidden="true" tabindex="-1"></a><span class="co">// - Many pages written by only one process (fast path)</span></span>
 <span id="cb137-18"><a href="#cb137-18" aria-hidden="true" tabindex="-1"></a><span class="co">// - Reality: COW saves 70-90% of copy overhead for typical workloads</span></span></code></pre></div>
-<h3 id="swap-in-major-page-fault">7.10.5 Swap-In (Major Page Fault)</h3>
+<h3 id="swap-in-major-page-fault">7.10.15 Swap-In (Major Page Fault)</h3>
 <p>When a page has been swapped to disk, we need a major page fault:</p>
 <div class="sourceCode" id="cb138"><pre
 class="sourceCode c"><code class="sourceCode c"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Swap-in handler</span></span>
@@ -5186,7 +5286,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb138-1"><a href="#cb1
 <span id="cb138-49"><a href="#cb138-49" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb138-50"><a href="#cb138-50" aria-hidden="true" tabindex="-1"></a><span class="co">/* Simplified from Linux kernel mm/memory.c</span></span>
 <span id="cb138-51"><a href="#cb138-51" aria-hidden="true" tabindex="-1"></a><span class="co">   Reference: Linux kernel v6.5, do_swap_page() */</span></span></code></pre></div>
-<h3 id="stack-growth">7.10.6 Stack Growth</h3>
+<h3 id="stack-growth">7.10.16 Stack Growth</h3>
 <p>Automatically expanding the stack when it grows:</p>
 <div class="sourceCode" id="cb139"><pre
 class="sourceCode c"><code class="sourceCode c"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stack growth handler</span></span>
@@ -5240,7 +5340,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb140-1"><a href="#cb1
 <span id="cb140-11"><a href="#cb140-11" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb140-12"><a href="#cb140-12" aria-hidden="true" tabindex="-1"></a>    recursive_function<span class="op">(</span>depth <span class="op">+</span> <span class="dv">1</span><span class="op">);</span></span>
 <span id="cb140-13"><a href="#cb140-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h3 id="invalid-fault-handling">7.10.7 Invalid Fault Handling</h3>
+<h3 id="invalid-fault-handling">7.10.17 Invalid Fault Handling</h3>
 <p>When a fault cannot be handled, terminate the process:</p>
 <div class="sourceCode" id="cb141"><pre
 class="sourceCode c"><code class="sourceCode c"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Invalid fault—send SIGSEGV</span></span>
@@ -5277,7 +5377,7 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb141-1"><a href="#cb1
 <span id="cb141-32"><a href="#cb141-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Send signal to process</span></span>
 <span id="cb141-33"><a href="#cb141-33" aria-hidden="true" tabindex="-1"></a>    force_sig_info<span class="op">(</span>SIGSEGV<span class="op">,</span> <span class="op">&amp;</span>si<span class="op">,</span> tsk<span class="op">);</span></span>
 <span id="cb141-34"><a href="#cb141-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h3 id="complete-page-fault-handler-integrated">7.10.8 Complete Page
+<h3 id="complete-page-fault-handler-integrated">7.10.18 Complete Page
 Fault Handler (Integrated)</h3>
 <p>Putting it all together:</p>
 <div class="sourceCode" id="cb142"><pre

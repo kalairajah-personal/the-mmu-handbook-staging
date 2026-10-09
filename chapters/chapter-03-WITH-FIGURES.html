@@ -2352,7 +2352,6 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <p>4. Check PML5E.P bit; if 0, page fault</p>
 <p>5. Extract PML4 physical address from PML5E[51:12]</p>
 
-<p>[Then continue with four-level process from PML4 onward...]</p>
 
 <p>6-9:   PML4 lookup</p>
 <p>10-14: PDPT lookup (check for 1GB huge page)</p>
@@ -2709,19 +2708,22 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Now that we've examined x86-64, ARM64, and RISC-V in detail, we can compare their approaches:</p>
 
-<p>| Feature | x86-64 | ARM64 | RISC-V |</p>
-<p>|---------|--------|-------|--------|</p>
-<p>| <strong>Common config</strong> | 4-level, 48-bit | 4-level, 48-bit | 3-level, 39-bit |</p>
-<p>| <strong>Max levels</strong> | 5 | 4 | 5 |</p>
-<p>| <strong>Max VA size</strong> | 57-bit (128PB) | 52-bit (4PB) | 57-bit (128PB) |</p>
-<p>| <strong>Page sizes</strong> | 4KB, 2MB, 1GB | 4KB, 16KB, 64KB + huge | 4KB, 2MB, 1GB |</p>
-<p>| <strong>Entry size</strong> | 8 bytes | 8 bytes | 8 bytes |</p>
-<p>| <strong>Entries/table</strong> | 512 | 512 or varies | 512 |</p>
-<p>| <strong>Permission model</strong> | R/W, XD separate | AP bits + XN/PXN | Explicit R/W/X |</p>
-<p>| <strong>ASID support</strong> | PCID (optional) | Built-in (16-bit) | Built-in (16-bit) |</p>
-<p>| <strong>Huge page method</strong> | PS bit in PDE/PDPTE | Block descriptors | R/W/X in upper level |</p>
-
-<p>All three architectures converged on similar solutions (4-5 levels, 512 entries per table, 8-byte entries) despite different design philosophies, suggesting these are close to optimal trade-offs for modern systems.</p>
+<table>
+<thead>
+<tr><th>Feature</th><th>x86-64</th><th>ARM64</th><th>RISC-V</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Common config</strong></td><td>4-level, 48-bit</td><td>4-level, 48-bit</td><td>3-level, 39-bit</td></tr>
+<tr><td><strong>Max levels</strong></td><td>5</td><td>4</td><td>5</td></tr>
+<tr><td><strong>Max VA size</strong></td><td>57-bit (128PB)</td><td>52-bit (4PB)</td><td>57-bit (128PB)</td></tr>
+<tr><td><strong>Page sizes</strong></td><td>4KB, 2MB, 1GB</td><td>4KB, 16KB, 64KB + huge</td><td>4KB, 2MB, 1GB</td></tr>
+<tr><td><strong>Entry size</strong></td><td>8 bytes</td><td>8 bytes</td><td>8 bytes</td></tr>
+<tr><td><strong>Entries/table</strong></td><td>512</td><td>512 or varies</td><td>512</td></tr>
+<tr><td><strong>Permission model</strong></td><td>R/W, XD separate</td><td>AP bits + XN/PXN</td><td>Explicit R/W/X</td></tr>
+<tr><td><strong>ASID support</strong></td><td>PCID (optional)</td><td>Built-in (16-bit)</td><td>Built-in (16-bit)</td></tr>
+<tr><td><strong>Huge page method</strong></td><td>PS bit in PDE/PDPTE</td><td>Block descriptors</td><td>R/W/X in upper level</td></tr>
+</tbody>
+</table><p>All three architectures converged on similar solutions (4-5 levels, 512 entries per table, 8-byte entries) despite different design philosophies, suggesting these are close to optimal trade-offs for modern systems.</p>
 
 <h3 id="3.4.5-translation-process-summary">3.4.5 Translation Process Summary</h3>
 
@@ -4644,17 +4646,20 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </ul>
 <p>Here's a comprehensive view of what gets cached where:</p>
 
-<p>| Structure | What It Caches | What It Doesn't Cache | Typical Size | Access Time |</p>
-<p>|-----------|----------------|----------------------|--------------|-------------|</p>
-<p>| <strong>L1 TLB</strong> | VA→PA (final) | Intermediate PTEs | 64-128 entries | 0-1 cycles |</p>
-<p>| <strong>L2 TLB</strong> | VA→PA (final) | Intermediate PTEs | 1280-2048 entries | 5-10 cycles |</p>
-<p>| <strong>PWC</strong> | PML4E, PDPTE, PDE | Final PTEs, VA→PA | ~32-64 entries/level | 10-20 cycles |</p>
-<p>| <strong>L1 Cache</strong> | Page table data | Nothing special | 32-64 KB | 3-5 cycles |</p>
-<p>| <strong>L2 Cache</strong> | Page table data | Nothing special | 256-512 KB | 10-15 cycles |</p>
-<p>| <strong>L3 Cache</strong> | Page table data | Nothing special | 8-32 MB | 40-60 cycles |</p>
-<p>| <strong>RAM</strong> | Everything | - | GBs | 100-200 cycles |</p>
-
-<p>This hierarchy explains why TLB hit rate is so critical:</p>
+<table>
+<thead>
+<tr><th>Structure</th><th>What It Caches</th><th>What It Doesn't Cache</th><th>Typical Size</th><th>Access Time</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>L1 TLB</strong></td><td>VA→PA (final)</td><td>Intermediate PTEs</td><td>64-128 entries</td><td>0-1 cycles</td></tr>
+<tr><td><strong>L2 TLB</strong></td><td>VA→PA (final)</td><td>Intermediate PTEs</td><td>1280-2048 entries</td><td>5-10 cycles</td></tr>
+<tr><td><strong>PWC</strong></td><td>PML4E, PDPTE, PDE</td><td>Final PTEs, VA→PA</td><td>~32-64 entries/level</td><td>10-20 cycles</td></tr>
+<tr><td><strong>L1 Cache</strong></td><td>Page table data</td><td>Nothing special</td><td>32-64 KB</td><td>3-5 cycles</td></tr>
+<tr><td><strong>L2 Cache</strong></td><td>Page table data</td><td>Nothing special</td><td>256-512 KB</td><td>10-15 cycles</td></tr>
+<tr><td><strong>L3 Cache</strong></td><td>Page table data</td><td>Nothing special</td><td>8-32 MB</td><td>40-60 cycles</td></tr>
+<tr><td><strong>RAM</strong></td><td>Everything</td><td>-</td><td>GBs</td><td>100-200 cycles</td></tr>
+</tbody>
+</table><p>This hierarchy explains why TLB hit rate is so critical:</p>
 <ul>
 <li><strong>TLB hit</strong>: 0-1 cycles for translation</li>
 <li><strong>TLB miss, PWC hit</strong>: 10-20 cycles</li>
@@ -5135,15 +5140,18 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </ul>
 <strong>Quantitative Example</strong> (4KB pages, 512 entries/table):
 
-<p>| Levels | Max Address Space | Worst-case Overhead | TLB Miss Cost |</p>
-<p>|--------|------------------|---------------------|---------------|</p>
-<p>| 1 | 2GB | 4MB per process | 1 memory access |</p>
-<p>| 2 | 1TB | ~4MB (sparse) | 2 memory accesses |</p>
-<p>| 3 | 512GB | ~16KB (sparse) | 3 memory accesses |</p>
-<p>| 4 | 256TB | ~32KB (sparse) | 4 memory accesses |</p>
-<p>| 5 | 128PB | ~40KB (sparse) | 5 memory accesses |</p>
-
-<p>The "sweet spot" for most systems is 3-4 levels, balancing reasonable overhead with manageable translation cost.</p>
+<table>
+<thead>
+<tr><th>Levels</th><th>Max Address Space</th><th>Worst-case Overhead</th><th>TLB Miss Cost</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>2GB</td><td>4MB per process</td><td>1 memory access</td></tr>
+<tr><td>2</td><td>1TB</td><td>~4MB (sparse)</td><td>2 memory accesses</td></tr>
+<tr><td>3</td><td>512GB</td><td>~16KB (sparse)</td><td>3 memory accesses</td></tr>
+<tr><td>4</td><td>256TB</td><td>~32KB (sparse)</td><td>4 memory accesses</td></tr>
+<tr><td>5</td><td>128PB</td><td>~40KB (sparse)</td><td>5 memory accesses</td></tr>
+</tbody>
+</table><p>The "sweet spot" for most systems is 3-4 levels, balancing reasonable overhead with manageable translation cost.</p>
 
 <h3 id="3.10.2-page-size-selection">3.10.2 Page Size Selection</h3>
 

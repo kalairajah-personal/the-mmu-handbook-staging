@@ -1883,12 +1883,20 @@ MGLRU (Linux 5.18+):
 <p><strong>Benchmark: PostgreSQL with 8 GB database, 4 GB
 RAM</strong><br />
 Workload: Mixed read/write with occasional large scans</p>
-<p><strong>Two-list LRU (Linux 5.17):</strong> - Query latency p50: 15
-ms - Query latency p99: 180 ms - Page faults: 2,200/sec - Throughput:
-4,100 queries/sec</p>
-<p><strong>MGLRU (Linux 5.18):</strong> - Query latency p50: 12 ms (20%
-better) - Query latency p99: 140 ms (22% better) - Page faults:
-1,850/sec (16% fewer) - Throughput: 4,900 queries/sec (19% better)</p>
+<p><strong>Two-list LRU (Linux 5.17):</strong></p>
+<ul>
+<li>Query latency p50: 15 ms</li>
+<li>Query latency p99: 180 ms</li>
+<li>Page faults: 2,200/sec</li>
+<li>Throughput: 4,100 queries/sec</li>
+</ul>
+<p><strong>MGLRU (Linux 5.18):</strong></p>
+<ul>
+<li>Query latency p50: 12 ms (20% better)</li>
+<li>Query latency p99: 140 ms (22% better)</li>
+<li>Page faults: 1,850/sec (16% fewer)</li>
+<li>Throughput: 4,900 queries/sec (19% better)</li>
+</ul>
 <p><strong>Why:</strong> MGLRU better identifies truly hot pages
 (accessed frequently across multiple generations) vs. one-time scan
 pages (accessed once, then aged out quickly).</p>
@@ -2410,9 +2418,12 @@ File server (NFS/Samba):
 <blockquote>
 <p>💡 <strong>KEY INSIGHT - WORKLOAD SPECIFIC TUNING</strong></p>
 <p>There is no "best" swappiness value. It depends entirely on your
-workload: - Database: Low swappiness (prefer file eviction) - Desktop:
-Medium swappiness (balanced) - File server: High swappiness (prefer
-swapping processes)</p>
+workload:</p>
+<ul>
+<li>Database: Low swappiness (prefer file eviction)</li>
+<li>Desktop: Medium swappiness (balanced)</li>
+<li>File server: High swappiness (prefer swapping processes)</li>
+</ul>
 <p>The default of 60 works reasonably for general-purpose systems but
 can be far from optimal for specialized workloads.</p>
 </blockquote>
@@ -2746,13 +2757,19 @@ populated.</p>
 <p>Real-world example:</p>
 <blockquote>
 <p>📊 <strong>REAL NUMBERS - PAGE TABLE OVERHEAD SCALING</strong></p>
-<p><strong>PostgreSQL database server (64 GB RAM):</strong> - 3 postgres
-processes, 16 GB shared_buffers each - Many memory-mapped files (10,000
-files × 10 MB avg) - Address space per process: 48 GB virtual</p>
-<p>Page table breakdown per process: - Dense regions (shared buffers):
-16 GB → 32 MB PTs - Sparse regions (mmap'd files): 32 GB → 64 MB PTs -
-Total per process: ~96 MB - <strong>Total for 3 processes: 288
-MB</strong></p>
+<p><strong>PostgreSQL database server (64 GB RAM):</strong></p>
+<ul>
+<li>3 postgres processes, 16 GB shared_buffers each</li>
+<li>Many memory-mapped files (10,000 files × 10 MB avg)</li>
+<li>Address space per process: 48 GB virtual</li>
+</ul>
+<p>Page table breakdown per process:</p>
+<ul>
+<li>Dense regions (shared buffers): 16 GB → 32 MB PTs</li>
+<li>Sparse regions (mmap'd files): 32 GB → 64 MB PTs</li>
+<li>Total per process: ~96 MB</li>
+<li><strong>Total for 3 processes: 288 MB</strong></li>
+</ul>
 <p>That's 288 MB of RAM (0.45% of total) just for page tables! With huge
 pages: 288 MB → 576 KB (500× reduction)</p>
 </blockquote>
@@ -2999,12 +3016,20 @@ Speed-up: 29% faster page walks!</code></pre>
 <p>📊 <strong>REAL NUMBERS - COMPACT ALLOCATION IMPACT</strong></p>
 <p><strong>Database workload (100 GB working set, random
 access):</strong></p>
-<p><strong>Sparse PT allocation:</strong> - Page walk latency p50: 115
-ns - Page walk latency p99: 220 ns - PWC hit rate: 62% - TLB miss
-penalty: High variance</p>
-<p><strong>Compact PT allocation:</strong> - Page walk latency p50: 82
-ns (28% better) - Page walk latency p99: 140 ns (36% better) - PWC hit
-rate: 88% - TLB miss penalty: Lower and predictable</p>
+<p><strong>Sparse PT allocation:</strong></p>
+<ul>
+<li>Page walk latency p50: 115 ns</li>
+<li>Page walk latency p99: 220 ns</li>
+<li>PWC hit rate: 62%</li>
+<li>TLB miss penalty: High variance</li>
+</ul>
+<p><strong>Compact PT allocation:</strong></p>
+<ul>
+<li>Page walk latency p50: 82 ns (28% better)</li>
+<li>Page walk latency p99: 140 ns (36% better)</li>
+<li>PWC hit rate: 88%</li>
+<li>TLB miss penalty: Lower and predictable</li>
+</ul>
 </blockquote>
 <p>The tradeoff: compact allocation requires reserving contiguous memory
 upfront, which may not be available under fragmentation. Most systems

@@ -701,21 +701,25 @@ own private address space, with the MMU translating virtual addresses to
 physical addresses. But we left an important question unanswered:
 <strong>What happens when a program’s virtual address space is larger
 than the available physical RAM?</strong></p>
-<p>Consider a realistic scenario: - Your laptop has <strong>16 GB of
-physical RAM</strong> - You’re running: Chrome (50 tabs using 8 GB), IDE
-(3 GB), database (4 GB), video editor (6 GB) - <strong>Total virtual
-memory needed: 21 GB</strong> - Physical RAM available: <strong>16
-GB</strong></p>
+<p>Consider a realistic scenario:</p>
+<ul>
+<li>Your laptop has <strong>16 GB of physical RAM</strong></li>
+<li>You’re running: Chrome (50 tabs using 8 GB), IDE (3 GB), database (4 GB), video editor (6 GB)</li>
+<li><strong>Total virtual memory needed: 21 GB</strong></li>
+<li>Physical RAM available: <strong>16 GB</strong></li>
+</ul>
 <p>How does this work? The answer is <strong>virtual memory</strong> in
 its fullest sense—not just address translation, but the ability to
 transparently use disk storage as an extension of physical RAM.</p>
 <h3 id="the-core-insight">The Core Insight</h3>
 <p>Not all of a program’s virtual memory needs to be in physical RAM
 simultaneously. Most programs exhibit <strong>locality of
-reference</strong>: - They access a small subset of their code
-repeatedly (loops, frequently called functions) - They work with a
-limited working set of data at any given time - Large data structures
-are often accessed sequentially or in predictable patterns</p>
+reference</strong>:</p>
+<ul>
+<li>They access a small subset of their code repeatedly (loops, frequently called functions)</li>
+<li>They work with a limited working set of data at any given time</li>
+<li>Large data structures are often accessed sequentially or in predictable patterns</li>
+</ul>
 <p>Virtual memory exploits this behavior through <strong>demand
 paging</strong>—loading pages into physical RAM only when they’re
 actually accessed, and evicting unused pages to disk when memory is
@@ -1094,23 +1098,45 @@ Valid=0 in some architectures: Page has never been used</code></pre>
 <h3 id="types-of-pages">2.2.4 Types of Pages</h3>
 <p>Different types of memory pages behave differently with demand
 paging:</p>
-<p><strong>Code Pages (Text Segment):</strong> - Loaded from executable
-file on disk - Read-only, never modified - Can be discarded (not
-swapped) since original is on disk - Shared between multiple instances
-of same program</p>
-<p><strong>Data Pages (Initialized Data):</strong> - Loaded from
-executable file - Can be modified (writable) - If modified, must be
-swapped to disk when evicted - Private to each process</p>
-<p><strong>BSS Pages (Uninitialized Data):</strong> - Not stored in
-executable file - Allocated on first access - Filled with zeros (zero
-page) - No disk I/O needed initially</p>
-<p><strong>Stack Pages:</strong> - Allocated on demand as stack grows -
-Filled with zeros - Can be swapped when inactive</p>
-<p><strong>Heap Pages:</strong> - Allocated by malloc() / mmap() -
-Initially filled with zeros (for security) - Can be swapped when
-inactive</p>
-<p><strong>Anonymous Pages:</strong> - Not backed by any file - Created
-by mmap(MAP_ANONYMOUS) - Must be swapped to disk if evicted</p>
+<p><strong>Code Pages (Text Segment):</strong></p>
+<ul>
+<li>Loaded from executable file on disk</li>
+<li>Read-only, never modified</li>
+<li>Can be discarded (not swapped) since original is on disk</li>
+<li>Shared between multiple instances of same program</li>
+</ul>
+<p><strong>Data Pages (Initialized Data):</strong></p>
+<ul>
+<li>Loaded from executable file</li>
+<li>Can be modified (writable)</li>
+<li>If modified, must be swapped to disk when evicted</li>
+<li>Private to each process</li>
+</ul>
+<p><strong>BSS Pages (Uninitialized Data):</strong></p>
+<ul>
+<li>Not stored in executable file</li>
+<li>Allocated on first access</li>
+<li>Filled with zeros (zero page)</li>
+<li>No disk I/O needed initially</li>
+</ul>
+<p><strong>Stack Pages:</strong></p>
+<ul>
+<li>Allocated on demand as stack grows</li>
+<li>Filled with zeros</li>
+<li>Can be swapped when inactive</li>
+</ul>
+<p><strong>Heap Pages:</strong></p>
+<ul>
+<li>Allocated by malloc() / mmap()</li>
+<li>Initially filled with zeros (for security)</li>
+<li>Can be swapped when inactive</li>
+</ul>
+<p><strong>Anonymous Pages:</strong></p>
+<ul>
+<li>Not backed by any file</li>
+<li>Created by mmap(MAP_ANONYMOUS)</li>
+<li>Must be swapped to disk if evicted</li>
+</ul>
 <h3 id="the-cost-of-page-faults">2.2.5 The Cost of Page Faults</h3>
 <p>Page faults are expensive. Let’s quantify the cost:</p>
 <pre><code>Operation                          Latency
@@ -1130,15 +1156,23 @@ Page fault (from HDD)              ~10,000 μs (10 ms)
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">1000000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    sum <span class="op">+=</span> array<span class="op">[</span>i<span class="op">];</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Scenario 1: All pages in memory (no page faults)</strong> -
-Memory accesses: 1,000,000 - Time: 1,000,000 × 70 ns = 70 ms</p>
-<p><strong>Scenario 2: All pages on SSD (1,000 page faults)</strong> -
-Page faults: 1,000 × 100 μs = 100 ms - Memory accesses: 1,000,000 × 70
-ns = 70 ms - <strong>Total: 170 ms (2.4× slower)</strong></p>
-<p><strong>Scenario 3: All pages on HDD (1,000 page faults)</strong> -
-Page faults: 1,000 × 10 ms = <strong>10,000 ms (10 seconds!)</strong> -
-Memory accesses: 70 ms - <strong>Total: ~10 seconds (140×
-slower)</strong></p>
+<p><strong>Scenario 1: All pages in memory (no page faults)</strong></p>
+<ul>
+<li>Memory accesses: 1,000,000</li>
+<li>Time: 1,000,000 × 70 ns = 70 ms</li>
+</ul>
+<p><strong>Scenario 2: All pages on SSD (1,000 page faults)</strong></p>
+<ul>
+<li>Page faults: 1,000 × 100 μs = 100 ms</li>
+<li>Memory accesses: 1,000,000 × 70 ns = 70 ms</li>
+<li><strong>Total: 170 ms (2.4× slower)</strong></li>
+</ul>
+<p><strong>Scenario 3: All pages on HDD (1,000 page faults)</strong></p>
+<ul>
+<li>Page faults: 1,000 × 10 ms = <strong>10,000 ms (10 seconds!)</strong></li>
+<li>Memory accesses: 70 ms</li>
+<li><strong>Total: ~10 seconds (140× slower)</strong></li>
+</ul>
 <p><strong>Lesson:</strong> Page faults to disk are catastrophically
 expensive. Minimizing page faults is critical for performance.</p>
 <h3 id="optimizing-demand-paging-prefetching">2.2.6 Optimizing Demand
@@ -1153,9 +1187,12 @@ OS predicts pages N+1, N+2, N+3 will be needed soon
 Load N+1, N+2, N+3 in background (before they&#39;re accessed)
   ↓
 When process accesses N+1 → Already in memory (no fault)</code></pre>
-<p><strong>Effectiveness:</strong> - Works great for sequential access
-patterns (file reading, array traversal) - Wasted effort for random
-access patterns - Modern OSes detect access patterns and adapt</p>
+<p><strong>Effectiveness:</strong></p>
+<ul>
+<li>Works great for sequential access patterns (file reading, array traversal)</li>
+<li>Wasted effort for random access patterns</li>
+<li>Modern OSes detect access patterns and adapt</li>
+</ul>
 <p><strong>Linux readahead:</strong></p>
 <div class="sourceCode" id="cb8"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check current readahead setting (in KB)</span></span>
@@ -1585,11 +1622,18 @@ Time:  1  2  3  4  1  2  5  1  2  3  4  5
 Faults: F  F  F  F        F           F  F
 
 Page faults: 10</code></pre>
-<p><strong>Advantages:</strong> - Simple to implement - Fair (all pages
-treated equally) - Low overhead</p>
-<p><strong>Disadvantages:</strong> - Doesn’t consider page usage
-patterns - Can evict frequently used pages - Suffers from Belady’s
-Anomaly (more frames → more faults in some cases)</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Simple to implement</li>
+<li>Fair (all pages treated equally)</li>
+<li>Low overhead</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Doesn’t consider page usage patterns</li>
+<li>Can evict frequently used pages</li>
+<li>Suffers from Belady’s Anomaly (more frames → more faults in some cases)</li>
+</ul>
 <p><strong>Belady’s Anomaly Example:</strong></p>
 <pre><code>Reference string: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5
 
@@ -1638,14 +1682,24 @@ Page faults: 8 (better than FIFO!)</code></pre>
 <span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>Problem:</strong> Updating timestamps on every memory access
 is impossibly expensive (billions of updates per second).</p>
-<p><strong>Hardware Support (x86 Accessed Bit):</strong> - Page table
-entries have an “Accessed” (A) bit - MMU sets A=1 automatically when
-page is accessed - OS can read and clear the A bit periodically -
-Provides approximation of recency without timestamps</p>
-<p><strong>Advantages:</strong> - Excellent performance (close to OPT) -
-Adapts to program behavior - No Belady’s Anomaly</p>
-<p><strong>Disadvantages:</strong> - Expensive to implement perfectly -
-Requires hardware support (Accessed bit)</p>
+<p><strong>Hardware Support (x86 Accessed Bit):</strong></p>
+<ul>
+<li>Page table entries have an “Accessed” (A) bit</li>
+<li>MMU sets A=1 automatically when page is accessed</li>
+<li>OS can read and clear the A bit periodically</li>
+<li>Provides approximation of recency without timestamps</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Excellent performance (close to OPT)</li>
+<li>Adapts to program behavior</li>
+<li>No Belady’s Anomaly</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Expensive to implement perfectly</li>
+<li>Requires hardware support (Accessed bit)</li>
+</ul>
 <h3 id="clock-algorithm-second-chance-not-recently-used">2.3.4 Clock
 Algorithm (Second Chance / Not Recently Used)</h3>
 <p><strong>Algorithm:</strong> Approximation of LRU using the hardware
@@ -1676,10 +1730,18 @@ Need to evict a page:
   - Page 0: A=1 → Set A=0, advance
   - Page 1: A=1 → Set A=0, advance
   - Page 2: A=0 → EVICT Page 2</code></pre>
-<p><strong>Advantages:</strong> - Simple to implement - Low overhead -
-Good approximation of LRU - Used in many real systems (Linux, BSD)</p>
-<p><strong>Disadvantages:</strong> - Not as good as perfect LRU - May
-scan many pages before finding victim</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Simple to implement</li>
+<li>Low overhead</li>
+<li>Good approximation of LRU</li>
+<li>Used in many real systems (Linux, BSD)</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Not as good as perfect LRU</li>
+<li>May scan many pages before finding victim</li>
+</ul>
 <p><strong>Linux Implementation (Simplified):</strong></p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Linux uses two lists: active and inactive</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> lru_list <span class="op">{</span></span>
@@ -1958,9 +2020,13 @@ Working Set Model</h2>
 <p><strong>Thrashing</strong> occurs when a system spends more time
 swapping pages between memory and disk than executing useful work
 [Denning, 1968].</p>
-<p><strong>Symptoms:</strong> - CPU utilization drops dramatically (from
-80% to &lt;10%) - Disk I/O spikes to 100% - System becomes unresponsive
-- Applications freeze or run extremely slowly</p>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>CPU utilization drops dramatically (from 80% to &lt;10%)</li>
+<li>Disk I/O spikes to 100%</li>
+<li>System becomes unresponsive</li>
+<li>Applications freeze or run extremely slowly</li>
+</ul>
 <p><strong>Visual Representation of System State:</strong></p>
 <h3 id="why-thrashing-occurs">2.4.2 Why Thrashing Occurs</h3>
 <p><strong>Scenario:</strong> Too many active processes, insufficient
@@ -1998,8 +2064,11 @@ Even worse thrashing</code></pre>
 a process actively uses during a time window.</p>
 <p><strong>Definition:</strong><br />
 WS(t, Δ) = Set of pages referenced in time interval [t - Δ, t]</p>
-<p>Where: - t = current time - Δ = working set window (e.g., 10,000
-memory references)</p>
+<p>Where:</p>
+<ul>
+<li>t = current time</li>
+<li>Δ = working set window (e.g., 10,000 memory references)</li>
+</ul>
 <p><strong>Example:</strong></p>
 <pre><code>Process accesses pages: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3
 
@@ -2017,10 +2086,12 @@ Working set: {1, 2, 3, 5} (4 pages)</code></pre>
  | ╱             ╲          ╲
  └────────────────────────────→ Time
    Init   Execute  Compute  I/O</code></pre>
-<p>Programs transition between phases: -
-<strong>Initialization:</strong> Large working set (loading libraries) -
-<strong>Steady state:</strong> Small working set (main loop) -
-<strong>Phase change:</strong> Working set spike (new functionality)</p>
+<p>Programs transition between phases:</p>
+<ul>
+<li><strong>Initialization:</strong> Large working set (loading libraries)</li>
+<li><strong>Steady state:</strong> Small working set (main loop)</li>
+<li><strong>Phase change:</strong> Working set spike (new functionality)</li>
+</ul>
 <h3 id="preventing-thrashing">2.4.4 Preventing Thrashing</h3>
 <p><strong>Strategy 1: Working Set Algorithm</strong></p>
 <pre><code>For each process P:
@@ -2323,8 +2394,12 @@ If parent and child both read (common case):
   - Traditional: Uses 2 GB (duplicate memory)
   - COW: Uses 1 GB (shared)</code></pre>
 <p><strong>Real-World Impact:</strong> Modern systems heavily use
-<code>fork()</code> + <code>exec()</code>: - Shell executing commands -
-Web servers spawning workers - Build systems compiling code</p>
+<code>fork()</code> + <code>exec()</code>:</p>
+<ul>
+<li>Shell executing commands</li>
+<li>Web servers spawning workers</li>
+<li>Build systems compiling code</li>
+</ul>
 <p>COW makes these operations practical.</p>
 <h3 id="cow-in-other-contexts">2.5.4 COW in Other Contexts</h3>
 <p><strong>File Systems (ZFS, Btrfs):</strong></p>
@@ -2783,9 +2858,13 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb46-1"><a href=
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Explicit huge pages</span></span>
 <span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> 1024 <span class="op">&gt;</span> /proc/sys/vm/nr_hugepages  <span class="co"># Allocate 1024 × 2MB = 2GB</span></span></code></pre></div>
-<p><strong>Trade-offs:</strong> - ✓ Fewer TLB misses - ✓ Smaller page
-tables - ✗ More internal fragmentation - ✗ Slower allocation (finding
-contiguous 2 MB)</p>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✓ Fewer TLB misses</li>
+<li>✓ Smaller page tables</li>
+<li>✗ More internal fragmentation</li>
+<li>✗ Slower allocation (finding contiguous 2 MB)</li>
+</ul>
 <h3 id="memory-overcommitment">2.7.2 Memory Overcommitment</h3>
 <p>Linux allows allocating more virtual memory than physical RAM +
 swap:</p>
@@ -2889,25 +2968,35 @@ than DRAM)</li>
 minimize page faults</li>
 </ul>
 <p><strong>Real-World Impact:</strong></p>
-<p>These virtual memory techniques enable: - Running dozens of programs
-on limited RAM - Instant process creation (<code>fork()</code>) -
-Efficient large file processing - Shared libraries saving gigabytes of
-memory - Databases performing well with files larger than RAM</p>
+<p>These virtual memory techniques enable:</p>
+<ul>
+<li>Running dozens of programs on limited RAM</li>
+<li>Instant process creation (<code>fork()</code>)</li>
+<li>Efficient large file processing</li>
+<li>Shared libraries saving gigabytes of memory</li>
+<li>Databases performing well with files larger than RAM</li>
+</ul>
 <hr />
 
 
 <!-- Folded from section looking-ahead -->
 <p><strong>Chapter 3</strong> will explore how these concepts are
-implemented in hardware: - Page table structures (single-level,
-multi-level, inverted) - Translation Lookaside Buffer (TLB) architecture
-- Hardware page table walkers - Different architectures’ approaches
-(x86, ARM, RISC-V)</p>
+implemented in hardware:</p>
+<ul>
+<li>Page table structures (single-level, multi-level, inverted)</li>
+<li>Translation Lookaside Buffer (TLB) architecture</li>
+<li>Hardware page table walkers</li>
+<li>Different architectures’ approaches (x86, ARM, RISC-V)</li>
+</ul>
 
 <p>One hardware optimisation introduced in Chapter 3 is especially relevant to the page-walk latency figures seen throughout this book: the <strong>Page Walk Cache (PWC)</strong> (§3.7.2). When the TLB misses, the hardware page walker must traverse multiple levels of the page table stored in main memory — four DRAM reads on x86-64 in the worst case. The PWC caches the upper-level page-directory entries (PML4E, PDPTE, PDE on x86-64) so that a typical TLB miss requires only a single final DRAM access rather than four, reducing page-walk latency by 50–80% (Barr, Cox &amp; Rixner, 2011; Bhattacharjee, Lustig &amp; Martonosi, 2011). Chapter 3 also covers ARM’s TTBR0/TTBR1 dual-register design (§3.7.3), which splits the address space so that user and kernel translations never share TLB entries, and the VMID+ASID tagging scheme that allows multiple VMs and processes to coexist in the TLB without flushing on every context switch.</p>
 
-<p><strong>Chapter 4</strong> will cover OS-specific implementations: -
-Linux memory management (<code>mm_struct</code>, page allocator, kswapd)
-- Windows memory manager - How OSes coordinate with MMU hardware</p>
+<p><strong>Chapter 4</strong> will cover OS-specific implementations:</p>
+<ul>
+<li>Linux memory management (<code>mm_struct</code>, page allocator, kswapd)</li>
+<li>Windows memory manager</li>
+<li>How OSes coordinate with MMU hardware</li>
+</ul>
 <hr />
 <p>The virtual memory concepts presented in this chapter form the conceptual bedrock for every subsequent chapter. Demand paging is not merely an implementation convenience — it fundamentally changes the relationship between address space size and physical memory requirement, decoupling the logical model of a process from the physical constraints of the hardware. This decoupling is what enables modern operating systems to run many large processes simultaneously on hardware with limited DRAM. The working set model explains both why virtual memory succeeds when memory pressure is moderate and why it fails catastrophically under thrashing conditions: performance is not degraded gracefully but collapses as soon as aggregate working sets exceed available physical memory. Copy-on-write page sharing, examined through the lens of the fork() system call, illustrates how address translation enables zero-cost duplication at the OS level — a technique that recurs in later chapters covering container isolation, memory-mapped shared libraries, and hypervisor page management. Memory-mapped files demonstrated that the virtual memory abstraction extends naturally beyond anonymous pages to file-backed mappings, setting the stage for the direct-access path examined in Chapter 10. Chapter 3 will build directly on the page table structures introduced here, transforming the conceptual mapping from virtual to physical addresses into the concrete multi-level data structures that hardware walks on every TLB miss.</p>
 

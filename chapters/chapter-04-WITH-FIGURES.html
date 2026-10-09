@@ -755,10 +755,13 @@ virtualization ubiquitous. Two-stage address translation (guest virtual
 new management challenges. Modern TLBs must cache two-dimensional
 translations while maintaining coherency across VM switches.</p>
 <p><strong>Security Implications:</strong> The TLB interacts intimately
-with memory protection, making it security-critical: - TLB poisoning can
-bypass access control - TLB timing attacks leak information across
-security boundaries - Spectre and Meltdown exploit speculative TLB
-behavior - TLB shootdown creates denial-of-service vectors</p>
+with memory protection, making it security-critical:</p>
+<ul>
+<li>TLB poisoning can bypass access control</li>
+<li>TLB timing attacks leak information across security boundaries</li>
+<li>Spectre and Meltdown exploit speculative TLB behavior</li>
+<li>TLB shootdown creates denial-of-service vectors</li>
+</ul>
 <h3 id="what-well-cover">What We'll Cover</h3>
 <p>This chapter provides comprehensive coverage of TLB architecture,
 management, and optimization:</p>
@@ -785,21 +788,26 @@ Why Multiple Levels?</h3>
 <p>Modern processors don't have a single TLB—they have a multi-level TLB
 hierarchy analogous to the data cache hierarchy (L1/L2/L3). This design
 emerges from fundamental tradeoffs:</p>
-<p><strong>Speed vs. Capacity Tradeoff:</strong> - Small,
-fully-associative TLBs (32-128 entries) can provide 1-cycle lookup -
-Large TLBs (1024-2048 entries) require multiple cycles or
-set-associativity - Solution: Multi-level hierarchy with small, fast L1
-TLBs backed by larger L2 TLBs</p>
-<p><strong>Instruction vs. Data Separation:</strong> - Instruction
-fetches and data accesses have different locality patterns - Code
-typically has high spatial locality (sequential execution) - Data access
-patterns vary widely by application - Solution: Separate L1 ITLB and L1
-DTLB, unified L2 TLB</p>
-<p><strong>Page Size Heterogeneity:</strong> - Modern systems use mixed
-page sizes (4KB, 2MB, 1GB) - Different page sizes have different working
-set requirements - Optimal TLB organization differs by page size -
-Solution: Multiple TLBs or flexible entries supporting multiple
-sizes</p>
+<p><strong>Speed vs. Capacity Tradeoff:</strong></p>
+<ul>
+<li>Small, fully-associative TLBs (32-128 entries) can provide 1-cycle lookup</li>
+<li>Large TLBs (1024-2048 entries) require multiple cycles or set-associativity</li>
+<li>Solution: Multi-level hierarchy with small, fast L1 TLBs backed by larger L2 TLBs</li>
+</ul>
+<p><strong>Instruction vs. Data Separation:</strong></p>
+<ul>
+<li>Instruction fetches and data accesses have different locality patterns</li>
+<li>Code typically has high spatial locality (sequential execution)</li>
+<li>Data access patterns vary widely by application</li>
+<li>Solution: Separate L1 ITLB and L1 DTLB, unified L2 TLB</li>
+</ul>
+<p><strong>Page Size Heterogeneity:</strong></p>
+<ul>
+<li>Modern systems use mixed page sizes (4KB, 2MB, 1GB)</li>
+<li>Different page sizes have different working set requirements</li>
+<li>Optimal TLB organization differs by page size</li>
+<li>Solution: Multiple TLBs or flexible entries supporting multiple sizes</li>
+</ul>
 <h4 id="typical-tlb-hierarchy">Typical TLB Hierarchy</h4>
 <figure id="fig-4-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
@@ -878,25 +886,28 @@ sizes</p>
     <strong>Figure 4.1:</strong> TLB hierarchy: L1 ITLB and DTLB serve in 1 cycle; misses fall to L2 STLB (8–12 cycles); STLB misses trigger the hardware page table walker (50–200 ns).
   </figcaption>
 </figure>
-<p><strong>L1 TLBs (Instruction and Data):</strong> -
-<strong>Size:</strong> 32-128 entries (typically 64 for data, 128 for
-instructions) - <strong>Associativity:</strong> Fully associative (all
-entries checked in parallel) - <strong>Latency:</strong> 1 cycle
-(integrated into pipeline) - <strong>Hit Rate:</strong> 95-99% for
-well-behaved applications - <strong>Organization:</strong> Separate ITLB
-(instruction) and DTLB (data)</p>
+<p><strong>L1 TLBs (Instruction and Data):</strong></p>
+<ul>
+<li><strong>Size:</strong> 32-128 entries (typically 64 for data, 128 for instructions)</li>
+<li><strong>Associativity:</strong> Fully associative (all entries checked in parallel)</li>
+<li><strong>Latency:</strong> 1 cycle (integrated into pipeline)</li>
+<li><strong>Hit Rate:</strong> 95-99% for well-behaved applications</li>
+<li><strong>Organization:</strong> Separate ITLB (instruction) and DTLB (data)</li>
+</ul>
 <p>The L1 TLBs are tiny by design—they must provide translation on the
 same cycle as L1 cache access, requiring fully parallel hardware that
 becomes impractical beyond ~128 entries. The split between instructions
 and data allows the CPU to fetch instructions while simultaneously
 accessing data, maintaining the illusion of Harvard architecture at the
 TLB level.</p>
-<p><strong>L2 TLB (Shared/Unified):</strong> - <strong>Size:</strong>
-512-2048 entries (Intel: 1536, AMD Zen 3: 2048) -
-<strong>Associativity:</strong> 4-way to 12-way set-associative -
-<strong>Latency:</strong> 5-10 cycles - <strong>Hit Rate:</strong>
-98-99.9% when L1 misses - <strong>Organization:</strong> Unified for
-both instructions and data</p>
+<p><strong>L2 TLB (Shared/Unified):</strong></p>
+<ul>
+<li><strong>Size:</strong> 512-2048 entries (Intel: 1536, AMD Zen 3: 2048)</li>
+<li><strong>Associativity:</strong> 4-way to 12-way set-associative</li>
+<li><strong>Latency:</strong> 5-10 cycles</li>
+<li><strong>Hit Rate:</strong> 98-99.9% when L1 misses</li>
+<li><strong>Organization:</strong> Unified for both instructions and data</li>
+</ul>
 <p>The L2 TLB acts as a victim cache for the L1 TLBs, storing
 translations evicted from L1. Its larger capacity provides better
 coverage of the application's working set, while set-associativity keeps
@@ -974,13 +985,13 @@ write)</li>
 <li><strong>PAT/MTRR bits:</strong> Memory type (write-back,
 write-through, uncached, etc.)</li>
 </ul>
-<p>These flags serve multiple purposes: - <strong>G-bit
-optimization:</strong> Kernel mappings marked global survive context
-switches, avoiding TLB refills - <strong>D-bit dirty tracking:</strong>
-OS uses this for copy-on-write and page-out decisions<br />
-- <strong>A-bit access tracking:</strong> Guides page replacement
-algorithms - <strong>Memory type control:</strong> Critical for device
-I/O and memory-mapped registers</p>
+<p>These flags serve multiple purposes:</p>
+<ul>
+<li><strong>G-bit optimization:</strong> Kernel mappings marked global survive context switches, avoiding TLB refills</li>
+<li><strong>D-bit dirty tracking:</strong> OS uses this for copy-on-write and page-out decisions<br /></li>
+<li><strong>A-bit access tracking:</strong> Guides page replacement algorithms</li>
+<li><strong>Memory type control:</strong> Critical for device I/O and memory-mapped registers</li>
+</ul>
 <p><strong>5. Address Space Identifier (ASID/PCID/VMID)</strong></p>
 <p>To avoid flushing the entire TLB on context switches, modern
 processors tag entries with an identifier:</p>
@@ -1012,9 +1023,12 @@ indicate its size:</p>
   01 = 2 MB  
   10 = 1 GB
   11 = 512 GB (future/experimental)</code></pre>
-<p>This is crucial because: - Virtual address → VPN extraction differs
-by page size - Large pages have fewer VPN bits, more offset bits - TLB
-must extract the correct PFN portion</p>
+<p>This is crucial because:</p>
+<ul>
+<li>Virtual address → VPN extraction differs by page size</li>
+<li>Large pages have fewer VPN bits, more offset bits</li>
+<li>TLB must extract the correct PFN portion</li>
+</ul>
 <p>For example, with a 2MB page:</p>
 <pre><code>Virtual Address: [47:21] = VPN (27 bits), [20:0] = Offset (21 bits)
 Physical Address: [51:21] = PFN (31 bits), [20:0] = Offset (21 bits)</code></pre>
@@ -1143,12 +1157,18 @@ requirement drives associativity choices.</p>
 <h4 id="fully-associative-tlbs">Fully Associative TLBs</h4>
 <p><strong>Design:</strong> Any translation can be stored in any TLB
 entry. Lookup checks all entries in parallel.</p>
-<p><strong>Advantages:</strong> - Maximum flexibility—no capacity misses
-due to set conflicts - Best hit rate for given size - Simple to
-implement at small sizes (32-128 entries)</p>
-<p><strong>Disadvantages:</strong> - Requires parallel comparators for
-every entry (expensive in silicon area and power) - Doesn't scale beyond
-~128 entries - Replacement policy must consider entire TLB</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Maximum flexibility—no capacity misses due to set conflicts</li>
+<li>Best hit rate for given size</li>
+<li>Simple to implement at small sizes (32-128 entries)</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Requires parallel comparators for every entry (expensive in silicon area and power)</li>
+<li>Doesn't scale beyond ~128 entries</li>
+<li>Replacement policy must consider entire TLB</li>
+</ul>
 <p><strong>Typical Use:</strong> L1 TLBs (both ITLB and DTLB)</p>
 <h4 id="set-associative-tlbs">Set-Associative TLBs</h4>
 <p><strong>Design:</strong> TLB is divided into sets; each translation
@@ -1156,16 +1176,24 @@ hashes to a specific set and can only reside in one of N entries within
 that set (N-way set-associative).</p>
 <p><strong>Address Mapping:</strong></p>
 <pre><code>VPN → Set Index = VPN[m:0] where m = log₂(num_sets)</code></pre>
-<p>For a 1024-entry, 8-way set-associative TLB: - 128 sets (1024 / 8) -
-VPN[6:0] determines the set (2^7 = 128) - Check 8 entries in parallel
-within that set</p>
-<p><strong>Advantages:</strong> - Scales to larger sizes (1024-4096
-entries feasible) - Reduces comparator count (only N comparators
-vs. total entries) - Power efficient—only activate one set</p>
-<p><strong>Disadvantages:</strong> - Conflict misses possible (two VPNs
-hash to same set, exceed associativity) - Lower hit rate than
-fully-associative at same total size - Set index bits "wasted" for
-tagging purposes</p>
+<p>For a 1024-entry, 8-way set-associative TLB:</p>
+<ul>
+<li>128 sets (1024 / 8)</li>
+<li>VPN[6:0] determines the set (2^7 = 128)</li>
+<li>Check 8 entries in parallel within that set</li>
+</ul>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Scales to larger sizes (1024-4096 entries feasible)</li>
+<li>Reduces comparator count (only N comparators vs. total entries)</li>
+<li>Power efficient—only activate one set</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Conflict misses possible (two VPNs hash to same set, exceed associativity)</li>
+<li>Lower hit rate than fully-associative at same total size</li>
+<li>Set index bits "wasted" for tagging purposes</li>
+</ul>
 <p><strong>Typical Use:</strong> L2/L3 TLBs</p>
 <h4 id="replacement-policies">Replacement Policies</h4>
 <p>When a TLB is full, inserting a new entry requires evicting an
@@ -1176,11 +1204,17 @@ evict.</p>
 the longest time.</p>
 <p><strong>Implementation:</strong> Maintain timestamp or age counter
 for each entry, evict oldest.</p>
-<p><strong>Advantages:</strong> - Theoretically optimal for temporal
-locality - Predictable behavior</p>
-<p><strong>Disadvantages:</strong> - Requires per-entry metadata (logâ''N
-bits for N-way associative) - Update cost on every TLB access (write
-timestamp) - Complex for large associativity</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Theoretically optimal for temporal locality</li>
+<li>Predictable behavior</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Requires per-entry metadata (logâ''N bits for N-way associative)</li>
+<li>Update cost on every TLB access (write timestamp)</li>
+<li>Complex for large associativity</li>
+</ul>
 <p><strong>Use:</strong> Common in smaller TLBs (L1) where tracking is
 feasible</p>
 <p><strong>2. Pseudo-LRU (PLRU)</strong></p>
@@ -1196,31 +1230,50 @@ encode a binary tree:</p>
     / \  / \ / \ / \
    E0 E1E2E3E4E5E6 E7</code></pre>
 <p>Each internal node bit points toward "recently used" subtree.</p>
-<p><strong>Advantages:</strong> - Much less metadata (N-1 bits for N
-entries vs. N*log₂N) - Cheaper to update (log₂N bits) - Good
-approximation of LRU</p>
-<p><strong>Disadvantages:</strong> - Not true LRU (pathological cases
-exist) - More complex than random</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Much less metadata (N-1 bits for N entries vs. N*log₂N)</li>
+<li>Cheaper to update (log₂N bits)</li>
+<li>Good approximation of LRU</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Not true LRU (pathological cases exist)</li>
+<li>More complex than random</li>
+</ul>
 <p><strong>Use:</strong> Common in L2 TLBs</p>
 <p><strong>3. Not Recently Used (NRU)</strong></p>
 <p><strong>Strategy:</strong> Mark entries as "used" on access, prefer
 evicting "not used" entries.</p>
 <p><strong>Implementation:</strong> Single "used" bit per entry,
 periodically clear all bits.</p>
-<p><strong>Advantages:</strong> - Very simple (1 bit per entry) - Low
-overhead - Reasonably effective</p>
-<p><strong>Disadvantages:</strong> - Coarse granularity - Periodic
-clearing introduces complexity</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Very simple (1 bit per entry)</li>
+<li>Low overhead</li>
+<li>Reasonably effective</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Coarse granularity</li>
+<li>Periodic clearing introduces complexity</li>
+</ul>
 <p><strong>Use:</strong> Some simpler TLB designs</p>
 <p><strong>4. Random Replacement</strong></p>
 <p><strong>Strategy:</strong> Evict a random entry from the set.</p>
 <p><strong>Implementation:</strong> Use a linear feedback shift register
 (LFSR) to generate pseudo-random index.</p>
-<p><strong>Advantages:</strong> - Simplest possible (no per-entry
-metadata) - No pathological cases - Surprisingly effective in
-practice</p>
-<p><strong>Disadvantages:</strong> - No exploitation of temporal
-locality - Variable performance</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Simplest possible (no per-entry metadata)</li>
+<li>No pathological cases</li>
+<li>Surprisingly effective in practice</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>No exploitation of temporal locality</li>
+<li>Variable performance</li>
+</ul>
 <p><strong>Use:</strong> Simple embedded processors, some RISC
 designs</p>
 <h4 id="hardware-example-intel-skylake-l2-stlb">Hardware Example: Intel
@@ -1404,18 +1457,28 @@ ARM64 architectures.</p>
 Works</h4>
 <p>When a TLB miss occurs:</p>
 <p><strong>1. CPU detects TLB miss</strong> (VPN not found in TLB)</p>
-<p><strong>2. Hardware page table walker activates:</strong> - Reads
-page table base register (CR3 on x86, TTBR0_EL1 on ARM) - Follows page
-table hierarchy level by level - Reads each page table entry from memory
-- Validates permissions and present bits at each level</p>
-<p><strong>3. On success:</strong> - Hardware constructs TLB entry from
-leaf PTE - Inserts entry into TLB (following replacement policy) -
-Retries the memory access (now hits in TLB) - <strong>No software
-intervention required</strong></p>
+<p><strong>2. Hardware page table walker activates:</strong></p>
+<ul>
+<li>Reads page table base register (CR3 on x86, TTBR0_EL1 on ARM)</li>
+<li>Follows page table hierarchy level by level</li>
+<li>Reads each page table entry from memory</li>
+<li>Validates permissions and present bits at each level</li>
+</ul>
+<p><strong>3. On success:</strong></p>
+<ul>
+<li>Hardware constructs TLB entry from leaf PTE</li>
+<li>Inserts entry into TLB (following replacement policy)</li>
+<li>Retries the memory access (now hits in TLB)</li>
+<li><strong>No software intervention required</strong></li>
+</ul>
 <p><strong>4. On failure (page not present, permission
-violation):</strong> - Generate page fault exception - Transfer control
-to OS page fault handler - OS resolves the fault and returns - Hardware
-retries, now succeeds</p>
+violation):</strong></p>
+<ul>
+<li>Generate page fault exception</li>
+<li>Transfer control to OS page fault handler</li>
+<li>OS resolves the fault and returns</li>
+<li>Hardware retries, now succeeds</li>
+</ul>
 <h4 id="x86-64-hardware-page-walk-example">x86-64 Hardware Page Walk
 Example</h4>
 <p>Consider accessing virtual address <code>0x00401234</code> with a TLB
@@ -1460,10 +1523,12 @@ The same code path is used billions of times per second, so it's worth
 extensive microarchitectural optimization.</p>
 <p><strong>3. Page Walk Caches</strong></p>
 <p>Modern processors add <strong>Page Walk Caches (PWC)</strong> that
-cache intermediate page table entries: - <strong>PML4 cache:</strong>
-Caches PML4 entries - <strong>PDPT cache:</strong> Caches PDPT
-entries<br />
-- <strong>PD cache:</strong> Caches PD entries</p>
+cache intermediate page table entries:</p>
+<ul>
+<li><strong>PML4 cache:</strong> Caches PML4 entries</li>
+<li><strong>PDPT cache:</strong> Caches PDPT entries<br /></li>
+<li><strong>PD cache:</strong> Caches PD entries</li>
+</ul>
 <p>These dramatically reduce the cost of TLB misses. Example with
 PWC:</p>
 <pre><code>TLB miss, but all intermediate levels cached:
@@ -1487,10 +1552,11 @@ table structures or compression schemes.</p>
 and power. The walker must handle multiple page sizes, two-stage
 translation (virtualization), and various corner cases.</p>
 <p><strong>3. Attack Surface</strong></p>
-<p>Hardware page walkers have been targets of attacks: -
-<strong>Speculative execution:</strong> Spectre variant 1.1 exploits
-speculative page walks - <strong>Timing side channels:</strong> Page
-table structure can leak information through timing</p>
+<p>Hardware page walkers have been targets of attacks:</p>
+<ul>
+<li><strong>Speculative execution:</strong> Spectre variant 1.1 exploits speculative page walks</li>
+<li><strong>Timing side channels:</strong> Page table structure can leak information through timing</li>
+</ul>
 <p><strong>4. Wasted Work</strong></p>
 <p>If a page is genuinely not present (swapped out), the hardware walker
 traverses multiple levels unnecessarily before generating a page
@@ -1503,14 +1569,20 @@ entry. This is the approach used by RISC-V and historically by MIPS.</p>
 <h4 id="how-software-tlb-management-works">How Software TLB Management
 Works</h4>
 <p><strong>1. CPU detects TLB miss</strong></p>
-<p><strong>2. CPU generates TLB miss exception:</strong> -
-<strong>Instruction TLB miss:</strong> Jump to ITLB miss handler vector
-- <strong>Data TLB miss:</strong> Jump to DTLB miss handler vector - Or
-unified TLB miss vector (implementation-dependent)</p>
-<p><strong>3. Software TLB refill handler executes:</strong> - Reads
-page table base from CSR (Control and Status Register) - Walks page
-tables in software - Constructs TLB entry - Uses special instruction to
-write TLB entry - Returns from exception</p>
+<p><strong>2. CPU generates TLB miss exception:</strong></p>
+<ul>
+<li><strong>Instruction TLB miss:</strong> Jump to ITLB miss handler vector</li>
+<li><strong>Data TLB miss:</strong> Jump to DTLB miss handler vector</li>
+<li>Or unified TLB miss vector (implementation-dependent)</li>
+</ul>
+<p><strong>3. Software TLB refill handler executes:</strong></p>
+<ul>
+<li>Reads page table base from CSR (Control and Status Register)</li>
+<li>Walks page tables in software</li>
+<li>Constructs TLB entry</li>
+<li>Uses special instruction to write TLB entry</li>
+<li>Returns from exception</li>
+</ul>
 <p><strong>4. CPU retries memory access → TLB HIT</strong></p>
 <h4 id="risc-v-software-tlb-refill-example">RISC-V Software TLB Refill
 Example</h4>
@@ -1560,11 +1632,13 @@ sfence.vma x0, x0    # Fence to synchronize
 Management</h4>
 <p><strong>1. Flexibility</strong></p>
 <p>OS has complete control over page table format. Possibilities
-include: - <strong>Compressed page tables:</strong> Use custom
-compression schemes - <strong>Inverted page tables:</strong> Hash-based
-lookup structures - <strong>Radix trees:</strong> Alternative
-hierarchical structures - <strong>Per-process optimizations:</strong>
-Different processes can use different schemes</p>
+include:</p>
+<ul>
+<li><strong>Compressed page tables:</strong> Use custom compression schemes</li>
+<li><strong>Inverted page tables:</strong> Hash-based lookup structures</li>
+<li><strong>Radix trees:</strong> Alternative hierarchical structures</li>
+<li><strong>Per-process optimizations:</strong> Different processes can use different schemes</li>
+</ul>
 <p><strong>2. Simplified Hardware</strong></p>
 <p>No hardware page walker required, saving silicon area and power. This
 aligns with RISC-V's philosophy of minimal hardware complexity.</p>
@@ -1577,9 +1651,13 @@ hardware changes.</p>
 <h4 id="disadvantages-of-software-management">Disadvantages of Software
 Management</h4>
 <p><strong>1. Performance Cost</strong></p>
-<p>Every TLB miss requires exception entry/exit overhead: - Save/restore
-CPU state - Jump to handler (potentially cold in instruction cache) -
-Execute handler code - Return from exception</p>
+<p>Every TLB miss requires exception entry/exit overhead:</p>
+<ul>
+<li>Save/restore CPU state</li>
+<li>Jump to handler (potentially cold in instruction cache)</li>
+<li>Execute handler code</li>
+<li>Return from exception</li>
+</ul>
 <p>Typical overhead: 200-1000 cycles for a TLB miss, even with fast
 handler.</p>
 <p><strong>2. Software Complexity</strong></p>
@@ -1601,8 +1679,11 @@ boundary:</p>
 Management with Software Hooks</h4>
 <p>ARM64 uses hardware page walks but allows software intervention:</p>
 <p><strong>Access Flag Faults:</strong> If a PTE's Access Flag (AF) is
-not set, ARM can either: - Set it automatically (pure hardware), or -
-Generate an Access Flag fault for software to handle</p>
+not set, ARM can either:</p>
+<ul>
+<li>Set it automatically (pure hardware), or</li>
+<li>Generate an Access Flag fault for software to handle</li>
+</ul>
 <p>This lets OS implement custom page tracking without full software TLB
 management.</p>
 <p><strong>Hardware Table Walk Disable:</strong> ARM allows disabling
@@ -1620,8 +1701,12 @@ large page support.</p>
 <h4 id="x86-software-page-table-walking">x86 Software Page Table
 Walking</h4>
 <p>x86 allows software to traverse page tables using regular memory
-accesses, useful for: - Debugging and introspection - Custom translation
-mechanisms - Security monitoring</p>
+accesses, useful for:</p>
+<ul>
+<li>Debugging and introspection</li>
+<li>Custom translation mechanisms</li>
+<li>Security monitoring</li>
+</ul>
 <p>The <code>CR3</code> register can be read by software, and page
 tables are in normal memory (though often write-protected by OS).</p>
 <hr />
@@ -1733,15 +1818,21 @@ Problem</h3>
    - A&#39;s translations gone despite recent use
    - Another 500-2000 cycle warmup</code></pre>
 <p><strong>Performance impact measurement:</strong></p>
-<p>Assuming: - Context switches every 10ms (quantum) - 1000 cycles TLB
-warmup cost per switch - 4 GHz CPU</p>
+<p>Assuming:</p>
+<ul>
+<li>Context switches every 10ms (quantum)</li>
+<li>1000 cycles TLB warmup cost per switch</li>
+<li>4 GHz CPU</li>
+</ul>
 <p>Cost per second:</p>
 <pre><code>100 switches/sec × 1000 cycles/switch = 100,000 cycles/sec
 = 0.0025% of CPU time</code></pre>
-<p>This seems small, but: - Real warmup cost is higher for
-memory-intensive applications - Cache pollution from context switches
-adds overhead - High-frequency context switches (server workloads)
-amplify the problem</p>
+<p>This seems small, but:</p>
+<ul>
+<li>Real warmup cost is higher for memory-intensive applications</li>
+<li>Cache pollution from context switches adds overhead</li>
+<li>High-frequency context switches (server workloads) amplify the problem</li>
+</ul>
 <p>Studies show context switch overhead can reach 1-5% of CPU time on
 busy servers.</p>
 <h3 id="asid-arms-address-space-identifier">4.4.2 ASID: ARM's Address
@@ -1750,13 +1841,17 @@ Space Identifier</h3>
 Space Identifier (ASID)</strong>, a tag attached to each TLB entry
 identifying which process it belongs to.</p>
 <h4 id="asid-basics">ASID Basics</h4>
-<p><strong>Size:</strong> 8-bit or 16-bit (implementation-defined) -
-<strong>8-bit ASID:</strong> 256 distinct address spaces -
-<strong>16-bit ASID:</strong> 65,536 distinct address spaces</p>
+<p><strong>Size:</strong> 8-bit or 16-bit (implementation-defined)</p>
+<ul>
+<li><strong>8-bit ASID:</strong> 256 distinct address spaces</li>
+<li><strong>16-bit ASID:</strong> 65,536 distinct address spaces</li>
+</ul>
 <p><strong>Storage:</strong> The ASID is part of the Translation Control
-Register: - <strong>TTBR0_EL1[63:48]:</strong> ASID for user-space
-translations - <strong>TTBR1_EL1[63:48]:</strong> ASID for kernel-space
-translations (often ignored since kernel is global)</p>
+Register:</p>
+<ul>
+<li><strong>TTBR0_EL1[63:48]:</strong> ASID for user-space translations</li>
+<li><strong>TTBR1_EL1[63:48]:</strong> ASID for kernel-space translations (often ignored since kernel is global)</li>
+</ul>
 <p><strong>TLB Entry Format:</strong></p>
 <div style="overflow-x:auto;margin:1.5em 0;">
 <table style="border-collapse:collapse;width:100%;font-family:Arial,Helvetica,sans-serif;font-size:14px;">
@@ -2087,8 +2182,11 @@ PCIDs. Kernel mappings remain global.</p>
 <strong>INVPCID</strong> instruction:</p>
 <p><strong>Invocation:</strong></p>
 <pre class="assembly"><code>invpcid rax, [rbx]</code></pre>
-<p>Where: - <code>rax</code>: Type of invalidation (0-3) -
-<code>[rbx]</code>: Descriptor (PCID + linear address)</p>
+<p>Where:</p>
+<ul>
+<li><code>rax</code>: Type of invalidation (0-3)</li>
+<li><code>[rbx]</code>: Descriptor (PCID + linear address)</li>
+</ul>
 <p><strong>Invalidation Types:</strong></p>
 <p><strong>Type 0: Individual Address</strong></p>
 <pre><code>Invalidate single address in specific PCID
@@ -2155,8 +2253,11 @@ contains VPID for each VM</p>
 <p style="font-size:13px;color:#616161;margin-top:4px;">VPID (Virtual Processor Identifier) tags entries per guest VM; PCID tags per guest process. Together they allow host and all guest TLB entries to coexist without flushing on VM-exit or context switch.</p>
 </div>
 <p>Notice: Can have <strong>both PCID and VPID</strong>, allowing TLB to
-cache: - Multiple processes in multiple VMs simultaneously - Example:
-VM1's Process A, VM1's Process B, VM2's Process A, Host OS</p>
+cache:</p>
+<ul>
+<li>Multiple processes in multiple VMs simultaneously</li>
+<li>Example: VM1's Process A, VM1's Process B, VM2's Process A, Host OS</li>
+</ul>
 <p><strong>Lookup:</strong></p>
 <pre><code>Match (VPN, PCID, VPID) → TLB hit</code></pre>
 <h4 id="arm-vmid">ARM VMID</h4>
@@ -2166,8 +2267,12 @@ translation</p>
 <p><strong>Combination with ASID:</strong></p>
 <p>ARM can tag entries with both ASID and VMID:</p>
 <pre><code>Entry: VPN, ASID (guest process), VMID (which VM), PFN</code></pre>
-<p>This enables caching: - Multiple guest processes in multiple VMs -
-Host processes - All without TLB flushes on switches</p>
+<p>This enables caching:</p>
+<ul>
+<li>Multiple guest processes in multiple VMs</li>
+<li>Host processes</li>
+<li>All without TLB flushes on switches</li>
+</ul>
 <h4 id="risc-v-vmid-hypervisor-extension">RISC-V VMID (Hypervisor
 Extension)</h4>
 <p><strong>Size:</strong> Implementation-defined (typically 7-14
@@ -2387,10 +2492,13 @@ Instructions</h3>
 CPUs)</p>
 <p><strong>INVPCID (Invalidate Process Context ID):</strong></p>
 <p>More flexible invalidation with four types (described in Section
-4.4.3): - Type 0: Single address in specific PCID - Type 1: All
-addresses in specific PCID<br />
-- Type 2: All non-global addresses in all PCIDs - Type 3: All addresses
-including global</p>
+4.4.3):</p>
+<ul>
+<li>Type 0: Single address in specific PCID</li>
+<li>Type 1: All addresses in specific PCID<br /></li>
+<li>Type 2: All non-global addresses in all PCIDs</li>
+<li>Type 3: All addresses including global</li>
+</ul>
 <p><strong>Example:</strong></p>
 <div class="sourceCode" id="cb47"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Invalidate entire address space for PCID 5</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint64_t</span> desc<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="dv">5</span><span class="op">,</span> <span class="dv">0</span><span class="op">};</span>  <span class="co">// PCID=5, address ignored</span></span>
@@ -2401,11 +2509,14 @@ including global</p>
 <pre class="assembly"><code>TLBI VAE1IS, X0    ; Invalidate VA in EL1, inner shareable
 TLBI ASIDE1IS, X0  ; Invalidate all entries for ASID, inner shareable
 TLBI VMALLE1IS     ; Invalidate all EL1 entries, inner shareable</code></pre>
-<p><strong>Naming Convention:</strong> - <strong>VA</strong>: Virtual
-Address - <strong>ASIDE</strong>: Address Space ID Entry -
-<strong>VMALLE</strong>: Virtual Memory All Entries -
-<strong>E1/E2</strong>: Exception Level (privilege level) -
-<strong>IS</strong>: Inner Shareable (affects other CPUs in cluster)</p>
+<p><strong>Naming Convention:</strong></p>
+<ul>
+<li><strong>VA</strong>: Virtual Address</li>
+<li><strong>ASIDE</strong>: Address Space ID Entry</li>
+<li><strong>VMALLE</strong>: Virtual Memory All Entries</li>
+<li><strong>E1/E2</strong>: Exception Level (privilege level)</li>
+<li><strong>IS</strong>: Inner Shareable (affects other CPUs in cluster)</li>
+</ul>
 <p><strong>Invalidate specific address:</strong></p>
 <div class="sourceCode" id="cb49"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> tlb_invalidate_page<span class="op">(</span>vaddr_t addr<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Construct descriptor: VA[55:12] | ASID[63:48]</span></span>
@@ -2416,8 +2527,11 @@ Address - <strong>ASIDE</strong>: Address Space ID Entry -
 <span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="risc-v-sfence.vma">RISC-V: SFENCE.VMA</h4>
 <p><strong>Instruction:</strong> <code>SFENCE.VMA rs1, rs2</code></p>
-<p><strong>Semantics:</strong> - <code>rs1</code>: Virtual address (0 =
-all addresses) - <code>rs2</code>: ASID (0 = all ASIDs)</p>
+<p><strong>Semantics:</strong></p>
+<ul>
+<li><code>rs1</code>: Virtual address (0 = all addresses)</li>
+<li><code>rs2</code>: ASID (0 = all ASIDs)</li>
+</ul>
 <p><strong>Examples:</strong></p>
 <pre class="assembly"><code># Invalidate specific address in current ASID
 sfence.vma a0, zero
@@ -2483,9 +2597,12 @@ CPU 1, 2, 3, ... (targets):
 <span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>    local_tlb_invalidate<span class="op">(</span>addr<span class="op">);</span></span>
 <span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h4 id="performance-cost">Performance Cost</h4>
-<p><strong>IPI overhead:</strong> - Send IPI: ~100-200 cycles - Receive
-and handle IPI: ~200-500 cycles per CPU - Wait for acknowledgments:
-~100-1000 cycles</p>
+<p><strong>IPI overhead:</strong></p>
+<ul>
+<li>Send IPI: ~100-200 cycles</li>
+<li>Receive and handle IPI: ~200-500 cycles per CPU</li>
+<li>Wait for acknowledgments: ~100-1000 cycles</li>
+</ul>
 <p><strong>Total for 4-CPU system:</strong> ~1,000-3,000 cycles</p>
 <p><strong>For 64-CPU system:</strong> ~10,000-40,000 cycles</p>
 <p>This is why minimizing TLB shootdowns is critical for
@@ -2508,11 +2625,12 @@ scalability.</p>
 <span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>tlb_shootdown_range<span class="op">(</span>start<span class="op">,</span> end<span class="op">);</span>  <span class="co">// One IPI for entire range</span></span></code></pre></div>
 <h4 id="range-based-invalidation">Range-Based Invalidation</h4>
-<p>Modern processors support invalidating ranges: - <strong>x86 INVPCID
-type 2:</strong> Invalidate all non-global entries - <strong>ARM TLBI
-VALE1IS with range:</strong> Invalidate range of addresses -
-<strong>RISC-V:</strong> Multiple SFENCE.VMA invocations (can be
-optimized by hardware)</p>
+<p>Modern processors support invalidating ranges:</p>
+<ul>
+<li><strong>x86 INVPCID type 2:</strong> Invalidate all non-global entries</li>
+<li><strong>ARM TLBI VALE1IS with range:</strong> Invalidate range of addresses</li>
+<li><strong>RISC-V:</strong> Multiple SFENCE.VMA invocations (can be optimized by hardware)</li>
+</ul>
 <h4 id="lazy-shootdown">Lazy Shootdown</h4>
 <p>For rarely-used pages, defer shootdown until necessary:</p>
 <div class="sourceCode" id="cb56"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> mm_struct <span class="op">{</span></span>
@@ -2619,10 +2737,12 @@ be addressed by all TLB entries:</p>
 <p>For a typical L1 DTLB with 64 entries and 4KB pages:</p>
 <pre><code>Coverage = 64 entries × 4 KB = 256 KB</code></pre>
 <p><strong>Problem:</strong> Modern applications routinely use gigabytes
-of memory. With 256 KB coverage: - Accessing 1 GB of memory requires TLB
-entries for 262,144 pages - With only 64 entries, we can cache 0.024% of
-needed translations - TLB miss rate approaches 99.9%+ for large working
-sets</p>
+of memory. With 256 KB coverage:</p>
+<ul>
+<li>Accessing 1 GB of memory requires TLB entries for 262,144 pages</li>
+<li>With only 64 entries, we can cache 0.024% of needed translations</li>
+<li>TLB miss rate approaches 99.9%+ for large working sets</li>
+</ul>
 <p><strong>Real-world example:</strong> A database scanning a 10 GB
 table with 4KB pages:</p>
 <pre><code>Pages needed: 10 GB / 4 KB = 2,621,440 pages
@@ -2721,13 +2841,22 @@ L2 STLB:
 Implementation</h4>
 <p>ARM64 calls large pages "blocks" and supports them at different table
 levels:</p>
-<p><strong>4KB Granule:</strong> - <strong>Level 3:</strong> 4 KB pages
-(leaf entries) - <strong>Level 2:</strong> 2 MB blocks - <strong>Level
-1:</strong> 1 GB blocks</p>
-<p><strong>16KB Granule:</strong> - <strong>Level 3:</strong> 16 KB
-pages - <strong>Level 2:</strong> 32 MB blocks</p>
-<p><strong>64KB Granule:</strong> - <strong>Level 3:</strong> 64 KB
-pages - <strong>Level 2:</strong> 512 MB blocks</p>
+<p><strong>4KB Granule:</strong></p>
+<ul>
+<li><strong>Level 3:</strong> 4 KB pages (leaf entries)</li>
+<li><strong>Level 2:</strong> 2 MB blocks</li>
+<li><strong>Level 1:</strong> 1 GB blocks</li>
+</ul>
+<p><strong>16KB Granule:</strong></p>
+<ul>
+<li><strong>Level 3:</strong> 16 KB pages</li>
+<li><strong>Level 2:</strong> 32 MB blocks</li>
+</ul>
+<p><strong>64KB Granule:</strong></p>
+<ul>
+<li><strong>Level 3:</strong> 64 KB pages</li>
+<li><strong>Level 2:</strong> 512 MB blocks</li>
+</ul>
 <p><strong>Descriptor Type Encoding:</strong></p>
 <p>ARM uses the descriptor type field to distinguish blocks from
 tables:</p>
@@ -2798,21 +2927,32 @@ individually:</p>
 4. Free 2MB page
 5. TLB invalidation (now need 512 entries)</code></pre>
 <h4 id="thp-performance-trade-offs">THP Performance Trade-offs</h4>
-<p><strong>Benefits:</strong> - Transparent to applications (no code
-changes) - Dramatic TLB coverage improvement (512×) - Reduced page table
-memory overhead - Better memory bandwidth utilization</p>
-<p><strong>Costs:</strong> - <strong>Compaction overhead:</strong>
-Creating 2MB contiguous regions requires moving pages - <strong>Memory
-bloat:</strong> If only 4KB of a 2MB page is used, 2044KB is wasted -
-<strong>Page fault latency:</strong> Allocating 2MB takes longer than
-4KB - <strong>TLB shootdown cost:</strong> Splitting 2MB pages affects
-all CPUs</p>
-<p><strong>When THP helps:</strong> - Large sequential access patterns
-(databases, scientific computing) - Streaming workloads (video
-processing, ML training) - Memory-mapped files (large datasets)</p>
-<p><strong>When THP hurts:</strong> - Random access with poor spatial
-locality - Small allocations (memory bloat) - Frequent mmap/munmap
-(allocation overhead)</p>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Transparent to applications (no code changes)</li>
+<li>Dramatic TLB coverage improvement (512×)</li>
+<li>Reduced page table memory overhead</li>
+<li>Better memory bandwidth utilization</li>
+</ul>
+<p><strong>Costs:</strong></p>
+<ul>
+<li><strong>Compaction overhead:</strong> Creating 2MB contiguous regions requires moving pages</li>
+<li><strong>Memory bloat:</strong> If only 4KB of a 2MB page is used, 2044KB is wasted</li>
+<li><strong>Page fault latency:</strong> Allocating 2MB takes longer than 4KB</li>
+<li><strong>TLB shootdown cost:</strong> Splitting 2MB pages affects all CPUs</li>
+</ul>
+<p><strong>When THP helps:</strong></p>
+<ul>
+<li>Large sequential access patterns (databases, scientific computing)</li>
+<li>Streaming workloads (video processing, ML training)</li>
+<li>Memory-mapped files (large datasets)</li>
+</ul>
+<p><strong>When THP hurts:</strong></p>
+<ul>
+<li>Random access with poor spatial locality</li>
+<li>Small allocations (memory bloat)</li>
+<li>Frequent mmap/munmap (allocation overhead)</li>
+</ul>
 <h3 id="huge-page-performance-measurements">4.6.6 Huge Page Performance
 Measurements</h3>
 <p><strong>Benchmark: STREAM Memory Bandwidth Test</strong></p>
@@ -2828,9 +2968,12 @@ Measurements</h3>
   Scale:  140 GB/s (+22%)
   Add:    155 GB/s (+24%)
   Triad:  160 GB/s (+23%)</code></pre>
-<p><strong>Why the improvement?</strong> - Reduced TLB misses (99% → 20%
-miss rate) - Fewer page table walks - Better memory-level
-parallelism</p>
+<p><strong>Why the improvement?</strong></p>
+<ul>
+<li>Reduced TLB misses (99% → 20% miss rate)</li>
+<li>Fewer page table walks</li>
+<li>Better memory-level parallelism</li>
+</ul>
 <p><strong>Benchmark: Database Index Scan</strong></p>
 <p>10 GB B-tree index scan with random accesses:</p>
 <pre><code>4KB Pages:
@@ -2842,17 +2985,23 @@ parallelism</p>
   Queries/sec: 34,000 (+172%)
   Avg latency: 29 ms (-64%)
   TLB miss rate: 8%</code></pre>
-<p><strong>Improvement analysis:</strong> - TLB miss reduction: 45% → 8%
-(80% reduction) - Each miss costs ~100 cycles - Savings: 37% of accesses
-× 100 cycles = 37 cycles/access saved - At 10^9 accesses: 37 billion
-cycles saved = ~9 seconds @ 4GHz</p>
+<p><strong>Improvement analysis:</strong></p>
+<ul>
+<li>TLB miss reduction: 45% → 8% (80% reduction)</li>
+<li>Each miss costs ~100 cycles</li>
+<li>Savings: 37% of accesses × 100 cycles = 37 cycles/access saved</li>
+<li>At 10^9 accesses: 37 billion cycles saved = ~9 seconds @ 4GHz</li>
+</ul>
 <h3 id="gb-page-support">4.6.7 1GB Page Support</h3>
 <p>For very large memory footprints (100GB+ datasets), even 2MB pages
 may not provide sufficient TLB coverage. 1GB pages offer an additional
 512× improvement.</p>
-<p><strong>Requirements for 1GB pages:</strong> - Processor support
-(most modern x86-64, ARM64) - Physically contiguous 1GB regions
-(challenging!) - Boot-time reservation or kernel-level allocation</p>
+<p><strong>Requirements for 1GB pages:</strong></p>
+<ul>
+<li>Processor support (most modern x86-64, ARM64)</li>
+<li>Physically contiguous 1GB regions (challenging!)</li>
+<li>Boot-time reservation or kernel-level allocation</li>
+</ul>
 <p><strong>Usage via hugetlbfs:</strong></p>
 <div class="sourceCode" id="cb75"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reserve 8GB of 1GB pages at boot</span></span>
@@ -2908,9 +3057,12 @@ CPU1:
   3. TLB HIT with stale entry!
   4. Reads from wrong physical page (0x9000 instead of 0xA000)
   5. CORRECTNESS VIOLATION</code></pre>
-<p><strong>Without TLB coherency, this leads to:</strong> - Reading
-stale data - Lost writes (writing to old copy) - Security violations
-(accessing freed pages)</p>
+<p><strong>Without TLB coherency, this leads to:</strong></p>
+<ul>
+<li>Reading stale data</li>
+<li>Lost writes (writing to old copy)</li>
+<li>Security violations (accessing freed pages)</li>
+</ul>
 <h3 id="tlb-shootdown-protocol-revisited">4.7.2 TLB Shootdown Protocol
 (Revisited)</h3>
 <p>We introduced TLB shootdown in Section 4.5.2. Here we examine it in
@@ -2935,9 +3087,12 @@ more detail with focus on correctness and optimization.</p>
 <span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Step 5: Wait for all CPUs to acknowledge</span></span>
 <span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (handled by smp_call_function_many&#39;s wait flag)</span></span>
 <span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Guarantees:</strong> - After return, NO CPU has stale TLB
-entry - Safe to free old physical page - Safe to reuse old physical page
-for different purpose</p>
+<p><strong>Guarantees:</strong></p>
+<ul>
+<li>After return, NO CPU has stale TLB entry</li>
+<li>Safe to free old physical page</li>
+<li>Safe to reuse old physical page for different purpose</li>
+</ul>
 <p><strong>Cost:</strong> Synchronous IPIs to all CPUs (expensive!)</p>
 <h4 id="deferred-tlb-shootdown">Deferred TLB Shootdown</h4>
 <p><strong>Optimization:</strong> Defer TLB flushes until strictly
@@ -2968,10 +3123,16 @@ necessary</p>
 <span id="cb79-24"><a href="#cb79-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb79-25"><a href="#cb79-25" aria-hidden="true" tabindex="-1"></a>    load_mm<span class="op">(</span>mm<span class="op">);</span></span>
 <span id="cb79-26"><a href="#cb79-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Benefits:</strong> - No immediate IPI cost - Flush batched
-with context switch (amortized cost)</p>
-<p><strong>Restrictions:</strong> - Cannot free page immediately (some
-CPUs may access it) - Requires tracking which pages are "in flight"</p>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>No immediate IPI cost</li>
+<li>Flush batched with context switch (amortized cost)</li>
+</ul>
+<p><strong>Restrictions:</strong></p>
+<ul>
+<li>Cannot free page immediately (some CPUs may access it)</li>
+<li>Requires tracking which pages are "in flight"</li>
+</ul>
 <h3 id="hardware-tlb-coherency-support">4.7.3 Hardware TLB Coherency
 Support</h3>
 <p>Some architectures provide hardware assistance for TLB coherency:</p>
@@ -2986,9 +3147,12 @@ the cluster. No software IPI needed!</p>
 <pre><code>TLBI VALE1OS, X0  ; Invalidate across multiple clusters</code></pre>
 <p><strong>Non-Shareable (NS):</strong></p>
 <pre><code>TLBI VALE1, X0    ; Local CPU only</code></pre>
-<p><strong>Benefits:</strong> - Reduced software overhead (no IPI
-handling) - Lower latency (hardware paths faster than interrupts) -
-Simpler software</p>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Reduced software overhead (no IPI handling)</li>
+<li>Lower latency (hardware paths faster than interrupts)</li>
+<li>Simpler software</li>
+</ul>
 <h4 id="x86-invlpg-and-broadcast">x86 INVLPG and Broadcast</h4>
 <p>On some x86 implementations, certain TLB operations are broadcast
 automatically within a coherency domain, though this is not
@@ -3001,8 +3165,11 @@ Memory Ordering</h3>
 <div class="sourceCode" id="cb83"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>CPU <span class="dv">0</span><span class="op">:</span>                          CPU <span class="dv">1</span><span class="op">:</span></span>
 <span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>pte<span class="op">-&gt;</span>flags <span class="op">|=</span> PTE_WRITE<span class="op">;</span>        data <span class="op">=</span> <span class="op">*</span>ptr<span class="op">;</span></span>
 <span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>invalidate_tlb<span class="op">(</span>ptr<span class="op">);</span>            <span class="co">// Which flags does CPU1&#39;s TLB see?</span></span></code></pre></div>
-<p>Without proper barriers, CPU1 might: - Read old PTE from TLB (before
-write visible) - Read new PTE but with stale flags cached</p>
+<p>Without proper barriers, CPU1 might:</p>
+<ul>
+<li>Read old PTE from TLB (before write visible)</li>
+<li>Read new PTE but with stale flags cached</li>
+</ul>
 <p><strong>Solution: Memory Barriers</strong></p>
 <div class="sourceCode" id="cb84"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>CPU <span class="dv">0</span><span class="op">:</span></span>
 <span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>WRITE_ONCE<span class="op">(</span>pte<span class="op">-&gt;</span>flags<span class="op">,</span> new_flags<span class="op">);</span>  <span class="co">// Store-release semantics</span></span>
@@ -3068,15 +3235,21 @@ time (e.g., <code>munmap()</code> of large region)</p>
 <span id="cb87-35"><a href="#cb87-35" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Single IPI for entire batch</span></span>
 <span id="cb87-36"><a href="#cb87-36" aria-hidden="true" tabindex="-1"></a>    smp_call_function_many<span class="op">(</span>batch<span class="op">-&gt;</span>cpus<span class="op">,</span> remote_flush_batch<span class="op">,</span> batch<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
 <span id="cb87-37"><a href="#cb87-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Performance:</strong> - Before: 10,000 IPIs = 40,000-80,000
-cycles - After: 40 IPIs = 1,600-3,200 cycles (25× faster)</p>
+<p><strong>Performance:</strong></p>
+<ul>
+<li>Before: 10,000 IPIs = 40,000-80,000 cycles</li>
+<li>After: 40 IPIs = 1,600-3,200 cycles (25× faster)</li>
+</ul>
 <h3 id="tlb-coherency-in-numa-systems">4.7.6 TLB Coherency in NUMA
 Systems</h3>
 <p>On NUMA (Non-Uniform Memory Access) systems, TLB coherency becomes
 more complex:</p>
-<p><strong>Challenges:</strong> - CPUs on different NUMA nodes have
-higher IPI latency - Page tables may reside on remote NUMA nodes -
-Memory barriers have different costs across nodes</p>
+<p><strong>Challenges:</strong></p>
+<ul>
+<li>CPUs on different NUMA nodes have higher IPI latency</li>
+<li>Page tables may reside on remote NUMA nodes</li>
+<li>Memory barriers have different costs across nodes</li>
+</ul>
 <p><strong>Optimization: Lazy cross-node shootdown</strong></p>
 <div class="sourceCode" id="cb88"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> shootdown_numa_aware<span class="op">(</span>pte_t <span class="op">*</span>pte<span class="op">,</span> pte_t new_val<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>    cpumask_t <span class="op">*</span>local_cpus<span class="op">,</span> <span class="op">*</span>remote_cpus<span class="op">;</span></span>
@@ -3147,10 +3320,13 @@ gcc (code)         1.2%        0.3%        85%
 average            2.5%        1.1%        72%</code></pre>
 <h4 id="intel-sapphire-rapids-4th-gen-xeon-2023">Intel Sapphire Rapids
 (4th Gen Xeon, 2023)</h4>
-<p><strong>Improvements over Ice Lake:</strong> - Larger L2 STLB: 2048
-entries (vs 1536) - Enhanced PWC: 512 PD entries (vs 256) - Support for
-5-level paging (57-bit virtual addresses) - Improved TLB replacement
-algorithms</p>
+<p><strong>Improvements over Ice Lake:</strong></p>
+<ul>
+<li>Larger L2 STLB: 2048 entries (vs 1536)</li>
+<li>Enhanced PWC: 512 PD entries (vs 256)</li>
+<li>Support for 5-level paging (57-bit virtual addresses)</li>
+<li>Improved TLB replacement algorithms</li>
+</ul>
 <h3 id="amd-zen-4-tlb-architecture-2022">4.8.2 AMD Zen 4 TLB
 Architecture (2022)</h3>
 <p><strong>L1 Data TLB:</strong></p>
@@ -3173,10 +3349,12 @@ Architecture (2022)</h3>
 1GB pages:
   - 96 entries
   - ~7 cycle hit latency</code></pre>
-<p><strong>Key AMD innovations:</strong> - <strong>Unified L2
-TLB:</strong> No separation between instruction and data - <strong>Very
-large L2:</strong> 3072 entries provide excellent coverage -
-<strong>Fully-associative L1:</strong> Eliminates conflict misses</p>
+<p><strong>Key AMD innovations:</strong></p>
+<ul>
+<li><strong>Unified L2 TLB:</strong> No separation between instruction and data</li>
+<li><strong>Very large L2:</strong> 3072 entries provide excellent coverage</li>
+<li><strong>Fully-associative L1:</strong> Eliminates conflict misses</li>
+</ul>
 <p><strong>Performance comparison (normalized to Intel):</strong></p>
 <pre><code>Metric                 Intel Ice Lake    AMD Zen 4
 L1 TLB capacity        192 entries       192 entries
@@ -3202,15 +3380,23 @@ Architecture (2020)</h3>
   - ~6 cycle hit latency
   - Supports all page sizes</code></pre>
 <p><strong>ARM-specific features:</strong></p>
-<p><strong>ASID Support:</strong> - 16-bit ASID in Cortex-A78 (65536
-address spaces) - No TLB flush on context switch - ASID in every TLB
-entry</p>
-<p><strong>VMID Support:</strong> - 16-bit VMID for virtualization -
-Each TLB entry tagged with (ASID, VMID) - Supports many VMs without TLB
-pollution</p>
-<p><strong>Inner/Outer Shareability:</strong> - TLB invalidation can
-target specific shareability domains - Reduces unnecessary TLB
-flushes</p>
+<p><strong>ASID Support:</strong></p>
+<ul>
+<li>16-bit ASID in Cortex-A78 (65536 address spaces)</li>
+<li>No TLB flush on context switch</li>
+<li>ASID in every TLB entry</li>
+</ul>
+<p><strong>VMID Support:</strong></p>
+<ul>
+<li>16-bit VMID for virtualization</li>
+<li>Each TLB entry tagged with (ASID, VMID)</li>
+<li>Supports many VMs without TLB pollution</li>
+</ul>
+<p><strong>Inner/Outer Shareability:</strong></p>
+<ul>
+<li>TLB invalidation can target specific shareability domains</li>
+<li>Reduces unnecessary TLB flushes</li>
+</ul>
 <p><strong>Performance characteristics:</strong></p>
 <pre><code>L1 TLB hit: 1 cycle
 L1 miss, L2 hit: 6 cycles
@@ -3225,21 +3411,33 @@ Implementation: SiFive U74 (2020)</h3>
 Data TLB:
   - 40 entries, fully associative
   - Supports 4KB, 2MB, 1GB pages</code></pre>
-<p><strong>Software-Managed:</strong> - TLB miss generates exception -
-Software walks page tables - Software inserts TLB entry via CSR
-writes</p>
-<p><strong>ASID Support:</strong> - 16-bit ASID in <code>satp</code>
-register (Sv39 mode) - Software can use <code>sfence.vma</code> with
-ASID parameter</p>
+<p><strong>Software-Managed:</strong></p>
+<ul>
+<li>TLB miss generates exception</li>
+<li>Software walks page tables</li>
+<li>Software inserts TLB entry via CSR writes</li>
+</ul>
+<p><strong>ASID Support:</strong></p>
+<ul>
+<li>16-bit ASID in <code>satp</code> register (Sv39 mode)</li>
+<li>Software can use <code>sfence.vma</code> with ASID parameter</li>
+</ul>
 <p><strong>Performance:</strong></p>
 <pre><code>TLB hit: 1 cycle
 TLB miss (software handling): 50-200 cycles depending on handler</code></pre>
 <p><strong>Trade-offs vs Hardware-Managed:</strong></p>
-<p><strong>Advantages:</strong> - Simpler hardware (smaller chip area,
-lower power) - Flexible page table formats - Easy to add custom TLB
-management features</p>
-<p><strong>Disadvantages:</strong> - Higher TLB miss latency (software
-path) - No page walk cache (no hardware walker) - Handler complexity</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Simpler hardware (smaller chip area, lower power)</li>
+<li>Flexible page table formats</li>
+<li>Easy to add custom TLB management features</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Higher TLB miss latency (software path)</li>
+<li>No page walk cache (no hardware walker)</li>
+<li>Handler complexity</li>
+</ul>
 <p><strong>SiFive U74 TLB Miss Handler (typical):</strong></p>
 <p>Optimized assembly code that walks Sv39 page tables takes ~50
 instructions (best case). With instruction cache hits and no data cache
@@ -3262,13 +3460,18 @@ Estimated L2 TLB:
 <pre><code>Estimated L1 TLB:
   - ~48-64 entries
   - Fully associative</code></pre>
-<p><strong>Observations from benchmarks:</strong> - Exceptional TLB
-performance compared to competitors - Very low TLB miss rates even with
-large working sets - Likely very large L2 TLB or advanced
-prefetching</p>
-<p><strong>Apple M3 (2023):</strong> - Estimated further TLB
-improvements - Better handling of mixed page sizes - Enhanced coherency
-for heterogeneous cores</p>
+<p><strong>Observations from benchmarks:</strong></p>
+<ul>
+<li>Exceptional TLB performance compared to competitors</li>
+<li>Very low TLB miss rates even with large working sets</li>
+<li>Likely very large L2 TLB or advanced prefetching</li>
+</ul>
+<p><strong>Apple M3 (2023):</strong></p>
+<ul>
+<li>Estimated further TLB improvements</li>
+<li>Better handling of mixed page sizes</li>
+<li>Enhanced coherency for heterogeneous cores</li>
+</ul>
 <hr />
 <h2 id="section-4.9">4.9
 Alternative Page Table Structures and TLB Implications</h2>
@@ -3386,9 +3589,12 @@ and inverted page tables:</p>
   - Software defines hash function
   - TLB miss handler can use VHPT or traditional tables</code></pre>
 <p><strong>Modern Status:</strong> Largely abandoned in favor of
-hierarchical tables due to: - Hardware page walkers prefer deterministic
-access patterns - Page walk caches optimize hierarchical lookups - Large
-pages benefit hierarchical structures</p>
+hierarchical tables due to:</p>
+<ul>
+<li>Hardware page walkers prefer deterministic access patterns</li>
+<li>Page walk caches optimize hierarchical lookups</li>
+<li>Large pages benefit hierarchical structures</li>
+</ul>
 <h3 id="shadow-page-tables-for-virtualization">4.9.2 Shadow Page Tables
 for Virtualization</h3>
 <p><strong>Context:</strong> Before hardware virtualization support
@@ -3464,9 +3670,12 @@ Implications</h4>
   PFN = Host Physical Frame (not GPA!)
   ASID/PCID = Guest&#39;s process context
   VMID = Which VM</code></pre>
-<p><strong>On VM switch:</strong> - Must flush all TLB entries for old
-VM - Shadow page tables remain but TLB is cold - New VM starts with
-empty TLB</p>
+<p><strong>On VM switch:</strong></p>
+<ul>
+<li>Must flush all TLB entries for old VM</li>
+<li>Shadow page tables remain but TLB is cold</li>
+<li>New VM starts with empty TLB</li>
+</ul>
 <p><strong>Memory overhead:</strong></p>
 <pre><code>Shadow PT per guest:
   Same size as guest&#39;s page tables
@@ -3505,8 +3714,12 @@ Variations</h3>
 <h4 id="clustered-page-tables">Clustered Page Tables</h4>
 <p><strong>Concept:</strong> Group multiple consecutive page table
 entries into clusters.</p>
-<p><strong>Benefits:</strong> - Reduce page table memory overhead -
-Improve spatial locality - TLB can cache cluster info</p>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Reduce page table memory overhead</li>
+<li>Improve spatial locality</li>
+<li>TLB can cache cluster info</li>
+</ul>
 <p><strong>Usage:</strong> Some embedded systems and research OSes.</p>
 <h4 id="multi-level-tlbs-with-different-organizations">Multi-Level TLBs
 with Different Organizations</h4>
@@ -3561,10 +3774,12 @@ buffer</li>
 Handling</h3>
 <h4 id="x86-64-hardware-coherency-mostly">x86-64: Hardware Coherency
 (Mostly)</h4>
-<p><strong>x86 guarantees:</strong> - Data cache is write-through or
-write-back with snooping - Self-modifying code detected via
-store-to-instruction checks - <strong>But:</strong> Explicit
-serialization still required for correctness</p>
+<p><strong>x86 guarantees:</strong></p>
+<ul>
+<li>Data cache is write-through or write-back with snooping</li>
+<li>Self-modifying code detected via store-to-instruction checks</li>
+<li><strong>But:</strong> Explicit serialization still required for correctness</li>
+</ul>
 <p><strong>Required sequence:</strong></p>
 <pre class="assembly"><code>; Write new instruction
 mov [rdi], eax        ; Store new instruction
@@ -3856,9 +4071,11 @@ class="sourceCode c"><code class="sourceCode c"><span id="cb145-1"><a href="#cb1
 <span id="cb145-10"><a href="#cb145-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Without this, CPU might use cached writable permission</span></span>
 <span id="cb145-11"><a href="#cb145-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p><strong>Apple M1 W^X hardware enforcement:</strong></p>
-<p>Apple Silicon enforces W^X at hardware level: - Attempting to set W+X
-bits in page table triggers fault - JIT must use dual-mapping
-technique</p>
+<p>Apple Silicon enforces W^X at hardware level:</p>
+<ul>
+<li>Attempting to set W+X bits in page table triggers fault</li>
+<li>JIT must use dual-mapping technique</li>
+</ul>
 <hr />
 <h2 id="section-4.11">4.11 Multithreading and TLB
 Sharing</h2>
@@ -3868,13 +4085,22 @@ core. Understanding how TLBs are shared (or not shared) between threads
 is critical for performance.</p>
 <h3 id="smt-architectures-intel-hyperthreading-and-amd-smt">4.11.1 SMT
 Architectures: Intel Hyperthreading and AMD SMT</h3>
-<p><strong>Intel Hyperthreading (2-way SMT):</strong> - 2 logical
-processors per physical core - Share: L1/L2 caches, TLBs, execution
-units - Private: Architectural registers, instruction pointer</p>
-<p><strong>AMD SMT (2-way):</strong> - Similar to Intel - 2 threads per
-core</p>
-<p><strong>IBM POWER9 (8-way SMT):</strong> - 8 hardware threads per
-core! - More complex resource sharing</p>
+<p><strong>Intel Hyperthreading (2-way SMT):</strong></p>
+<ul>
+<li>2 logical processors per physical core</li>
+<li>Share: L1/L2 caches, TLBs, execution units</li>
+<li>Private: Architectural registers, instruction pointer</li>
+</ul>
+<p><strong>AMD SMT (2-way):</strong></p>
+<ul>
+<li>Similar to Intel</li>
+<li>2 threads per core</li>
+</ul>
+<p><strong>IBM POWER9 (8-way SMT):</strong></p>
+<ul>
+<li>8 hardware threads per core!</li>
+<li>More complex resource sharing</li>
+</ul>
 <h3 id="tlb-partitioning-strategies">4.11.2 TLB Partitioning
 Strategies</h3>
 <p><strong>Three approaches to TLB sharing:</strong></p>
@@ -3885,11 +4111,16 @@ AMD approach)</h4>
   L1 ITLB: 128 entries (shared by Thread 0 and Thread 1)
   L1 DTLB: 64 entries (shared by Thread 0 and Thread 1)
   L2 STLB: 1536 entries (shared)</code></pre>
-<p><strong>Advantages:</strong> - Maximum TLB capacity utilization - One
-thread can use all entries if other thread idle</p>
-<p><strong>Disadvantages:</strong> - <strong>TLB contention:</strong>
-Threads thrash each other's entries - <strong>Security:</strong> Thread
-0 can observe Thread 1's TLB timing</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>Maximum TLB capacity utilization</li>
+<li>One thread can use all entries if other thread idle</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li><strong>TLB contention:</strong> Threads thrash each other's entries</li>
+<li><strong>Security:</strong> Thread 0 can observe Thread 1's TLB timing</li>
+</ul>
 <p><strong>Example conflict:</strong></p>
 <pre><code>Thread 0: Accesses pages 0-127 (fills ITLB)
 Thread 1: Accesses pages 200-327 (evicts Thread 0&#39;s entries)
@@ -3900,10 +4131,17 @@ Result: Thrashing, performance degradation</code></pre>
 <pre><code>L1 DTLB (64 entries):
   Thread 0: Entries 0-31 (32 entries)
   Thread 1: Entries 32-63 (32 entries)</code></pre>
-<p><strong>Advantages:</strong> - No thrashing - Predictable performance
-- Better security (isolation)</p>
-<p><strong>Disadvantages:</strong> - Underutilization if one thread idle
-- Fixed partitioning may not match workload needs</p>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li>No thrashing</li>
+<li>Predictable performance</li>
+<li>Better security (isolation)</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li>Underutilization if one thread idle</li>
+<li>Fixed partitioning may not match workload needs</li>
+</ul>
 <p><strong>Implementation: Tag entries with thread ID:</strong></p>
 <pre><code>TLB Entry:
   VPN: 36 bits
@@ -4002,16 +4240,23 @@ SMT on TLB</h3>
 2 threads (SMT)        1.8              3.6          4.8%
                        ↑                 ↑            ↑
                        Lower per-thread  Higher total TLB thrashing</code></pre>
-<p><strong>TLB contention increases miss rate:</strong> - Single thread:
-2.1% DTLB miss rate - Two threads (SMT): 4.8% DTLB miss rate per thread
-(2.3× worse)</p>
-<p><strong>When SMT helps despite TLB contention:</strong> - Threads
-have different workloads (one CPU-bound, one memory-bound) - Hides
-memory latency (while one thread waits on cache miss, other runs) -
-Total throughput improves even if individual thread slower</p>
-<p><strong>When SMT hurts:</strong> - Both threads memory-intensive with
-large working sets - TLB thrashing dominates performance - Better to
-disable SMT and run threads on separate cores</p>
+<p><strong>TLB contention increases miss rate:</strong></p>
+<ul>
+<li>Single thread: 2.1% DTLB miss rate</li>
+<li>Two threads (SMT): 4.8% DTLB miss rate per thread (2.3× worse)</li>
+</ul>
+<p><strong>When SMT helps despite TLB contention:</strong></p>
+<ul>
+<li>Threads have different workloads (one CPU-bound, one memory-bound)</li>
+<li>Hides memory latency (while one thread waits on cache miss, other runs)</li>
+<li>Total throughput improves even if individual thread slower</li>
+</ul>
+<p><strong>When SMT hurts:</strong></p>
+<ul>
+<li>Both threads memory-intensive with large working sets</li>
+<li>TLB thrashing dominates performance</li>
+<li>Better to disable SMT and run threads on separate cores</li>
+</ul>
 <hr />
 <h2 id="section-4.12">4.12 Virtualization
 with Mismatched Page Sizes</h2>
@@ -4194,8 +4439,12 @@ their own Memory Management Units with unique requirements and design
 trade-offs compared to CPU MMUs.</p>
 <h3 id="why-gpus-need-mmus">4.13.1 Why GPUs Need MMUs</h3>
 <p><strong>Traditional approach (pre-2010):</strong> GPU access only
-pinned physical memory - OS pins memory pages (prevents swapping) - GPU
-uses physical addresses directly - Simple but inflexible</p>
+pinned physical memory</p>
+<ul>
+<li>OS pins memory pages (prevents swapping)</li>
+<li>GPU uses physical addresses directly</li>
+<li>Simple but inflexible</li>
+</ul>
 
 <figure id="fig-4-8" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
@@ -4285,12 +4534,20 @@ uses physical addresses directly - Simple but inflexible</p>
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 4.8:</strong> GPU MMU architecture versus CPU TLB. CPUs use per-core, fully-coherent hardware-managed TLBs with ASID isolation. GPU MMUs use a shared two-level hierarchy (per-SM L1 + shared L2) with hardware broadcast shootdown via NVSwitch, but a TLB miss incurs a full PCIe page fault at 25× CPU miss latency.</figcaption>
 </figure>
 
-<p><strong>Problems:</strong> - Limits memory oversubscription -
-Complicates CPU-GPU data sharing - Requires complex buffer management -
-Can't support virtual memory per-process</p>
-<p><strong>Modern approach:</strong> GPU has full MMU - GPU uses virtual
-addresses - Supports page faults - Enables unified virtual addressing -
-Allows memory overcommit</p>
+<p><strong>Problems:</strong></p>
+<ul>
+<li>Limits memory oversubscription</li>
+<li>Complicates CPU-GPU data sharing</li>
+<li>Requires complex buffer management</li>
+<li>Can't support virtual memory per-process</li>
+</ul>
+<p><strong>Modern approach:</strong> GPU has full MMU</p>
+<ul>
+<li>GPU uses virtual addresses</li>
+<li>Supports page faults</li>
+<li>Enables unified virtual addressing</li>
+<li>Allows memory overcommit</li>
+</ul>
 <h3 id="nvidia-gpu-mmu-architecture">4.13.2 NVIDIA GPU MMU
 Architecture</h3>
 <p><strong>NVIDIA Pascal/Volta/Ampere architecture:</strong></p>
