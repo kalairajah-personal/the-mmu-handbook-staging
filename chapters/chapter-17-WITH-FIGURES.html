@@ -583,6 +583,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
   <style>
 
@@ -1709,7 +1721,11 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 <li id="ref-sifive-2021"><p>SiFive Inc. (2021). <em>SiFive U74 Core Complex Manual</em>. Chapter 7: Memory Management Unit. <a class="ref-link" href="https://www.sifive.com/documentation">https://www.sifive.com/documentation</a></p></li>
 <li id="ref-yaniv-2016"><p>Yaniv, I., and Tsafrir, D. (2016). Hash, don't cache (the page table). <em>Proceedings of the 2016 ACM SIGMETRICS International Conference on Measurement and Modeling of Computer Science</em>, 337–350. <a class="ref-link" href="https://doi.org/10.1145/2901318.2901333">https://doi.org/10.1145/2901318.2901333</a></p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-16-WITH-FIGURES.html" rel="prev">&larr; Chapter 16: Advanced TLB Optimization Techniques</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-18-WITH-FIGURES.html" rel="next">Chapter 18: MMU-Level Vulnerabilities: Spectre, Meltdown, and Paging Exploits &rarr;</a>
+</nav>
 <script>
 (function() {
 var CHAPTERS = [

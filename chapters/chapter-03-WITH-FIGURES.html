@@ -584,6 +584,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
 <style>
 
@@ -5389,7 +5401,11 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 <li id="ref-rosenblum-1995"><p>Rosenblum, M. et al. "Complete computer system simulation: The SimOS approach." <em>IEEE Parallel &amp; Distributed Technology</em>, 3(4):34–43, 1995.
     <a class="ref-link" href="https://doi.org/10.1109/88.386348" target="_blank" rel="noopener">DOI: 10.1109/88.386348</a></p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-02-WITH-FIGURES.html" rel="prev">&larr; Chapter 2: Virtual Memory Concepts</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-04-WITH-FIGURES.html" rel="next">Chapter 4: Translation Lookaside Buffer (TLB) - Deep Dive &rarr;</a>
+</nav>
 <script>
 
 

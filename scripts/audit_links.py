@@ -8,6 +8,7 @@
   G12e  ledger entry/alias points at a reference that does not exist    ERROR
   G12f  TOC has one expand/collapse toggle and matches h2/h3 order             ERROR
   G12g  link_refs.py / build_toc.py would change the file (not idempotent / not applied)  ERROR
+  G12h  build_footer.py would change the file (footer missing, stale, or ad-hoc footer)  ERROR
 
 Usage: python3 scripts/audit_links.py [--strict] [chapters/]
 """
@@ -19,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import reflib as R
 import link_refs as L
 import build_toc as T
+import build_footer as F
 
 REPO = Path(__file__).resolve().parent.parent
 
@@ -69,6 +71,8 @@ def audit(path, entries, aliases, strict=False, missing=()):
     try:
         if T.process(page) != page:
             errs.append('G12g build_toc.py would change this file')
+        if F.process(page, int(ch)) != page:
+            errs.append('G12h build_footer.py would change this file (chapter footer missing/stale)')
         if L.process(page, ch, entries, aliases) != page:
             errs.append('G12g link_refs.py would change this file')
     except ValueError as x:

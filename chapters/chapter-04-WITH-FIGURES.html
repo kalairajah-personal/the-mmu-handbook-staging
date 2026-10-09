@@ -586,6 +586,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
 <style>
 
@@ -5027,7 +5039,11 @@ optimizations]</p></li>
 <li id="ref-intel-2023c"><p>Intel Corporation. <em>Intel Data Center GPU Flex Series Product Brief</em>. 2023.
     <a class="ref-link" href="https://www.intel.com/content/www/us/en/products/docs/discrete-gpus/data-center-gpu/flex-series/overview.html" target="_blank" rel="noopener">intel.com/data-center-gpu-flex</a></p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-03-WITH-FIGURES.html" rel="prev">&larr; Chapter 3: Page Table Structures and Implementation</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-05-WITH-FIGURES.html" rel="next">Chapter 5: IOMMU and DMA Remapping - Deep Dive &rarr;</a>
+</nav>
 <script>
 
 

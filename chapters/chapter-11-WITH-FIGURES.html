@@ -585,6 +585,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
 <style>
 
@@ -5276,6 +5288,19 @@ class="sourceCode swift"><code class="sourceCode swift"><span id="cb182-1"><a hr
 <p>The practical lessons from this chapter apply directly to production AI/ML deployments: always prefetch with <code>cudaMemPrefetchAsync</code> before training loops, configure huge pages for large models, understand the TLB coherency overhead of multi-chiplet architectures, and select the memory management model that matches your workload's access pattern—static allocation for predictable matrix workloads, UVM with careful prefetching for dynamic models.</p>
 
 <hr />
+<p>This chapter explored virtual memory management across the spectrum
+of AI/ML accelerators, from Google's TPU (which eliminates the MMU
+entirely) to NVIDIA and AMD GPUs (which implement full MMU
+functionality) to hybrid approaches like Intel Habana (selective virtual
+memory). The key insight: virtual memory trades flexibility for
+overhead, and that trade-off shifts dramatically with workload
+characteristics. For predictable inference workloads, Google's no-MMU
+approach delivers 10-20% efficiency gains. For general-purpose training
+across variable batch sizes and model architectures, full virtual memory
+becomes mandatory despite its costs. The optimal design point depends on
+workload predictability, model size, and multi-device scaling
+requirements—there is no universal best answer, only carefully
+considered trade-offs.</p>
 <h2 id="references">References</h2>
 <h3 id="gpu-mmu-architecture-and-virtual-memory">GPU MMU Architecture
 and Virtual Memory</h3>
@@ -5408,20 +5433,11 @@ specifications] <a class="ref-link" href="https://www.jedec.org/standards-docume
 <li id="ref-pcisig-2022"><p>PCI-SIG. "PCI Express Base Specification Revision 6.0." 2022.
 [PCIe specifications and Address Translation Services] <a class="ref-link ref-link--search" href="https://scholar.google.com/scholar?q=PCI+Express+Base+Specification+Revision+6+0">[search]</a></p></li>
 </ol>
-<hr />
-<p>This chapter explored virtual memory management across the spectrum
-of AI/ML accelerators, from Google's TPU (which eliminates the MMU
-entirely) to NVIDIA and AMD GPUs (which implement full MMU
-functionality) to hybrid approaches like Intel Habana (selective virtual
-memory). The key insight: virtual memory trades flexibility for
-overhead, and that trade-off shifts dramatically with workload
-characteristics. For predictable inference workloads, Google's no-MMU
-approach delivers 10-20% efficiency gains. For general-purpose training
-across variable batch sizes and model architectures, full virtual memory
-becomes mandatory despite its costs. The optimal design point depends on
-workload predictability, model size, and multi-device scaling
-requirements—there is no universal best answer, only carefully
-considered trade-offs.</p>
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-10-WITH-FIGURES.html" rel="prev">&larr; Chapter 10: Hardware Accelerators and External MMU Access</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-12-WITH-FIGURES.html" rel="next">Chapter 12: When MMU Architecture Breaks - AI at Scale &rarr;</a>
+</nav>
 </div><!-- container -->
 <script>
 

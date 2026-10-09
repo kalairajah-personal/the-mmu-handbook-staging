@@ -583,6 +583,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
   <style>
 
@@ -4893,6 +4905,10 @@ Best of all approaches, selected automatically based on access pattern!
 <li id="ref-norman-2023"><p>Norman Jouppi et al., "TPU v4: Optically Reconfigurable Supercomputer," ISCA 2023 (discussed in Chapter 11.2).</p></li>
 <li id="ref-xulong-2024"><p>Xulong Tang et al., "GRIT: Scalable TLB Management for Multi-GPU Systems," HPCA 2024 (detailed in Chapter 12.2).</p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-14-WITH-FIGURES.html" rel="prev">&larr; Chapter 14: Software-Managed Memory for AI Workloads</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-16-WITH-FIGURES.html" rel="next">Chapter 16: Advanced TLB Optimization Techniques &rarr;</a>
+</nav>
 </body>
 </html>

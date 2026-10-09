@@ -585,6 +585,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
 <style>
 
@@ -1141,7 +1153,11 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 <li id="ref-microsoft-2019"><p>Microsoft Security Response Center. (2019). A Proactive Approach to More Secure Code. <em>MSRC Blog</em>. msrc.microsoft.com/blog/2019/07. [~70% CVE figure for memory safety] <a class="ref-link" href="https://www.microsoft.com/en-us/msrc/blog/2019/07/a-proactive-approach-to-more-secure-code">https://www.microsoft.com/en-us/msrc/blog/2019/07/a-proactive-approach-to-more-secure-code</a></p></li>
 <li id="ref-cisa-2023"><p>CISA. (2023). The Urgent Need for Memory Safety in Software Products. cisa.gov. [Joint advisory with NSA, NCSC-UK citing 70% figures and recommending hardware enforcement] <a class="ref-link" href="https://www.cisa.gov/news-events/news/urgent-need-memory-safety-software-products">https://www.cisa.gov/news-events/news/urgent-need-memory-safety-software-products</a></p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-20-WITH-FIGURES.html" rel="prev">&larr; Chapter 20: Confidential Computing and the Untrusted Hypervisor</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-22-WITH-FIGURES.html" rel="next">Chapter 22: Linux HMM and Shared Virtual Addressing — Kernel Coordination for CPU–GPU–NPU Memory &rarr;</a>
+</nav>
 <script>
 
 

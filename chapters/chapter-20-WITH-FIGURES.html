@@ -585,6 +585,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
 <style>
 
@@ -1155,7 +1167,11 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 <li id="ref-mccoyd-2023"><p>McCoyd, M., Kaur, G., and Sadeghi, A.-R. "Attestation Chains for Confidential Cloud Computing." In <em>Proceedings of the 19th Workshop on Hot Topics in Operating Systems (HotOS '23).</em> ACM, 2023.</p></li>
 <li id="ref-shen-2024"><p>Shen, Y., Tian, Y., Chen, H., and Narayanan, D. "DejaVu: Oblivious Guest Execution for Confidential Virtual Machines." In <em>Proceedings of the 29th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '24).</em> ACM, 2024.</p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-19-WITH-FIGURES.html" rel="prev">&larr; Chapter 19: CXL and the Disaggregated Address Space</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-21-WITH-FIGURES.html" rel="next">Chapter 21: Hardware Memory Safety — CHERI, MTE, and Capability-Based Addressing &rarr;</a>
+</nav>
 <script>
 
 

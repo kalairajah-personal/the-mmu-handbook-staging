@@ -584,6 +584,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
   <style>
 
@@ -1608,7 +1620,11 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 <li id="ref-linux-2023a"><p>Linux Kernel Documentation. (2023). Spectre Side Channel Mitigation for x86 Processors. <a class="ref-link" href="https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/spectre.html">https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/spectre.html</a></p></li>
 <li id="ref-linux-2023b"><p>Linux Kernel Documentation. (2023). MDS — Microarchitectural Data Sampling. <a class="ref-link" href="https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html">https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html</a></p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-17-WITH-FIGURES.html" rel="prev">&larr; Chapter 17: Page Table Walker Microarchitecture</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-19-WITH-FIGURES.html" rel="next">Chapter 19: CXL and the Disaggregated Address Space &rarr;</a>
+</nav>
 <script>
 
 (function() {

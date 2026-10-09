@@ -583,6 +583,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
     <style>
 
@@ -8321,6 +8333,10 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb189-1"><a href
     <a class="ref-link" href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">DOI: 10.1002/cpe.4061</a></p></li>
 <li id="ref-vesely-2015"><p>Vesely, J., Basu, A., Oskin, M., Loh, G. H., Bhattacharjee, A., Tuck, J., and Ceze, L. "Observation and exploitation of narrow width loads in high-performance processors." <em>Proceedings of the 21st International Symposium on High Performance Computer Architecture (HPCA)</em>, 2015. <a class="ref-link ref-link--search" href="https://scholar.google.com/scholar?q=Observation+and+exploitation+of+narrow+width+loads+in+high-performance+processors">[search]</a></p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-06-WITH-FIGURES.html" rel="prev">&larr; Chapter 6: Memory Protection and Access Control</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+<a class="chapter-nav-next" href="chapter-08-WITH-FIGURES.html" rel="next">Chapter 8: Advanced MMU Topics - System Integration and Optimization &rarr;</a>
+</nav>
 </body>
 </html>

@@ -103,7 +103,8 @@ def test_audit(tmp_path):
     f.write_text(PAGE)
     errs, _ = A.audit(f, {}, {})
     assert any(e.startswith('G12c') for e in errs) and any(e.startswith('G12f') for e in errs)
-    f.write_text(T.process(L.process(PAGE, '02', {}, {'ch02:Nobody,1999': 'ref-intel-2022'})))
+    pg = PAGE.replace('<script>var CHAPTERS=[];</script>', '<script>' + CH + '</script>')
+    f.write_text(F.process(T.process(L.process(pg, '02', {}, {'ch02:Nobody,1999': 'ref-intel-2022'})), 2))
     errs, warns = A.audit(f, {}, {'ch02:Nobody,1999': 'ref-intel-2022'})
     assert errs == []
     assert any('ref-belady-1966' in w for w in warns)
@@ -118,3 +119,25 @@ def test_ledger_change_replaces_appended_link():
     gone = L.link_refs(twice, '02', {'ch02:belady-1966': {'status': 'none'}}, L.new_stats())
     assert 'sj.52.0078' not in gone
     assert L.link_refs(twice, '02', {'ch02:belady-1966': {'status': 'verified', 'doi': '10.1147/sj.52.0078'}}, L.new_stats()) == twice
+
+
+import build_footer as F
+
+CH = 'var CHAPTERS = [{"num": 1, "file": "chapter-01-WITH-FIGURES.html", "short": "One"}, {"num": 2, "file": "chapter-02-WITH-FIGURES.html", "short": "Two"}, {"num": 3, "file": "chapter-03-WITH-FIGURES.html", "short": "Three"}];'
+
+
+def test_footer_replaces_next_chapter_and_moves_prose():
+    p = PAGE.replace('</ol>\n<script>var CHAPTERS=[];</script>',
+                     '</ol>\n<hr />\n<p>Closing prose.</p>\n<hr />\n<p><em>Next Chapter: X.</em></p>\n\n<script>' + CH + '</script>')
+    out = F.process(p, 2)
+    assert 'Next Chapter: X' not in out
+    assert '<p>Closing prose.</p>\n<h2 id="references">' in out
+    assert '&larr; Chapter 1: One' in out and 'Chapter 3: Three &rarr;' in out and '../index.html' in out
+    assert F.process(out, 2) == out
+
+
+def test_footer_ends():
+    p = PAGE.replace('<script>var CHAPTERS=[];</script>', '<script>' + CH + '</script>')
+    first, last = F.process(p, 1), F.process(p, 3)
+    assert 'chapter-nav-prev' not in first and 'chapter-nav-next' in first
+    assert 'chapter-nav-next' not in last and 'chapter-nav-prev' in last

@@ -585,6 +585,18 @@ li[id^="ref-"] { scroll-margin-top: 1.5em; }
 li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
 a.ref-link { word-break: break-all; }
 a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
+
+/* ── Chapter footer: prev · Contents · next (build_footer.py) ── */
+nav.chapter-nav {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75em 1.5em;
+  margin: 3em 0 1em; padding-top: 1.2em; border-top: 1px solid #d8dee9; font-size: 0.95em;
+}
+nav.chapter-nav a { text-decoration: none; color: #5E81AC; }
+nav.chapter-nav a:hover { text-decoration: underline; }
+nav.chapter-nav .chapter-nav-prev { flex: 1 1 0; min-width: 0; }
+nav.chapter-nav .chapter-nav-home { flex: 0 0 auto; font-weight: 600; }
+nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right; }
+@media print { nav.chapter-nav { display: none; } }
 </style>
 <style>
 
@@ -1138,7 +1150,10 @@ again:
 <li id="ref-vesely-2016"><p>J. Vesely, A. Basu, M. Oskin, G. H. Loh, and A. Bhattacharjee, “Observations and opportunities in architecting shared virtual memory for heterogeneous systems,” in <em>Proc. IEEE Int. Symp. Performance Analysis of Systems and Software (ISPASS)</em>, 2016, pp. 161–171. <a class="ref-link" href="https://doi.org/10.1109/ISPASS.2016.7482091">doi:10.1109/ISPASS.2016.7482091</a></p></li>
 <li id="ref-wahlgren-2025"><p>J. Wahlgren, G. Schieffer, R. Shi, E. A. León, R. Pearce, M. Gokhale, and I. Peng, “Dissecting CPU-GPU unified physical memory on AMD MI300A APUs,” preprint, arXiv:2508.12743, 2025. <a class="ref-link" href="https://doi.org/10.1109/IISWC66894.2025.00038">doi:10.1109/IISWC66894.2025.00038</a></p></li>
 </ol>
-
+<nav class="chapter-nav" aria-label="Chapter navigation">
+<a class="chapter-nav-prev" href="chapter-21-WITH-FIGURES.html" rel="prev">&larr; Chapter 21: Hardware Memory Safety — CHERI, MTE, and Capability-Based Addressing</a>
+<a class="chapter-nav-home" href="../index.html">Contents</a>
+</nav>
 <script>
 
 
