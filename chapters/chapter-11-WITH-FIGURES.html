@@ -2273,6 +2273,7 @@ processing on one device, then transfer to the other.</p>
 <p>Use <code>nvidia-smi --query-gpu=page_fault --format=csv</code> to
 monitor fault rates. If faults &gt;1,000/sec, investigate. High fault
 rates indicate misconfiguration.</p>
+<p><strong>Kernel coordination:</strong> The Linux kernel frameworks that let a device use ordinary process memory — HMM page-table mirroring, device-private migration, and Shared Virtual Addressing — and the system-allocated memory model they support are covered in Chapter 22.</p>
 <p>Next, we'll examine what happens when page faults occur not just on
 one GPU, but across 1,000 GPUs simultaneously—requiring coordination of
 TLB invalidations at a scale that naive approaches cannot handle. ##
@@ -6410,6 +6411,65 @@ considered trade-offs.</p>
             {
                 "text": "21.10 Chapter Summary",
                 "id": "section-21.10"
+            }
+        ]
+    },
+    {
+        "num": 22,
+        "file": "chapter-22-WITH-FIGURES.html",
+        "short": "Linux HMM and Shared Virtual Addressing — Kernel Coordination for CPU–GPU–NPU Memory",
+        "sections": [
+            {
+                "text": "22.1 Introduction: One Address Space, Many Translators",
+                "id": "section-22.1"
+            },
+            {
+                "text": "22.2 Copy, Managed, and System-Allocated Models",
+                "id": "section-22.2"
+            },
+            {
+                "text": "22.3 HMM Page-Table Mirroring",
+                "id": "section-22.3"
+            },
+            {
+                "text": "22.4 Device-Private Memory Migration",
+                "id": "section-22.4"
+            },
+            {
+                "text": "22.5 Linux SVA Binding",
+                "id": "section-22.5"
+            },
+            {
+                "text": "22.6 Two End-to-End Fault Traces",
+                "id": "section-22.6"
+            },
+            {
+                "text": "22.7 Invalidation Lifecycle",
+                "id": "section-22.7"
+            },
+            {
+                "text": "22.8 Grace Hopper and MI300A",
+                "id": "section-22.8"
+            },
+            {
+                "text": "22.9 Coherent Fabrics and NPUs",
+                "id": "section-22.9"
+            },
+            {
+                "text": "22.10 Isolation and Failure Modes",
+                "id": "section-22.10"
+            },
+            {
+                "text": "22.11 Production Performance",
+                "id": "section-22.11"
+            },
+            {
+                "text": "22.12 Chapter Summary",
+                "id": "section-22.12"
+            },
+            {
+                "text": "References",
+                "id": "references"
             }
         ]
     }

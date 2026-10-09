@@ -1,0 +1,18 @@
+{
+  "_comment": "Single source of truth for SVG figure colours. Roles from live-chapter extraction 2026-10-07 (d4556d4). book-imagegen reads this; scripts/audit_factual.py G6p checks against it.",
+  "primary": "#5E81AC",
+  "teal": "#4A8A99",
+  "accent": "#BF616A",
+  "dark": "#34495E",
+  "text": "#212121",
+  "text-secondary": "#616161",
+  "text-on-dark": "#FFFFFF",
+  "border": "#9E9E9E",
+  "background": "#F5F5F5",
+  "panel": "#FAFAFA",
+  "rule": "#E0E0E0",
+  "tint-primary": "#DDEAF5",
+  "tint-primary-light": "#EAF2F8",
+  "tint-teal": "#CCE8EC",
+  "tint-accent": "#F0D9D9"
+}

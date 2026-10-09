@@ -41,8 +41,9 @@ All diagrams are inline SVG — fully scalable, print-ready, and self-contained 
 | [19](chapters/chapter-19-WITH-FIGURES.html) | CXL and the Disaggregated Address Space | 13 | 198 KB |
 | [20](chapters/chapter-20-WITH-FIGURES.html) | Confidential Computing and the Untrusted Hypervisor | 8 | 125 KB |
 | [21](chapters/chapter-21-WITH-FIGURES.html) | Hardware Memory Safety — CHERI, MTE, and Capability-Based Addressing | 8 | 127 KB |
+| [22](chapters/chapter-22-WITH-FIGURES.html) | Linux HMM and Shared Virtual Addressing — Kernel Coordination for CPU–GPU–NPU Memory | 9 | 198 KB |
 
-**Total: 224 embedded SVG figures across 21 chapters (~5.0 MB)**
+**Total: 233 embedded SVG figures across 22 chapters (~5.2 MB)**
 
 ---
 
@@ -111,6 +112,9 @@ The structural vulnerability of conventional virtualisation: how a compromised V
 **Chapter 21 — Hardware Memory Safety: CHERI, MTE, and Capability-Based Addressing**
 The memory safety gap the MMU cannot close: within a single page, pointer overflows and use-after-free vulnerabilities are invisible to page-granularity enforcement, accounting for ~70% of CVEs at Microsoft and Google. Memory tagging (SPARC ADI 2015, ARM MTE ARMv8.5-A 2019, Pixel 8 production 2023, AmpereOne 2024): 4-bit lock per 16-byte granule, pointer key in bits [59:56] via Top Byte Ignore, 1–3% ASYNC overhead, TikTag speculative bypass (arXiv:2406.08719). CHERI capabilities (SRI International/Cambridge): 128-bit fat pointer with unforgeable validity tag in cache-line SRAM, exact bounds via CHERI Concentrate compression, permissions bitmask, check in CPU execute stage before MMU translation. Arm Morello (2022): first high-performance CHERI silicon, 2–10% hybrid overhead, 10–50% purecap. CHERIoT (MICRO 2023): complete memory safety for embedded cores at 7–15% area overhead. Temporal safety: CHERIvoke pointer revocation, Cornucopia lazy sweeping (<1%). Intel MPX (Skylake 2015–2019): the cautionary tale of hardware bounds checking done wrong.
 
+**Chapter 22 — Linux HMM and Shared Virtual Addressing: Kernel Coordination for CPU–GPU–NPU Memory**
+The kernel layer that keeps CPU page tables, CPU TLBs, IOMMU translation caches, device ATCs, and device-local TLBs consistent when devices use process memory. Three programming models (copy, managed, system-allocated) and who owns each translation. HMM page-table mirroring: `mmu_interval_notifier`, sequence-count retry, `hmm_range_fault()` (Linux v7.2.9) and `hmm_range_fault_unlocked_timeout()` (v7.3). Device-private migration with `migrate_vma_setup/pages/finalize`, `MMU_NOTIFY_MIGRATE`, and `make_device_exclusive()`. Linux SVA: process-wide PASID, `iommu_sva_bind_device()`, the I/O page-fault path, Intel `ENQCMD`. Separate HMM and SVA fault traces; invalidation lifecycle across Intel VT-d, AMD IOMMU, Arm SMMUv3, and RISC-V IOMMU, including IOMMU-before-ATC ordering. Grace Hopper (ICPP 2024 measurements) and MI300A (ISCA 2024); in-tree NPU evidence (AMD XDNA). Failure modes: untrusted-device ATS, PASID lifetime, invalidation timeouts.
+
 ---
 
 ## Architecture Coverage
@@ -126,11 +130,11 @@ The memory safety gap the MMU cannot close: within a single page, pointer overfl
 
 ## Reading Guide
 
-**Systems / OS developers** → Chapters 1–9 form a complete foundation. Chapter 19 extends this to CXL-attached memory and disaggregated address spaces.
+**Systems / OS developers** → Chapters 1–9 form a complete foundation. Chapter 19 extends this to CXL-attached memory and disaggregated address spaces. Chapter 22 covers kernel coordination of CPU and device translations (HMM and SVA).
 
 **Hardware architects** → Chapters 4, 5, 10, 15, 16, 17, 18 cover translation hardware, IOMMUs, advanced TLB design, PTW microarchitecture, and paging-level security vulnerabilities in depth. Chapter 19 covers CXL disaggregation.
 
-**AI/ML infrastructure engineers** → Chapters 11–14 directly address GPU/accelerator memory challenges. Chapter 20 covers confidential computing for AI workloads including GPU TEEs and H100 CC.
+**AI/ML infrastructure engineers** → Chapters 11–14 directly address GPU/accelerator memory challenges. Chapter 20 covers confidential computing for AI workloads including GPU TEEs and H100 CC. Chapter 22 covers HMM, SVA, and system-allocated memory on Grace Hopper and MI300A.
 
 **Security researchers** → Chapter 6 covers the full protection model; Chapters 5 and 12 cover isolation at device and multi-tenant GPU scale; Chapter 18 covers Meltdown, Spectre, L1TF/Foreshadow, MDS, and KPTI in full depth (CVE-2017-5754, CVE-2017-5753/5715, CVE-2018-3615/3620/3646, CVE-2018-12126/12127/12130); Chapter 20 covers confidential computing — TDX, SEV-SNP, ARM CCA, and GPU TEEs; Chapter 21 covers hardware memory safety — CHERI, ARM MTE, and capability-based addressing.
 
