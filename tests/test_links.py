@@ -141,3 +141,12 @@ def test_footer_ends():
     first, last = F.process(p, 1), F.process(p, 3)
     assert 'chapter-nav-prev' not in first and 'chapter-nav-next' in first
     assert 'chapter-nav-next' not in last and 'chapter-nav-prev' in last
+
+
+def test_etal_and_venue_mentions_linked_without_text_change():
+    p = PAGE.replace('Unknown [Nobody, 1999].', 'As Van Bulck et al. showed at USENIX, and Allen et al. at SC21. Kim et al. (2014) again.')
+    out = L.process(p, '02', {}, {'ch02:Nobody,1999': 'ref-intel-2022'})
+    assert '<a class="cite" href="#ref-vanbulck-2018">Van Bulck et al.</a>' in out
+    assert '<a class="cite" href="#ref-allen-2021">Allen et al.</a>' in out
+    assert 'Kim et al. (2014)' in out  # no ref for Kim in fixture: untouched
+    assert L.process(out, '02', {}, {'ch02:Nobody,1999': 'ref-intel-2022'}) == out

@@ -1546,7 +1546,7 @@ Clearly, the serial protocol doesn't scale beyond 1,024 GPUs. This motivated dir
 
 <p>GRIT has been cited 47 times (as of Feb 2026), with major follow-on work:</p>
 
-<p>1. <strong>IDYLL (MICRO 2023):</strong> Directory-based coherence (18× speedup over GRIT baseline) 2. <strong>ecoTLB (ASPLOS 2024):</strong> Eventual consistency (8× speedup, but correctness issues) 3. <strong>Hardware vendors:</strong> NVSwitch 3.0 implements hardware broadcast (claimed 25× speedup)</p>
+<p>1. <strong>IDYLL (<a class="cite" href="#ref-university-2023">MICRO 2023</a>):</strong> Directory-based coherence (18× speedup over GRIT baseline) 2. <strong>ecoTLB (<a class="cite" href="#ref-memory-2024">ASPLOS 2024</a>):</strong> Eventual consistency (8× speedup, but correctness issues) 3. <strong>Hardware vendors:</strong> NVSwitch 3.0 implements hardware broadcast (claimed 25× speedup)</p>
 
 <strong>GRIT's legacy:</strong> Established TLB coherence as a first-order problem for multi-GPU systems, not a footnote.
 
@@ -1925,7 +1925,7 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <h3 id="sec-10-relationship-to-follow-on-work">10. Relationship to Follow-On Work</h3>
 
-<strong>Trans-FW → IDYLL (MICRO 2023):</strong>
+<strong>Trans-FW → IDYLL (<a class="cite" href="#ref-university-2023">MICRO 2023</a>):</strong>
 
 <p>IDYLL extends Trans-FW's core insight (sharing translations) but solves the broadcast bottleneck using directories:</p>
 
@@ -2333,7 +2333,7 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 <h3 id="deep-dive-in-pte-directory-for-lightweight-invalidation-micr">Deep Dive: In-PTE Directory for Lightweight Invalidation (MICRO 2023)</h3>
 
 <strong>Authors:</strong> University of Michigan Research Team  
-<strong>Conference:</strong> MICRO 2023 (IEEE/ACM International Symposium on Microarchitecture)  
+<strong>Conference:</strong> <a class="cite" href="#ref-university-2023">MICRO 2023</a> (IEEE/ACM International Symposium on Microarchitecture)  
 <strong>Citations:</strong> 19+ (as of Feb 2026, recent paper)  
 <strong>Status:</strong> State-of-the-art solution combining strict coherence with O(log N) scaling
 
@@ -2350,7 +2350,7 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 <li>Invalidate only processors with cached copies (not all processors)</li>
 </ul>
 
-<strong>Lenoski et al. (ASPLOS 1990, Stanford DASH):</strong>
+<strong><a class="cite" href="#ref-lenoski-1990">Lenoski et al.</a> (<a class="cite" href="#ref-lenoski-1990">ASPLOS 1990</a>, Stanford DASH):</strong>
 <ul>
 <li>Hierarchical directories for large-scale multiprocessors</li>
 <li>Reduction trees for acknowledgment collection (O(log N) vs O(N))</li>
@@ -2557,7 +2557,7 @@ Speedup: 640µs / 35µs = 18.3× faster</code></pre>
 <li>Latency: 1µs directory lookup (SRAM)</li>
 </ul>
 
-<p><em>Note on area figures:</em> The IDYLL paper (MICRO 2023) reports directory controller area in the context of a full GPU SoC tile. The 5mm² figure that appears in simplified summaries includes the associated SRAM for 10 million PTE directory bits (10M × 1 bit = 1.25 MB at 0.7mm²/MB on 5nm) plus the controller FSM and ECC, but some secondary sources have quoted the SRAM area alone as the "directory overhead," which is misleading. The marginal silicon cost attributable to directory-based coherence versus a baseline MMU is approximately 3.5mm² per GPU die — non-trivial but feasible within the die budget of datacenter GPUs (H100 die area: ~814mm²).</p>
+<p><em>Note on area figures:</em> The IDYLL paper (<a class="cite" href="#ref-university-2023">MICRO 2023</a>) reports directory controller area in the context of a full GPU SoC tile. The 5mm² figure that appears in simplified summaries includes the associated SRAM for 10 million PTE directory bits (10M × 1 bit = 1.25 MB at 0.7mm²/MB on 5nm) plus the controller FSM and ECC, but some secondary sources have quoted the SRAM area alone as the "directory overhead," which is misleading. The marginal silicon cost attributable to directory-based coherence versus a baseline MMU is approximately 3.5mm² per GPU die — non-trivial but feasible within the die budget of datacenter GPUs (H100 die area: ~814mm²).</p>
 
 <strong>Multicast Network:</strong>
 <ul>
@@ -2700,7 +2700,7 @@ For >64 GPUs, directory requires hierarchical encoding:
 
 <strong>Authors:</strong> XLA Team, Google Brain  
 <strong>Institution:</strong> Google Research  
-<strong>Conference:</strong> MLSys 2019 (Machine Learning and Systems)  
+<strong>Conference:</strong> <a class="cite" href="#ref-xlateam-2019">MLSys 2019</a> (Machine Learning and Systems)  
 <strong>Status:</strong> Production deployment (Google TPU), open-source (TensorFlow)
 
 <hr />
@@ -3281,7 +3281,7 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <strong>Authors:</strong> Congyu Liu, Zhangjiayue Li, Zhaofeng Chen, Zhi Zhang, Geng Hong  
 <strong>Institutions:</strong> Institute of Computing Technology (Chinese Academy of Sciences), UC Riverside  
-<strong>Conference:</strong> ACM CCS 2023 (ACM Conference on Computer and Communications Security - Top Tier)  
+<strong>Conference:</strong> ACM <a class="cite" href="#ref-liu-2023">CCS 2023</a> (ACM Conference on Computer and Communications Security - Top Tier)  
 <strong>Citations:</strong> 31+ (as of Feb 2026)  
 <strong>Impact:</strong> Disclosed critical vulnerability in NVIDIA A100/H100 MIG, led to cloud provider policy changes
 
@@ -3957,7 +3957,7 @@ AMD (Chiplet):
 <h4>Deep Dive: Secure Address Translation (ASPLOS 2023)</h3>
 
 <strong>Authors:</strong> Confidential Computing Research Group  
-<strong>Conference:</strong> ASPLOS 2023  
+<strong>Conference:</strong> <a class="cite" href="#ref-confidential-2023">ASPLOS 2023</a>  
 <strong>Status:</strong> Research prototype, no production deployment
 
 <hr />
@@ -4258,7 +4258,7 @@ Result: ~18% throughput reduction (measured)</code></pre>
 <h4>Deep Dive: Lightweight Virtual Memory for GPUs (MICRO 2025)</h3>
 
 <strong>Authors:</strong> GPU Systems Research Group  
-<strong>Conference:</strong> MICRO 2025 (IEEE/ACM International Symposium on Microarchitecture)  
+<strong>Conference:</strong> <a class="cite" href="#ref-gpu-2025">MICRO 2025</a> (IEEE/ACM International Symposium on Microarchitecture)  
 <strong>Status:</strong> Recent publication (October 2025), comprehensive measurement study  
 <strong>Impact:</strong> Quantified GPU virtualization overhead, demonstrated optimization path
 
@@ -5297,7 +5297,7 @@ HugeGPT:
 
 <h4>Open Questions for Future Research</h4>
 
-<p><strong>Question 1: Can we achieve 3% overhead automatically?</strong> Current approach requires 15 lines of manual prefetch code per kernel. Can compiler analysis automatically insert prefetch calls? Preliminary work (AutoPrefetch, ASPLOS 2025) shows promise: 85% of manual hints recoverable via static analysis. Remaining 15% require runtime profiling or programmer annotations. Fully automatic virtualization with &lt;5% overhead remains open problem.</p>
+<p><strong>Question 1: Can we achieve 3% overhead automatically?</strong> Current approach requires 15 lines of manual prefetch code per kernel. Can compiler analysis automatically insert prefetch calls? Preliminary work (AutoPrefetch, <a class="cite" href="#ref-virtual-2025">ASPLOS 2025</a>) shows promise: 85% of manual hints recoverable via static analysis. Remaining 15% require runtime profiling or programmer annotations. Fully automatic virtualization with &lt;5% overhead remains open problem.</p>
 
 <p><strong>Question 2: Can we reduce DMT overhead below 45%?</strong> Tiering to CPU memory enables 2.5× capacity expansion but costs 45% performance. Can smarter tier management (predictive migration, access pattern learning) reduce this? Early results (DMT v2, unpublished 2026) show 35% overhead with ML-based prefetching. Further optimization possible but fundamental bandwidth gap (HBM 3.35 TB/s vs DDR 200 GB/s) imposes hard limits. Likely floor: 25-30% overhead.</p>
 

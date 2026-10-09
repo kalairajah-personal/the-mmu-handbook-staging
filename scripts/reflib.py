@@ -92,6 +92,8 @@ ITEM = re.compile(r'^\s*([A-Z][^,;\[\]()<>]*?),\s*(' + YEAR + r')([a-z]?)\s*$')
 BRACKET = re.compile(r'\[([^\[\]<>]{3,240}?)\]')
 PAREN = re.compile(r'\(([^()<>]{3,240}?)\)')
 NARR = re.compile(r'\b([A-Z][A-Za-z’\'\-]+(?: et al\.| (?:and|&amp;|&) [A-Z][A-Za-z’\'\-]+)?)\s\((' + YEAR + r')([a-z]?)\)')
+ETAL = re.compile(r'\b((?:(?:[Vv]an|[Vv]on|[Dd]e|[Dd]el|[Ll]e) )?[A-Z][A-Za-z’\'\-]+) et al\.(?! \[(?:<|$))')
+VENUE = re.compile(r'\b(ISCA|MICRO|ASPLOS|HPCA|SOSP|OSDI|ISPASS|NDSS|PACT|EuroSys|CCS|TACO|DAC|ICPP|IISWC|FAST|SIGMETRICS|VEE|PLDI|NeurIPS|ICML|MLSys)(?:-\d+)?[ \u2019\']+((?:19|20)\d\d|\d\d)\b')
 SKIP = re.compile(r'(<pre\b.*?</pre>|<code\b.*?</code>|<svg\b.*?</svg>|<h[1-6]\b.*?</h[1-6]>|<a\b.*?</a>|<[^>]+>)', re.S)
 
 

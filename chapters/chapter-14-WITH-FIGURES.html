@@ -718,7 +718,7 @@ nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right
 </ul>
 </nav>
 
-<p><em>This chapter examines software-managed memory approaches for large language model workloads, demonstrating how application-controlled memory allocation can achieve 2-4× throughput improvements over traditional OS-managed virtual memory. We analyze two peer-reviewed systems—vLLM's PagedAttention (SOSP 2023) and Direct Segments (ISCA 2013)—presenting comprehensive technical evaluations, comparative analysis, and future research directions.</em></p>
+<p><em>This chapter examines software-managed memory approaches for large language model workloads, demonstrating how application-controlled memory allocation can achieve 2-4× throughput improvements over traditional OS-managed virtual memory. We analyze two peer-reviewed systems—vLLM's PagedAttention (<a class="cite" href="#ref-kwon-2023">SOSP 2023</a>) and Direct Segments (<a class="cite" href="#ref-basu-2013">ISCA 2013</a>)—presenting comprehensive technical evaluations, comparative analysis, and future research directions.</em></p>
 
 <hr />
 
@@ -831,9 +831,9 @@ Translation overhead = 87,500 × 0.999 × 200ns ≈ 17.5ms per forward pass
 
 <p><strong>Section 14.2</strong> analyzes memory management failure modes in detail, establishing quantitatively why traditional approaches fail for LLM serving. This section synthesizes findings from Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>] on fragmentation and from studies of demand paging overhead under memory pressure.</p>
 
-<p><strong>Section 14.3</strong> presents a comprehensive technical analysis of vLLM's PagedAttention system (Kwon et al., SOSP 2023). This software-managed memory system treats GPU VRAM like a 1960s-era virtual memory system, implementing block tables, dynamic allocation, and copy-on-write semantics entirely in application code. The section examines the algorithm, architecture, experimental results, and implementation details.</p>
+<p><strong>Section 14.3</strong> presents a comprehensive technical analysis of vLLM's PagedAttention system (<a class="cite" href="#ref-kwon-2023">Kwon et al.</a>, <a class="cite" href="#ref-kwon-2023">SOSP 2023</a>). This software-managed memory system treats GPU VRAM like a 1960s-era virtual memory system, implementing block tables, dynamic allocation, and copy-on-write semantics entirely in application code. The section examines the algorithm, architecture, experimental results, and implementation details.</p>
 
-<p><strong>Section 14.4</strong> examines translation-bypass mechanisms, focusing on the Direct Segments architecture (Basu et al., ISCA 2013). While this work predates LLMs, its techniques for eliminating translation overhead for large contiguous regions are directly applicable to model weight and KV cache allocation. The section analyzes the original graph analytics results and explores potential applications to LLM workloads.</p>
+<p><strong>Section 14.4</strong> examines translation-bypass mechanisms, focusing on the Direct Segments architecture (<a class="cite" href="#ref-basu-2013">Basu et al.</a>, <a class="cite" href="#ref-basu-2013">ISCA 2013</a>). While this work predates LLMs, its techniques for eliminating translation overhead for large contiguous regions are directly applicable to model weight and KV cache allocation. The section analyzes the original graph analytics results and explores potential applications to LLM workloads.</p>
 
 <p><strong>Section 14.5</strong> provides a comparative analysis of software-managed memory versus translation bypass, examining design trade-offs, performance characteristics, and deployment considerations based on the experimental results from the respective papers.</p>
 
@@ -1220,11 +1220,11 @@ Memory_per_token = 2 × L × H × d_h × bytes_per_element
 <text x="665" y="492" text-anchor="middle" font-size="12" fill="#616161">Tradeoff: loses fine-grained per-page protection for that region</text>
 </svg></div><figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 14.2:</strong> vLLM PagedAttention: software memory management bypassing MMU fragmentation limits. Traditional LLM serving pre-allocates contiguous KV-cache regions per request, wasting 60-70% of GPU memory. PagedAttention divides the KV cache into fixed-size blocks managed by a software block table analogous to OS page tables. Direct Segment Addressing extends this by mapping the entire 70 GB model weights to a single hardware register, eliminating TLB misses for weight tensors entirely.</figcaption></figure>
 
-<p>The vLLM system, introduced by Kwon et al. at SOSP 2023, represents a fundamental rethinking of memory management for LLM serving. Rather than relying on operating system paging mechanisms, vLLM implements a complete software-managed memory system operating entirely in user space. This section provides a comprehensive technical analysis of vLLM's architecture, algorithm, and experimental results as documented in the SOSP 2023 publication.</p>
+<p>The vLLM system, introduced by <a class="cite" href="#ref-kwon-2023">Kwon et al.</a> at <a class="cite" href="#ref-kwon-2023">SOSP 2023</a>, represents a fundamental rethinking of memory management for LLM serving. Rather than relying on operating system paging mechanisms, vLLM implements a complete software-managed memory system operating entirely in user space. This section provides a comprehensive technical analysis of vLLM's architecture, algorithm, and experimental results as documented in the <a class="cite" href="#ref-kwon-2023">SOSP 2023</a> publication.</p>
 
 <h3 id="section-14.3.1">14.3.1 The PagedAttention Algorithm</h3>
 
-<p>At the core of vLLM is the PagedAttention algorithm, which applies virtual memory concepts to GPU KV cache management. The key insight, as stated by the authors, is that "the memory allocation and management problem in LLM serving is fundamentally similar to the classical virtual memory and paging problem in operating systems" (Kwon et al., 2023, Section 1).</p>
+<p>At the core of vLLM is the PagedAttention algorithm, which applies virtual memory concepts to GPU KV cache management. The key insight, as stated by the authors, is that "the memory allocation and management problem in LLM serving is fundamentally similar to the classical virtual memory and paging problem in operating systems" (<a class="cite" href="#ref-kwon-2023">Kwon et al.</a>, 2023, Section 1).</p>
 
 <figure id="fig-14-3" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
@@ -1682,7 +1682,7 @@ function append_token_to_request(request_id, token):
 <p>The authors selected block size 16 as the default based on these results, providing a good balance for typical sequence length distributions. For workloads with predominantly long sequences, block size 32 may be preferable.</p>
 
 <blockquote>
-<strong>Summary of vLLM Results:</strong> As reported by Kwon et al. (SOSP 2023), vLLM achieves 2-4× throughput improvement over existing serving systems through block-based memory management that reduces memory waste from 62-80% to <4%. The PagedAttention algorithm adds 4.7% computational overhead, which is more than offset by the ability to serve 2-3× larger batch sizes. Copy-on-write sharing provides additional benefits for workloads with common prefixes, reducing memory consumption by up to 64% for such workloads.
+<strong>Summary of vLLM Results:</strong> As reported by <a class="cite" href="#ref-kwon-2023">Kwon et al.</a> (<a class="cite" href="#ref-kwon-2023">SOSP 2023</a>), vLLM achieves 2-4× throughput improvement over existing serving systems through block-based memory management that reduces memory waste from 62-80% to <4%. The PagedAttention algorithm adds 4.7% computational overhead, which is more than offset by the ability to serve 2-3× larger batch sizes. Copy-on-write sharing provides additional benefits for workloads with common prefixes, reducing memory consumption by up to 64% for such workloads.
 </blockquote>
 
 <hr>
@@ -1907,7 +1907,7 @@ function append_token_to_request(request_id, token):
 
 <h2 id="section-14.4">14.4 Translation-Bypass Mechanisms: Direct Segment Addressing</h2>
 
-<p>While vLLM demonstrates that software-managed memory can dramatically improve efficiency for LLM workloads, it still performs address translation—albeit in software rather than hardware. An alternative approach eliminates translation entirely for certain memory regions through direct segment addressing. This section examines the Direct Segments architecture introduced by Basu et al. at ISCA 2013 and explores its potential applicability to LLM workloads.</p>
+<p>While vLLM demonstrates that software-managed memory can dramatically improve efficiency for LLM workloads, it still performs address translation—albeit in software rather than hardware. An alternative approach eliminates translation entirely for certain memory regions through direct segment addressing. This section examines the Direct Segments architecture introduced by <a class="cite" href="#ref-basu-2013">Basu et al.</a> at <a class="cite" href="#ref-basu-2013">ISCA 2013</a> and explores its potential applicability to LLM workloads.</p>
 
 <figure id="fig-14-4" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
@@ -2009,13 +2009,13 @@ function append_token_to_request(request_id, token):
   <line x1="25" y1="237" x2="875" y2="237" style="stroke:#9E9E9E;stroke-width:1;stroke-dasharray:5,3;"/>
 </svg>
   </div>
-  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 14.4:</strong> Direct Segment addressing (Basu et al., ISCA 2013): the traditional four-level page walk (top) incurs up to 256 ns of memory latency on a TLB miss. Direct Segments (bottom) add BASE and LIMIT registers to the MMU; for virtual addresses within the mapped region, the physical address is computed in one cycle as PHY_BASE + (VA − BASE), eliminating the entire page table walk. Measured speedups of 1.3–2.5× on big-memory graph and genomics workloads.</figcaption>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 14.4:</strong> Direct Segment addressing (<a class="cite" href="#ref-basu-2013">Basu et al.</a>, <a class="cite" href="#ref-basu-2013">ISCA 2013</a>): the traditional four-level page walk (top) incurs up to 256 ns of memory latency on a TLB miss. Direct Segments (bottom) add BASE and LIMIT registers to the MMU; for virtual addresses within the mapped region, the physical address is computed in one cycle as PHY_BASE + (VA − BASE), eliminating the entire page table walk. Measured speedups of 1.3–2.5× on big-memory graph and genomics workloads.</figcaption>
 </figure>
 
 
 <h3 id="section-14.4.1">14.4.1 Motivation and Design Principles</h3>
 
-<p>The Direct Segments work emerged from analysis of "big-memory" workloads in high-performance computing and graph analytics—applications with working sets measuring hundreds of gigabytes that far exceed TLB reach. Basu et al. (2013, Section 2) observed that many such workloads access memory in predictable patterns over large contiguous regions, yet still incur continuous translation overhead.</p>
+<p>The Direct Segments work emerged from analysis of "big-memory" workloads in high-performance computing and graph analytics—applications with working sets measuring hundreds of gigabytes that far exceed TLB reach. <a class="cite" href="#ref-basu-2013">Basu et al.</a> (2013, Section 2) observed that many such workloads access memory in predictable patterns over large contiguous regions, yet still incur continuous translation overhead.</p>
 
 <p><strong>The Core Insight:</strong> For large, contiguous memory allocations accessed in predictable patterns, address translation provides little value. The translation—mapping virtual addresses to physical addresses—is a constant offset for the entire region. Rather than caching this translation in a TLB and performing repeated lookups, the system could simply check whether a virtual address falls within a known range and apply a constant offset if so.</p>
 
@@ -2310,7 +2310,7 @@ Segment 1: KV cache pool (200GB allocation for multiple requests)
 <p>The table illustrates that different memory regions have different optimal management strategies. A production LLM serving system might benefit from applying multiple techniques to different memory types, rather than choosing one approach for all memory.</p>
 
 <blockquote>
-<strong>Summary of Direct Segments:</strong> As demonstrated by Basu et al. (ISCA 2013) on graph analytics workloads, Direct Segments can eliminate 96-99% of TLB misses for large contiguous memory regions, achieving 2.4-3.1× performance improvements. While not yet implemented in GPU hardware, the technique is directly applicable to LLM model weights, which represent large (350GB+), static, sequentially-accessed allocations. Combined with vLLM's block-based management for dynamic KV cache, a hybrid approach could optimize both translation overhead and allocation efficiency.
+<strong>Summary of Direct Segments:</strong> As demonstrated by <a class="cite" href="#ref-basu-2013">Basu et al.</a> (<a class="cite" href="#ref-basu-2013">ISCA 2013</a>) on graph analytics workloads, Direct Segments can eliminate 96-99% of TLB misses for large contiguous memory regions, achieving 2.4-3.1× performance improvements. While not yet implemented in GPU hardware, the technique is directly applicable to LLM model weights, which represent large (350GB+), static, sequentially-accessed allocations. Combined with vLLM's block-based management for dynamic KV cache, a hybrid approach could optimize both translation overhead and allocation efficiency.
 </blockquote>
 
 <hr>
@@ -2479,7 +2479,7 @@ Segment 1: KV cache pool (200GB allocation for multiple requests)
 
 <p>Comparing performance across systems requires care, as the vLLM and Direct Segments papers evaluate different workloads on different hardware. This section summarizes published results while clearly noting the differences in experimental setups.</p>
 
-<p><strong>vLLM Performance (from Kwon et al., SOSP 2023):</strong></p>
+<p><strong>vLLM Performance (from <a class="cite" href="#ref-kwon-2023">Kwon et al.</a>, <a class="cite" href="#ref-kwon-2023">SOSP 2023</a>):</strong></p>
 
 <ul>
 <li><strong>Throughput improvement:</strong> 2.0-4.2× vs existing systems (FasterTransformer, Orca)</li>
@@ -2491,7 +2491,7 @@ Segment 1: KV cache pool (200GB allocation for multiple requests)
 <li><strong>Workload:</strong> LLM inference with varying sequence lengths</li>
 </ul>
 
-<p><strong>Direct Segments Performance (from Basu et al., ISCA 2013):</strong></p>
+<p><strong>Direct Segments Performance (from <a class="cite" href="#ref-basu-2013">Basu et al.</a>, <a class="cite" href="#ref-basu-2013">ISCA 2013</a>):</strong></p>
 
 <ul>
 <li><strong>Speedup:</strong> 2.4-3.1× vs 4KB pages for graph analytics</li>
@@ -2648,7 +2648,7 @@ Segment 1: KV cache pool (200GB allocation for multiple requests)
 <p>These limitations are not fatal flaws but indicate areas where further research and engineering are needed before either approach can be considered fully mature for all LLM deployment scenarios.</p>
 
 <blockquote>
-<strong>Summary of Comparative Analysis:</strong> vLLM and Direct Segments represent complementary approaches to LLM memory management. vLLM (SOSP 2023) provides software-managed block allocation achieving 2-4× throughput improvement through reduced fragmentation, deployable on existing hardware. Direct Segments (ISCA 2013) provides hardware translation bypass achieving 2.4-3.1× speedup through elimination of TLB misses, applicable to large static allocations like model weights but requiring hardware modifications not yet available. Each is optimal for different memory types, suggesting potential future systems might combine both techniques.
+<strong>Summary of Comparative Analysis:</strong> vLLM and Direct Segments represent complementary approaches to LLM memory management. vLLM (<a class="cite" href="#ref-kwon-2023">SOSP 2023</a>) provides software-managed block allocation achieving 2-4× throughput improvement through reduced fragmentation, deployable on existing hardware. Direct Segments (<a class="cite" href="#ref-basu-2013">ISCA 2013</a>) provides hardware translation bypass achieving 2.4-3.1× speedup through elimination of TLB misses, applicable to large static allocations like model weights but requiring hardware modifications not yet available. Each is optimal for different memory types, suggesting potential future systems might combine both techniques.
 </blockquote>
 
 <hr>
@@ -2904,7 +2904,7 @@ Segment 1: KV cache pool (200GB allocation for multiple requests)
 
 <h2 id="section-14.7">14.7 Chapter Summary</h2>
 
-<p>This chapter examined software-managed memory approaches for large language model workloads, focusing on two systems grounded in peer-reviewed research: vLLM's PagedAttention (Kwon et al., SOSP 2023) and Direct Segments (Basu et al., ISCA 2013). These systems represent fundamentally different approaches to addressing the limitations of traditional virtual memory when confronted with AI workload characteristics.</p>
+<p>This chapter examined software-managed memory approaches for large language model workloads, focusing on two systems grounded in peer-reviewed research: vLLM's PagedAttention (<a class="cite" href="#ref-kwon-2023">Kwon et al.</a>, <a class="cite" href="#ref-kwon-2023">SOSP 2023</a>) and Direct Segments (<a class="cite" href="#ref-basu-2013">Basu et al.</a>, <a class="cite" href="#ref-basu-2013">ISCA 2013</a>). These systems represent fundamentally different approaches to addressing the limitations of traditional virtual memory when confronted with AI workload characteristics.</p>
 
 <p><strong>Key Findings:</strong></p>
 

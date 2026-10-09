@@ -749,8 +749,8 @@ nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right
 <p><strong>PART I: Coalescing Techniques (Sections 16.2-16.3)</strong></p>
 <p><strong>Principle:</strong> Detect and exploit <em>partial</em> contiguity—coalesce entries when possible, fallback to small pages when not.</p>
 <ul>
-<li><strong>COLT (MICRO 2012):</strong> Entry-level coalescing detects 8 contiguous 4KB pages and represents them as single 32KB TLB entry—deployed in AMD processors since Zen+ (2017) and ARM processors via contiguous bit (billions of devices)</li>
-<li><strong>Pichai (ASPLOS 2014):</strong> Request-level coalescing intercepts page walks and combines translations before TLB insertion—32-38% miss reduction for GPU workloads</li>
+<li><strong>COLT (<a class="cite" href="#ref-pham-2012">MICRO 2012</a>):</strong> Entry-level coalescing detects 8 contiguous 4KB pages and represents them as single 32KB TLB entry—deployed in AMD processors since Zen+ (2017) and ARM processors via contiguous bit (billions of devices)</li>
+<li><strong>Pichai (<a class="cite" href="#ref-pichai-2014">ASPLOS 2014</a>):</strong> Request-level coalescing intercepts page walks and combines translations before TLB insertion—32-38% miss reduction for GPU workloads</li>
 </ul>
 <p><strong>Key advantage:</strong> Incremental improvement over existing infrastructure—no OS changes required for hardware-only variants.</p>
 <p><strong>Deployment status:</strong> Production (AMD, ARM) for entry-level; research-only for request-level.</p>
@@ -758,8 +758,8 @@ nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right
 <p><strong>PART II: Predictive Techniques (Sections 16.4-16.5)</strong></p>
 <p><strong>Principle:</strong> Speculatively translate or prefetch future addresses based on observed access patterns.</p>
 <ul>
-<li><strong>SpecTLB (ISCA 2011):</strong> Reservation-based speculation allows misses to proceed without blocking subsequent accesses—relies on spatial locality</li>
-<li><strong>Avatar (MICRO 2024):</strong> Stride-based prediction achieves 90.3% speculation accuracy for AI workloads—37.2% speedup by overlapping translation with computation</li>
+<li><strong>SpecTLB (<a class="cite" href="#ref-barr-2011">ISCA 2011</a>):</strong> Reservation-based speculation allows misses to proceed without blocking subsequent accesses—relies on spatial locality</li>
+<li><strong>Avatar (<a class="cite" href="#ref-memory-2024">MICRO 2024</a>):</strong> Stride-based prediction achieves 90.3% speculation accuracy for AI workloads—37.2% speedup by overlapping translation with computation</li>
 <li><strong>SnakeByte (ASPLOS 2023):</strong> Markov model predicts miss sequences for graph analytics—40-60% miss reduction</li>
 </ul>
 <p><strong>Key advantage:</strong> Works with any page size, no contiguity required, tolerates fragmentation.</p>
@@ -776,7 +776,7 @@ nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right
 <p><strong>PART IV: Alternative Addressing Modes (Sections 16.7-16.8)</strong></p>
 <p><strong>Principle:</strong> Replace page-granular translation with coarser abstractions.</p>
 <ul>
-<li><strong>FlexPointer (MICRO 2023):</strong> Range TLB covers arbitrary contiguous virtual ranges with single entry—10-100× reach for ML workloads</li>
+<li><strong>FlexPointer (<a class="cite" href="#ref-compiler-2023">MICRO 2023</a>):</strong> Range TLB covers arbitrary contiguous virtual ranges with single entry—10-100× reach for ML workloads</li>
 <li><strong>IAS (ASPLOS 2024):</strong> Intermediate Address Space adds indirection layer for heterogeneous systems—2-10× reach improvement</li>
 </ul>
 <p><strong>Key advantage:</strong> Fundamental shift—single entry covers entire tensor or memory region.</p>
@@ -844,7 +844,7 @@ nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right
 
 <h2 id="section-16.2">16.2 Entry-Level Coalescing: COLT and Production Implementations</h2>
 
-<p>Coalescing Large-Reach TLBs (COLT), proposed by Pham and Bhattacharjee at MICRO 2012, represents the most successful TLB reach optimization technique measured by deployment scale. The core innovation is deceptively simple: when inserting a new TLB entry, examine whether adjacent entries map contiguous physical addresses. If so, merge them into a single entry covering a larger effective page size.</p>
+<p>Coalescing Large-Reach TLBs (COLT), proposed by Pham and Bhattacharjee at <a class="cite" href="#ref-pham-2012">MICRO 2012</a>, represents the most successful TLB reach optimization technique measured by deployment scale. The core innovation is deceptively simple: when inserting a new TLB entry, examine whether adjacent entries map contiguous physical addresses. If so, merge them into a single entry covering a larger effective page size.</p>
 <figure id="fig-16-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="580" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
@@ -1278,7 +1278,7 @@ eliminate the fundamental TLB capacity problem.</code></pre>
 
 <h2 id="section-16.3">16.3 Request-Level Coalescing: Pichai's Page Walk Optimization</h2>
 
-<p>While COLT coalesces at TLB insertion (entry-level), Pichai et al.'s ASPLOS 2014 work demonstrated coalescing at an earlier stage—during the page table walk itself (request-level). The key insight: rather than performing separate page table walks for nearby addresses and then coalescing the results, intercept multiple walk requests and combine them before accessing memory.</p>
+<p>While COLT coalesces at TLB insertion (entry-level), <a class="cite" href="#ref-pichai-2014">Pichai et al.</a>'s <a class="cite" href="#ref-pichai-2014">ASPLOS 2014</a> work demonstrated coalescing at an earlier stage—during the page table walk itself (request-level). The key insight: rather than performing separate page table walks for nearby addresses and then coalescing the results, intercept multiple walk requests and combine them before accessing memory.</p>
 
 <h3 id="section-16.3.1">16.3.1 The Page Walk Bottleneck in GPUs</h3>
 
@@ -1441,7 +1441,7 @@ Result: 6 × 200ns = 1200ns total translation time</code></pre>
 
 <h3 id="section-16.3.3">16.3.3 Performance Results and Deployment Status</h3>
 
-<p><strong>Original Pichai et al. measurements (ASPLOS 2014):</strong></p>
+<p><strong>Original <a class="cite" href="#ref-pichai-2014">Pichai et al.</a> measurements (<a class="cite" href="#ref-pichai-2014">ASPLOS 2014</a>):</strong></p>
 
 <pre><code>GPU Benchmarks (NVIDIA Kepler-class simulation):
 - LU Decomposition: 38% TLB miss reduction
@@ -1648,13 +1648,13 @@ Result: 256 requests → 12 TLB entries (21× compression)
   </g>
 </svg>
   </div>
-  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.3:</strong> SpecTLB and Avatar speculative translation: SpecTLB (ISCA 2011, left) detects stride patterns during a page walk, pre-fills a speculative TLB with predicted translations, and lets execution proceed; correct predictions are promoted to the main TLB while mispredictions cause a squash (17% miss-penalty reduction). Avatar (ISCA 2016, right) extends speculation to GPU warps: one page walk serves 32 threads via batch collection and parallel verification, reducing GPU TLB misses by 23%.</figcaption>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.3:</strong> SpecTLB and Avatar speculative translation: SpecTLB (<a class="cite" href="#ref-barr-2011">ISCA 2011</a>, left) detects stride patterns during a page walk, pre-fills a speculative TLB with predicted translations, and lets execution proceed; correct predictions are promoted to the main TLB while mispredictions cause a squash (17% miss-penalty reduction). Avatar (ISCA 2016, right) extends speculation to GPU warps: one page walk serves 32 threads via batch collection and parallel verification, reducing GPU TLB misses by 23%.</figcaption>
 </figure>
 
 
 <h3 id="section-16.4.1">16.4.1 SpecTLB: Reservation-Based Speculation (ISCA 2011)</h3>
 
-<p>Proposed by Barr, Cox, and Rixner at ISCA 2011, SpecTLB introduced the concept of <strong>speculative TLB entries</strong>—inserting predicted translations before page walks complete, then validating asynchronously.</p>
+<p>Proposed by Barr, Cox, and Rixner at <a class="cite" href="#ref-barr-2011">ISCA 2011</a>, SpecTLB introduced the concept of <strong>speculative TLB entries</strong>—inserting predicted translations before page walks complete, then validating asynchronously.</p>
 
 <h4>Core Mechanism: Reservation Entries</h4>
 
@@ -1723,7 +1723,7 @@ Confidence: HIGH if last N accesses followed same stride
            LOW if pattern breaks (random access)
 </code></pre>
 
-<p><strong>Original SpecTLB results (ISCA 2011):</strong></p>
+<p><strong>Original SpecTLB results (<a class="cite" href="#ref-barr-2011">ISCA 2011</a>):</strong></p>
 
 <pre><code>SPEC CPU2006 benchmarks:
 - libquantum: 47% speedup (highly regular access pattern)
@@ -1744,7 +1744,7 @@ Hardware cost:
 
 <h3 id="section-16.4.2">16.4.2 Avatar: Stride-Based Speculation for Modern AI (MICRO 2024)</h3>
 
-<p>Avatar, presented at MICRO 2024, revisits speculative translation with AI workload awareness. The key observation: modern deep learning exhibits highly predictable memory access patterns due to structured tensor operations.</p>
+<p>Avatar, presented at <a class="cite" href="#ref-memory-2024">MICRO 2024</a>, revisits speculative translation with AI workload awareness. The key observation: modern deep learning exhibits highly predictable memory access patterns due to structured tensor operations.</p>
 
 <h4>AI-Specific Access Patterns</h4>
 
@@ -1839,7 +1839,7 @@ Key finding: Structured tensor ops have 85-95% accuracy
 
 <h3 id="section-16.4.3">16.4.3 Evolution: 13 Years from SpecTLB to Avatar</h3>
 
-<p>The 13-year gap between SpecTLB (ISCA 2011) and Avatar (MICRO 2024) reveals how AI workloads enabled speculation to finally become viable:</p>
+<p>The 13-year gap between SpecTLB (<a class="cite" href="#ref-barr-2011">ISCA 2011</a>) and Avatar (<a class="cite" href="#ref-memory-2024">MICRO 2024</a>) reveals how AI workloads enabled speculation to finally become viable:</p>
 
 <blockquote>
 <p><strong>Why SpecTLB [<a class="cite" href="#ref-barr-2011">2011</a>] didn't deploy:</strong></p>
@@ -2568,7 +2568,7 @@ Critical insight: Embedding lookups scatter across memory
 
 <h2 id="section-16.7">16.7 Range-Based Translation: FlexPointer</h2>
 
-<p>All previous techniques maintain page-granular translation—each 4KB page requires its own mapping (possibly coalesced or compressed). FlexPointer, published at MICRO 2023, makes a radical departure: <strong>abandon page granularity entirely</strong> for large memory regions, using BASE/LIMIT registers to describe arbitrary-sized contiguous virtual ranges.</p>
+<p>All previous techniques maintain page-granular translation—each 4KB page requires its own mapping (possibly coalesced or compressed). FlexPointer, published at <a class="cite" href="#ref-compiler-2023">MICRO 2023</a>, makes a radical departure: <strong>abandon page granularity entirely</strong> for large memory regions, using BASE/LIMIT registers to describe arbitrary-sized contiguous virtual ranges.</p>
 
 <h3 id="section-16.7.1">16.7.1 The Tensor Memory Problem</h3>
 
@@ -2881,7 +2881,7 @@ Hardware reads bits to decide range TLB insertion.
 
 <h2 id="section-16.8">16.8 Hierarchical Translation: Intermediate Address Space (IAS)</h2>
 
-<p>The final alternative architecture we examine is Intermediate Address Space (IAS), published in ACM TACO 2024. IAS solves a different problem than previous techniques: <strong>translation overhead in heterogeneous systems</strong> where CPUs, GPUs, NPUs, and accelerators share memory but have different page table formats.</p>
+<p>The final alternative architecture we examine is Intermediate Address Space (IAS), published in ACM <a class="cite" href="#ref-heterogeneous-2024">TACO 2024</a>. IAS solves a different problem than previous techniques: <strong>translation overhead in heterogeneous systems</strong> where CPUs, GPUs, NPUs, and accelerators share memory but have different page table formats.</p>
 <figure id="fig-16-7" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
@@ -3011,7 +3011,7 @@ Hardware reads bits to decide range TLB insertion.
   <text x="740" y="564" text-anchor="middle" font-size="12" style="fill:#4A8A99;">directly via IAS</text>
 </svg>
   </div>
-  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.7:</strong> IAS Intermediate Address Space (ACM TACO 2024): heterogeneous SoCs integrate CPUs, GPUs, and NPUs with incompatible page table formats. IAS adds a shared 64-bit address space layer between device virtual addresses and physical memory. All devices map to the same IAS addresses; a single unified IAS→PA page table eliminates per-device translation stacks and enables zero-copy sharing. CPU translation incurs a two-hop overhead of less than 5% when the IAS TLB is warm.</figcaption>
+  <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 16.7:</strong> IAS Intermediate Address Space (ACM <a class="cite" href="#ref-heterogeneous-2024">TACO 2024</a>): heterogeneous SoCs integrate CPUs, GPUs, and NPUs with incompatible page table formats. IAS adds a shared 64-bit address space layer between device virtual addresses and physical memory. All devices map to the same IAS addresses; a single unified IAS→PA page table eliminates per-device translation stacks and enables zero-copy sharing. CPU translation incurs a two-hop overhead of less than 5% when the IAS TLB is warm.</figcaption>
 </figure>
 
 

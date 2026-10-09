@@ -768,11 +768,11 @@ nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right
 
 <p><strong>Section 15.2: Network-Level Translation</strong></p>
 
-<p>MIND (SOSP 2021) and pulse (ASPLOS 2025) move translation into programmable network switches and distributed memory controllers. Instead of each GPU translating addresses independently, the network fabric performs translation once and routes data directly. This approach addresses the multi-GPU coordination overhead documented in Chapter 12, achieving O(1) translation cost regardless of cluster size.</p>
+<p>MIND (<a class="cite" href="#ref-abhishek-2021">SOSP 2021</a>) and pulse (<a class="cite" href="#ref-hao-2025">ASPLOS 2025</a>) move translation into programmable network switches and distributed memory controllers. Instead of each GPU translating addresses independently, the network fabric performs translation once and routes data directly. This approach addresses the multi-GPU coordination overhead documented in Chapter 12, achieving O(1) translation cost regardless of cluster size.</p>
 
 <p><strong>Section 15.3: Processing-in-Memory Translation (PIM-TLB)</strong></p>
 
-<p>vPIM (DAC 2023), IMPRINT, and recent work (NDPage, H2M2) place translation logic within or adjacent to High-Bandwidth Memory (HBM) stacks. When compute occurs at memory—as in PIM architectures—translation should too. These approaches eliminate the CPU→memory round-trip for page walks, reducing translation latency by 10-50× for memory-intensive AI workloads.</p>
+<p>vPIM (<a class="cite" href="#ref-fatima-2023">DAC 2023</a>), IMPRINT, and recent work (NDPage, H2M2) place translation logic within or adjacent to High-Bandwidth Memory (HBM) stacks. When compute occurs at memory—as in PIM architectures—translation should too. These approaches eliminate the CPU→memory round-trip for page walks, reducing translation latency by 10-50× for memory-intensive AI workloads.</p>
 
 <p><strong>Section 15.4: Utopia—Hybrid Radix-Segments</strong></p>
 
@@ -954,11 +954,11 @@ nav.chapter-nav .chapter-nav-next { flex: 1 1 0; min-width: 0; text-align: right
 </figure>
 
 
-<p>Network-level translation inverts this model: <strong>translation happens once, in the network fabric, and data is routed directly to the requesting device</strong>. Two recent systems demonstrate this approach: MIND (SOSP 2021) and pulse (ASPLOS 2025).</p>
+<p>Network-level translation inverts this model: <strong>translation happens once, in the network fabric, and data is routed directly to the requesting device</strong>. Two recent systems demonstrate this approach: MIND (<a class="cite" href="#ref-abhishek-2021">SOSP 2021</a>) and pulse (<a class="cite" href="#ref-hao-2025">ASPLOS 2025</a>).</p>
 
 <h3 id="mind-memory-in-network-disaggregation">15.2.1 MIND: Memory-in-Network Disaggregation</h3>
 
-<p><strong>Paper:</strong> "MIND: In-Network Memory Management for Disaggregated Data Centers" (SOSP 2021)<br>
+<p><strong>Paper:</strong> "MIND: In-Network Memory Management for Disaggregated Data Centers" (<a class="cite" href="#ref-abhishek-2021">SOSP 2021</a>)<br>
 <strong>Authors:</strong> Abhishek Bhattacharjee, et al. (Yale University)<br>
 <strong>Key Innovation:</strong> Programmable network switches perform address translation</p>
 <figure id="fig-15-2" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
@@ -1365,7 +1365,7 @@ Performance at 512 GPUs:
 
 <h3 id="pulse-distributed-translation-for-far-memory">15.2.2 pulse: Distributed Translation for Far Memory</h3>
 
-<p><strong>Paper:</strong> "pulse: Accelerating Distributed Page Table Walks with Programmable NICs" (ASPLOS 2025)<br>
+<p><strong>Paper:</strong> "pulse: Accelerating Distributed Page Table Walks with Programmable NICs" (<a class="cite" href="#ref-hao-2025">ASPLOS 2025</a>)<br>
 <strong>Authors:</strong> Hao Tang, et al. (University of Wisconsin-Madison)<br>
 <strong>Key Innovation:</strong> Distributed pointer-chasing for page walks across network</p>
 
@@ -1687,7 +1687,7 @@ Workloads:
 <p><strong>Current status (2026):</strong></p>
 <ul>
 <li>MIND: Research prototype, not deployed at scale</li>
-<li>pulse: Research prototype, ASPLOS 2025 paper pending peer review</li>
+<li>pulse: Research prototype, <a class="cite" href="#ref-hao-2025">ASPLOS 2025</a> paper pending peer review</li>
 <li>Industry interest: High (Meta, NVIDIA exploring disaggregated memory)</li>
 </ul>
 
@@ -3171,7 +3171,7 @@ Result: 4 round-trips just to translate, defeating PIM's purpose
 
 <h3 id="vpim-scalable-pim-translation">15.3.2 vPIM: Scalable Virtual Address Translation for PIM</h3>
 
-<p><strong>Paper:</strong> "vPIM: Scalable Virtual Address Translation for Processing-in-Memory Architectures" (DAC 2023)<br>
+<p><strong>Paper:</strong> "vPIM: Scalable Virtual Address Translation for Processing-in-Memory Architectures" (<a class="cite" href="#ref-fatima-2023">DAC 2023</a>)<br>
 <strong>Authors:</strong> Fatima Adlat, et al. (University of Illinois Urbana-Champaign)<br>
 <strong>Key Innovation:</strong> Translation logic integrated into PIM chiplets</p>
 
@@ -3770,7 +3770,7 @@ Different trade-off than general-purpose CPU
 
 <p><strong>Current status (2026):</strong></p>
 <ul>
-<li>vPIM: Peer-reviewed (DAC 2023), simulation only</li>
+<li>vPIM: Peer-reviewed (<a class="cite" href="#ref-fatima-2023">DAC 2023</a>), simulation only</li>
 <li>IMPRINT: Conference paper (MEMSYS), simulation only</li>
 <li>No production PIM systems with integrated translation yet</li>
 </ul>
@@ -3844,7 +3844,7 @@ Different trade-off than general-purpose CPU
 
 <h2 id="section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</h2>
 
-<p>Chapter 14, Section 14.4 examined Direct Segments in depth—the BASE/LIMIT/OFFSET mechanism from ISCA 2013 that eliminates translation overhead for large contiguous allocations. Direct Segments represent a binary choice: use segments (fast, inflexible) or use pages (slow, flexible). Utopia [<a class="cite" href="#ref-utopiaresearchteam-2022">2022</a>] asks a different question: <strong>why choose?</strong></p>
+<p>Chapter 14, Section 14.4 examined Direct Segments in depth—the BASE/LIMIT/OFFSET mechanism from <a class="cite" href="#ref-jayneelgandhi-2013">ISCA 2013</a> that eliminates translation overhead for large contiguous allocations. Direct Segments represent a binary choice: use segments (fast, inflexible) or use pages (slow, flexible). Utopia [<a class="cite" href="#ref-utopiaresearchteam-2022">2022</a>] asks a different question: <strong>why choose?</strong></p>
 <figure id="fig-15-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">

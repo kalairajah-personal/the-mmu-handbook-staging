@@ -129,10 +129,38 @@ def link_cites(page, ch, aliases, stats):
         stats['cites'] += 1
         return f'{m.group(1)} [{_cite_a(k, m.group(2) + m.group(3))}]'
 
+    def by_name(m):
+        n = R.cite_name(m.group(1))
+        hits = {r['key'] for r in refs if n in r['names'] or n == r['base']}
+        if len(hits) != 1:
+            stats['unresolved_etal'] += 1
+            return m.group(0)
+        stats['etal'] += 1
+        return _cite_a(hits.pop(), m.group(0))
+
+    def by_venue(m):
+        v, y = m.group(1), m.group(2)
+        y = y if len(y) == 4 else ('20' + y if int(y) < 50 else '19' + y)
+        # venue and year must sit together in the reference ("MICRO 2024", "ASPLOS '23", "ISCA ... 2013)")
+        vre = re.compile(r'\b' + re.escape(v) + r'\b[^.;]{0,40}?(?:' + y + r"|['\u2019]" + y[2:] + r')\b')
+        hits = [r['key'] for r in refs if vre.search(r['text'])]
+        if len(hits) != 1:
+            return m.group(0)
+        stats['venue'] += 1
+        return _cite_a(hits[0], m.group(0))
+
+    def outside_anchors(p, rx, fn):
+        parts = R.SKIP.split(p)
+        for j in range(0, len(parts), 2):
+            parts[j] = rx.sub(fn, parts[j])
+        return ''.join(parts)
+
     for i in range(0, len(pieces), 2):
         p = R.BRACKET.sub(lambda m: group(m, '['), pieces[i])
         p = R.PAREN.sub(lambda m: group(m, '('), p)
         p = R.NARR.sub(narr, p)
+        p = outside_anchors(p, R.ETAL, by_name)
+        p = outside_anchors(p, R.VENUE, by_venue)
         pieces[i] = p
     new_body = ''.join(pieces)
     norm = lambda x: re.sub(r'[\[\]()\s]', '', R.text(x))
@@ -150,7 +178,8 @@ def process(page, ch, entries, aliases, cites=True, stats=None):
 
 
 def new_stats():
-    return {'refs': 0, 'tagged': 0, 'wrapped': 0, 'ledger': 0, 'unlinked': [], 'cites': 0, 'unresolved': []}
+    return {'refs': 0, 'tagged': 0, 'wrapped': 0, 'ledger': 0, 'unlinked': [], 'cites': 0, 'unresolved': [],
+            'etal': 0, 'unresolved_etal': 0, 'venue': 0}
 
 
 def files(args):
@@ -175,7 +204,7 @@ def main(argv):
             if not check:
                 f.write_text(new)
         print(f"{f.name}: refs {st['refs']} tagged {st['tagged']} wrapped {st['wrapped']} ledger {st['ledger']} "
-              f"unlinked {len(st['unlinked'])} cites {st['cites']} unresolved {len(st['unresolved'])}"
+              f"unlinked {len(st['unlinked'])} cites {st['cites']} etal {st['etal']} venue {st['venue']} unresolved {len(st['unresolved'])}"
               + (' CHANGED' if new != page else ''))
         for u in st['unresolved']:
             print('   unresolved:', u[:100])
