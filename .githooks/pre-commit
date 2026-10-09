@@ -9,6 +9,10 @@
 AUDIT_SCRIPT="/mnt/skills/user/chapter-structure/scripts/audit.py"
 CHAPTERS_DIR="$(git rev-parse --show-toplevel)/chapters"
 
+# Repo hygiene gate (G11): runs on every commit
+python3 "$(git rev-parse --show-toplevel)/scripts/audit_repo.py" || {
+  echo "COMMIT BLOCKED — repo hygiene check (G11) failed."; exit 1; }
+
 # Only run if chapter files are being committed
 CHAPTER_CHANGES=$(git diff --cached --name-only | grep -c 'chapters/chapter-.*\.html' || true)
 if [ "$CHAPTER_CHANGES" -eq "0" ]; then
