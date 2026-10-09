@@ -570,20 +570,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -701,23 +694,21 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </header>
 
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li class="toc-leaf"><a href="#section-19.1">19.1 Introduction: When Physical Memory Leaves the Socket</a></li>
-<li class="toc-leaf"><a href="#section-19.2">19.2 CXL Protocol Architecture: .io, .cache, .mem</a></li>
-<li class="toc-leaf"><a href="#section-19.3">19.3 CXL as a NUMA Node: How Linux Sees Disaggregated Memory</a></li>
-<li class="toc-leaf"><a href="#section-19.4">19.4 The Unchanged Mechanism, the Changed Cost</a></li>
-<li class="toc-leaf"><a href="#section-19.5">19.5 The Page Table Pinning Constraint</a></li>
-<li class="toc-leaf"><a href="#section-19.6">19.6 Memory Tiering: The OS Page Allocator Under CXL</a></li>
-<li class="toc-leaf"><a href="#section-19.7">19.7 TLB Shootdown Inverted: CXL Back-Invalidation</a></li>
-<li class="toc-leaf"><a href="#section-19.8">19.8 CXL 3.0 Shared Memory: Two-Stage Translation Returns</a></li>
-<li><details class="toc-sec"><summary><a href="#section-19.9">19.9 Production Deployments and Performance Engineering</a></summary>
-<ul><li><a href="#sec-19-9-1-azure-pond-cxl-memory-pooling-at-cloud-scale">19.9.1 Azure Pond: CXL Memory Pooling at Cloud Scale</a></li><li><a href="#sec-19-9-2-directcxl-load-store-vs-page-based-disaggregation">19.9.2 DirectCXL: Load/Store vs Page-Based Disaggregation</a></li><li><a href="#sec-19-9-3-meta-tpp-transparent-page-placement">19.9.3 Meta TPP: Transparent Page Placement</a></li><li><a href="#sec-19-9-4-tlb-thrashing-on-cxl-the-hash-join-problem">19.9.4 TLB Thrashing on CXL: The Hash Join Problem</a></li><li><a href="#sec-19-9-5-ai-ml-workloads-kv-cache-and-anns">19.9.5 AI/ML Workloads: KV Cache and ANNS</a></li><li><a href="#sec-19-9-6-five-production-tuning-rules">19.9.6 Five Production Tuning Rules</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#section-19.10">19.10 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-19.1">19.1 Introduction: When Physical Memory Leaves the Socket</a></li>
+<li><a href="#section-19.2">19.2 CXL Protocol Architecture: .io, .cache, .mem</a></li>
+<li><a href="#section-19.3">19.3 CXL as a NUMA Node: How Linux Sees Disaggregated Memory</a></li>
+<li><a href="#section-19.4">19.4 The Unchanged Mechanism, the Changed Cost</a></li>
+<li><a href="#section-19.5">19.5 The Page Table Pinning Constraint</a></li>
+<li><a href="#section-19.6">19.6 Memory Tiering: The OS Page Allocator Under CXL</a></li>
+<li><a href="#section-19.7">19.7 TLB Shootdown Inverted: CXL Back-Invalidation</a></li>
+<li><a href="#section-19.8">19.8 CXL 3.0 Shared Memory: Two-Stage Translation Returns</a></li>
+<li><a href="#section-19.9">19.9 Production Deployments and Performance Engineering</a><ul class="toc-sub"><li><a href="#sec-19-9-1-azure-pond-cxl-memory-pooling-at-cloud-scale">19.9.1 Azure Pond: CXL Memory Pooling at Cloud Scale</a></li><li><a href="#sec-19-9-2-directcxl-load-store-vs-page-based-disaggregation">19.9.2 DirectCXL: Load/Store vs Page-Based Disaggregation</a></li><li><a href="#sec-19-9-3-meta-tpp-transparent-page-placement">19.9.3 Meta TPP: Transparent Page Placement</a></li><li><a href="#sec-19-9-4-tlb-thrashing-on-cxl-the-hash-join-problem">19.9.4 TLB Thrashing on CXL: The Hash Join Problem</a></li><li><a href="#sec-19-9-5-ai-ml-workloads-kv-cache-and-anns">19.9.5 AI/ML Workloads: KV Cache and ANNS</a></li><li><a href="#sec-19-9-6-five-production-tuning-rules">19.9.6 Five Production Tuning Rules</a></li></ul></li>
+<li><a href="#section-19.10">19.10 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 <h2 id="section-19.1">19.1 Introduction: When Physical Memory Leaves the Socket</h2>

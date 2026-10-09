@@ -569,20 +569,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -700,39 +693,21 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 <h1 class="title">Chapter 3: Page Table Structures and Implementation</h1>
 </header>
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li><details class="toc-sec"><summary><a href="#section-3.1">3.1 Introduction</a></summary>
-<ul><li><a href="#why-page-table-design-matters">Why Page Table Design Matters</a></li><li><a href="#the-evolution-from-simple-to-sophisticated">The Evolution: From Simple to Sophisticated</a></li><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#a-note-on-architecture-coverage">A Note on Architecture Coverage</a></li><li><a href="#roadmap-for-part-2">Roadmap for Part 2</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-3.2">3.2 Single-Level Page Tables: The Simplest Approach</a></summary>
-<ul><li><a href="#3.2.1-structure-and-mechanics">3.2.1 Structure and Mechanics</a></li><li><a href="#3.2.2-size-calculations-and-memory-overhead">3.2.2 Size Calculations and Memory Overhead</a></li><li><a href="#3.2.3-advantages-and-when-single-level-tables-make-sense">3.2.3 Advantages and When Single-Level Tables Make Sense</a></li><li><a href="#3.2.4-fundamental-limitations">3.2.4 Fundamental Limitations</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-3.3">3.3 Two-Level Page Tables</a></summary>
-<ul><li><a href="#3.3.1-the-hierarchical-structure">3.3.1 The Hierarchical Structure</a></li><li><a href="#3.3.2-x86-32-bit-example-the-classic-implementation">3.3.2 x86 32-bit Example: The Classic Implementation</a></li><li><a href="#3.3.3-translation-walkthrough-with-concrete-example">3.3.3 Translation Walkthrough with Concrete Example</a></li><li><a href="#3.3.4-memory-savings-analysis">3.3.4 Memory Savings Analysis</a></li><li><a href="#3.3.5-the-cost-translation-complexity">3.3.5 The Cost: Translation Complexity</a></li><li><a href="#3.3.6-transition-to-more-levels">3.3.6 Transition to More Levels</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-3.4">3.4 Multi-Level Page Tables (3+ Levels)</a></summary>
-<ul><li><a href="#3.4.1-x86-64-four-level-paging-the-current-standard">3.4.1 x86-64 Four-Level Paging: The Current Standard</a></li><li><a href="#3.4.2-x86-64-five-level-paging-expanding-to-128-pb">3.4.2 x86-64 Five-Level Paging: Expanding to 128 PB</a></li><li><a href="#3.4.3-arm64-page-table-structures">3.4.3 ARM64 Page Table Structures</a></li><li><a href="#3.4.4-risc-v-page-table-structures">3.4.4 RISC-V Page Table Structures</a></li><li><a href="#3.4.5-translation-process-summary">3.4.5 Translation Process Summary</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-3.5">3.5 Virtualization: Two-Stage Address Translation</a></summary>
-<ul><li><a href="#3.6.2-intel-ept-extended-page-tables">3.6.2 Intel EPT (Extended Page Tables)</a></li><li><a href="#3.6.3-amd-npt-nested-page-tables">3.6.3 AMD NPT (Nested Page Tables)</a></li><li><a href="#3.6.4-arm-stage-2-translation">3.6.4 ARM Stage 2 Translation</a></li><li><a href="#3.6.5-risc-v-hypervisor-extension">3.6.5 RISC-V Hypervisor Extension</a></li><li><a href="#3.6.6-performance-impact-and-mitigations">3.6.6 Performance Impact and Mitigations</a></li><li><a href="#3.6.7-why-two-stages-matter">3.6.7 Why Two Stages Matter</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-3.6">3.6 What Gets Cached: TLB and Page Walk Caches</a></summary>
-<ul><li><a href="#3.7.1-translation-lookaside-buffer-tlb-final-translation-cache">3.7.1 Translation Lookaside Buffer (TLB): Final Translation Cache</a></li><li><a href="#3.7.2-page-walk-caches-the-hidden-optimization">3.7.2 Page Walk Caches: The Hidden Optimization</a></li><li><a href="#3.7.3-caching-in-virtualization-combined-tlb">3.7.3 Caching in Virtualization: Combined TLB</a></li><li><a href="#3.7.4-what-is-not-cached-important-clarifications">3.7.4 What Is NOT Cached: Important Clarifications</a></li><li><a href="#3.7.5-caching-hierarchy-summary-table">3.7.5 Caching Hierarchy Summary Table</a></li><li><a href="#3.7.6-performance-implications">3.7.6 Performance Implications</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-3.7">3.7 Hardware Page Table Walker</a></summary>
-<ul><li><a href="#3.8.1-the-page-walk-state-machine">3.8.1 The Page Walk State Machine</a></li><li><a href="#3.8.2-hardware-managed-vs-software-managed-bits">3.8.2 Hardware-Managed vs Software-Managed Bits</a></li><li><a href="#3.8.3-performance-characteristics">3.8.3 Performance Characteristics</a></li><li><a href="#3.8.4-tlb-coherence-and-shootdown-mechanisms">3.8.4 TLB Coherence and Shootdown on Multicore Processors</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-3.8">3.8 Page Table Management from the OS Perspective</a></summary>
-<ul><li><a href="#3.9.1-process-creation-and-page-table-allocation">3.9.1 Process Creation and Page Table Allocation</a></li><li><a href="#3.9.2-copy-on-write-cow-and-fork">3.9.2 Copy-on-Write (COW) and Fork</a></li><li><a href="#3.9.3-transparent-huge-pages-thp">3.9.3 Transparent Huge Pages (THP)</a></li><li><a href="#3.9.4-page-table-reclamation">3.9.4 Page Table Reclamation</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-3.9">3.9 Design Trade-offs</a></summary>
-<ul><li><a href="#3.10.1-memory-overhead-vs-translation-speed">3.10.1 Memory Overhead vs Translation Speed</a></li><li><a href="#3.10.2-page-size-selection">3.10.2 Page Size Selection</a></li><li><a href="#3.10.3-hardware-vs-software-complexity">3.10.3 Hardware vs Software Complexity</a></li><li><a href="#3.10.4-virtualization-overhead">3.10.4 Virtualization Overhead</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#section-3.10">3.10 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-3.1">3.1 Introduction</a><ul class="toc-sub"><li><a href="#why-page-table-design-matters">Why Page Table Design Matters</a></li><li><a href="#the-evolution-from-simple-to-sophisticated">The Evolution: From Simple to Sophisticated</a></li><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#a-note-on-architecture-coverage">A Note on Architecture Coverage</a></li><li><a href="#roadmap-for-part-2">Roadmap for Part 2</a></li></ul></li>
+<li><a href="#section-3.2">3.2 Single-Level Page Tables: The Simplest Approach</a><ul class="toc-sub"><li><a href="#3.2.1-structure-and-mechanics">3.2.1 Structure and Mechanics</a></li><li><a href="#3.2.2-size-calculations-and-memory-overhead">3.2.2 Size Calculations and Memory Overhead</a></li><li><a href="#3.2.3-advantages-and-when-single-level-tables-make-sense">3.2.3 Advantages and When Single-Level Tables Make Sense</a></li><li><a href="#3.2.4-fundamental-limitations">3.2.4 Fundamental Limitations</a></li></ul></li>
+<li><a href="#section-3.3">3.3 Two-Level Page Tables</a><ul class="toc-sub"><li><a href="#3.3.1-the-hierarchical-structure">3.3.1 The Hierarchical Structure</a></li><li><a href="#3.3.2-x86-32-bit-example-the-classic-implementation">3.3.2 x86 32-bit Example: The Classic Implementation</a></li><li><a href="#3.3.3-translation-walkthrough-with-concrete-example">3.3.3 Translation Walkthrough with Concrete Example</a></li><li><a href="#3.3.4-memory-savings-analysis">3.3.4 Memory Savings Analysis</a></li><li><a href="#3.3.5-the-cost-translation-complexity">3.3.5 The Cost: Translation Complexity</a></li><li><a href="#3.3.6-transition-to-more-levels">3.3.6 Transition to More Levels</a></li></ul></li>
+<li><a href="#section-3.4">3.4 Multi-Level Page Tables (3+ Levels)</a><ul class="toc-sub"><li><a href="#3.4.1-x86-64-four-level-paging-the-current-standard">3.4.1 x86-64 Four-Level Paging: The Current Standard</a></li><li><a href="#3.4.2-x86-64-five-level-paging-expanding-to-128-pb">3.4.2 x86-64 Five-Level Paging: Expanding to 128 PB</a></li><li><a href="#3.4.3-arm64-page-table-structures">3.4.3 ARM64 Page Table Structures</a></li><li><a href="#3.4.4-risc-v-page-table-structures">3.4.4 RISC-V Page Table Structures</a></li><li><a href="#3.4.5-translation-process-summary">3.4.5 Translation Process Summary</a></li></ul></li>
+<li><a href="#section-3.5">3.5 Virtualization: Two-Stage Address Translation</a><ul class="toc-sub"><li><a href="#3.6.2-intel-ept-extended-page-tables">3.6.2 Intel EPT (Extended Page Tables)</a></li><li><a href="#3.6.3-amd-npt-nested-page-tables">3.6.3 AMD NPT (Nested Page Tables)</a></li><li><a href="#3.6.4-arm-stage-2-translation">3.6.4 ARM Stage 2 Translation</a></li><li><a href="#3.6.5-risc-v-hypervisor-extension">3.6.5 RISC-V Hypervisor Extension</a></li><li><a href="#3.6.6-performance-impact-and-mitigations">3.6.6 Performance Impact and Mitigations</a></li><li><a href="#3.6.7-why-two-stages-matter">3.6.7 Why Two Stages Matter</a></li></ul></li>
+<li><a href="#section-3.6">3.6 What Gets Cached: TLB and Page Walk Caches</a><ul class="toc-sub"><li><a href="#3.7.1-translation-lookaside-buffer-tlb-final-translation-cache">3.7.1 Translation Lookaside Buffer (TLB): Final Translation Cache</a></li><li><a href="#3.7.2-page-walk-caches-the-hidden-optimization">3.7.2 Page Walk Caches: The Hidden Optimization</a></li><li><a href="#3.7.3-caching-in-virtualization-combined-tlb">3.7.3 Caching in Virtualization: Combined TLB</a></li><li><a href="#3.7.4-what-is-not-cached-important-clarifications">3.7.4 What Is NOT Cached: Important Clarifications</a></li><li><a href="#3.7.5-caching-hierarchy-summary-table">3.7.5 Caching Hierarchy Summary Table</a></li><li><a href="#3.7.6-performance-implications">3.7.6 Performance Implications</a></li></ul></li>
+<li><a href="#section-3.7">3.7 Hardware Page Table Walker</a><ul class="toc-sub"><li><a href="#3.8.1-the-page-walk-state-machine">3.8.1 The Page Walk State Machine</a></li><li><a href="#3.8.2-hardware-managed-vs-software-managed-bits">3.8.2 Hardware-Managed vs Software-Managed Bits</a></li><li><a href="#3.8.3-performance-characteristics">3.8.3 Performance Characteristics</a></li><li><a href="#3.8.4-tlb-coherence-and-shootdown-mechanisms">3.8.4 TLB Coherence and Shootdown on Multicore Processors</a></li></ul></li>
+<li><a href="#section-3.8">3.8 Page Table Management from the OS Perspective</a><ul class="toc-sub"><li><a href="#3.9.1-process-creation-and-page-table-allocation">3.9.1 Process Creation and Page Table Allocation</a></li><li><a href="#3.9.2-copy-on-write-cow-and-fork">3.9.2 Copy-on-Write (COW) and Fork</a></li><li><a href="#3.9.3-transparent-huge-pages-thp">3.9.3 Transparent Huge Pages (THP)</a></li><li><a href="#3.9.4-page-table-reclamation">3.9.4 Page Table Reclamation</a></li></ul></li>
+<li><a href="#section-3.9">3.9 Design Trade-offs</a><ul class="toc-sub"><li><a href="#3.10.1-memory-overhead-vs-translation-speed">3.10.1 Memory Overhead vs Translation Speed</a></li><li><a href="#3.10.2-page-size-selection">3.10.2 Page Size Selection</a></li><li><a href="#3.10.3-hardware-vs-software-complexity">3.10.3 Hardware vs Software Complexity</a></li><li><a href="#3.10.4-virtualization-overhead">3.10.4 Virtualization Overhead</a></li></ul></li>
+<li><a href="#section-3.10">3.10 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 <h2 id="section-3.1">3.1 Introduction</h2>

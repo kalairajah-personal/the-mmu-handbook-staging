@@ -568,20 +568,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -699,29 +692,17 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 <h1 class="title">Chapter 15: Beyond Traditional MMU - Alternative Translation Architectures</h1>
 </header>
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li><details class="toc-sec"><summary><a href="#section-15.1">15.1 Introduction</a></summary>
-<ul><li><a href="#why-question-this-assumption">Why Question This Assumption Now?</a></li><li><a href="#what-makes-an-alternative-architecture">What Makes an "Alternative" Architecture?</a></li><li><a href="#chapter-roadmap">Chapter Roadmap</a></li><li><a href="#relationship-to-previous-chapters">Relationship to Previous Chapters</a></li><li><a href="#scope-and-limitations">Scope and Limitations</a></li><li><a href="#evaluation-framework">Evaluation Framework</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-15.2">15.2 Network-Level Translation</a></summary>
-<ul><li><a href="#mind-memory-in-network-disaggregation">15.2.1 MIND: Memory-in-Network Disaggregation</a></li><li><a href="#pulse-distributed-translation-for-far-memory">15.2.2 pulse: Distributed Translation for Far Memory</a></li><li><a href="#network-translation-implications">15.2.3 Network Translation: Implications and Limitations</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-15.3">15.3 Processing-in-Memory Translation (PIM-TLB)</a></summary>
-<ul><li><a href="#motivation-memory-wall-and-pim">15.3.1 Motivation: The Memory Wall and PIM</a></li><li><a href="#vpim-scalable-pim-translation">15.3.2 vPIM: Scalable Virtual Address Translation for PIM</a></li><li><a href="#imprint-page-translation-in-hbm">15.3.3 IMPRINT: Page Translation Table in HBM Logic Layer</a></li><li><a href="#emerging-pim-tlb-research">15.3.4 Emerging PIM-TLB Research (2025)</a></li><li><a href="#pim-tlb-synthesis">15.3.5 PIM-TLB Synthesis and Outlook</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</a></summary>
-<ul><li><a href="#motivation-the-flexibility-performance-tradeoff">15.4.1 Motivation: The Flexibility-Performance Trade-off</a></li><li><a href="#utopia-architecture">15.4.2 Utopia Architecture: Automatic Hybrid Translation</a></li><li><a href="#performance-evaluation">15.4.3 Performance Evaluation</a></li><li><a href="#implementation-challenges">15.4.4 Implementation Challenges</a></li><li><a href="#relationship-to-chapter-14">15.4.5 Relationship to Chapter 14</a></li><li><a href="#deployment-outlook">15.4.6 Deployment Outlook</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-15.5">15.5 Comparative Analysis</a></summary>
-<ul><li><a href="#architectural-comparison">15.5.1 Architectural Comparison</a></li><li><a href="#workload-suitability">15.5.2 Workload Suitability</a></li><li><a href="#deployment-considerations">15.5.3 Deployment Considerations</a></li><li><a href="#coexistence-and-combination">15.5.4 Coexistence and Combination</a></li><li><a href="#relationship-to-traditional-mmu-1">15.5.5 Relationship to Traditional MMU</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-15.6">15.6 Chapter Summary</a></summary>
-<ul><li><a href="#key-findings">Key Findings</a></li><li><a href="#relationship-to-book-narrative">Relationship to Book Narrative</a></li><li><a href="#deployment-reality-check">Deployment Reality Check</a></li><li><a href="#lessons-for-system-designers">Lessons for System Designers</a></li><li><a href="#open-questions">Open Questions</a></li><li><a href="#looking-forward">Looking Forward</a></li><li><a href="#final-thoughts">Final Thoughts</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-15.1">15.1 Introduction</a><ul class="toc-sub"><li><a href="#why-question-this-assumption">Why Question This Assumption Now?</a></li><li><a href="#what-makes-an-alternative-architecture">What Makes an "Alternative" Architecture?</a></li><li><a href="#chapter-roadmap">Chapter Roadmap</a></li><li><a href="#relationship-to-previous-chapters">Relationship to Previous Chapters</a></li><li><a href="#scope-and-limitations">Scope and Limitations</a></li><li><a href="#evaluation-framework">Evaluation Framework</a></li></ul></li>
+<li><a href="#section-15.2">15.2 Network-Level Translation</a><ul class="toc-sub"><li><a href="#mind-memory-in-network-disaggregation">15.2.1 MIND: Memory-in-Network Disaggregation</a></li><li><a href="#pulse-distributed-translation-for-far-memory">15.2.2 pulse: Distributed Translation for Far Memory</a></li><li><a href="#network-translation-implications">15.2.3 Network Translation: Implications and Limitations</a></li></ul></li>
+<li><a href="#section-15.3">15.3 Processing-in-Memory Translation (PIM-TLB)</a><ul class="toc-sub"><li><a href="#motivation-memory-wall-and-pim">15.3.1 Motivation: The Memory Wall and PIM</a></li><li><a href="#vpim-scalable-pim-translation">15.3.2 vPIM: Scalable Virtual Address Translation for PIM</a></li><li><a href="#imprint-page-translation-in-hbm">15.3.3 IMPRINT: Page Translation Table in HBM Logic Layer</a></li><li><a href="#emerging-pim-tlb-research">15.3.4 Emerging PIM-TLB Research (2025)</a></li><li><a href="#pim-tlb-synthesis">15.3.5 PIM-TLB Synthesis and Outlook</a></li></ul></li>
+<li><a href="#section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</a><ul class="toc-sub"><li><a href="#motivation-the-flexibility-performance-tradeoff">15.4.1 Motivation: The Flexibility-Performance Trade-off</a></li><li><a href="#utopia-architecture">15.4.2 Utopia Architecture: Automatic Hybrid Translation</a></li><li><a href="#performance-evaluation">15.4.3 Performance Evaluation</a></li><li><a href="#implementation-challenges">15.4.4 Implementation Challenges</a></li><li><a href="#relationship-to-chapter-14">15.4.5 Relationship to Chapter 14</a></li><li><a href="#deployment-outlook">15.4.6 Deployment Outlook</a></li></ul></li>
+<li><a href="#section-15.5">15.5 Comparative Analysis</a><ul class="toc-sub"><li><a href="#architectural-comparison">15.5.1 Architectural Comparison</a></li><li><a href="#workload-suitability">15.5.2 Workload Suitability</a></li><li><a href="#deployment-considerations">15.5.3 Deployment Considerations</a></li><li><a href="#coexistence-and-combination">15.5.4 Coexistence and Combination</a></li><li><a href="#relationship-to-traditional-mmu-1">15.5.5 Relationship to Traditional MMU</a></li></ul></li>
+<li><a href="#section-15.6">15.6 Chapter Summary</a><ul class="toc-sub"><li><a href="#key-findings">Key Findings</a></li><li><a href="#relationship-to-book-narrative">Relationship to Book Narrative</a></li><li><a href="#deployment-reality-check">Deployment Reality Check</a></li><li><a href="#lessons-for-system-designers">Lessons for System Designers</a></li><li><a href="#open-questions">Open Questions</a></li><li><a href="#looking-forward">Looking Forward</a></li><li><a href="#final-thoughts">Final Thoughts</a></li></ul></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 <h2 id="section-15.1">15.1 Introduction</h2>

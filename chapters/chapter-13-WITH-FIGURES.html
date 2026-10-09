@@ -567,20 +567,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -700,24 +693,16 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </header>
 
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li><details class="toc-sec"><summary><a href="#section-13.1">13.1 Introduction: The ML Seduction</a></summary>
-<ul><li><a href="#core-thesis-software-hardware-for-complex-logic">Core Thesis: Software &gt; Hardware for Complex Logic</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-13.2">13.2 Pythia: Why Hardware RL Failed</a></summary>
-<ul><li><a href="#section-13.2.1">13.2.1 The Q-Learning Approach</a></li><li><a href="#section-13.2.2">13.2.2 Performance Results and Analysis</a></li><li><a href="#section-13.2.3">13.2.3 Why Pythia Didn't Ship</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-13.3">13.3 LVM: Can Learned Indexes Save Page Tables?</a></summary>
-<ul><li><a href="#section-13.3.1">13.3.1 The Learned Index Revolution</a></li><li><a href="#section-13.3.2">13.3.2 LVM Architecture and Results</a></li><li><a href="#section-13.3.3">13.3.3 Production Viability Analysis</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-13.4">13.4 LeCaR: The Rare Success (And Why)</a></summary>
-<ul><li><a href="#section-13.4.1">13.3.4.1 LeCaR Architecture</a></li><li><a href="#section-13.4.2">13.4.2 Why LeCaR Succeeded Where Pythia Failed</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#section-13.5">13.5 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-13.1">13.1 Introduction: The ML Seduction</a><ul class="toc-sub"><li><a href="#core-thesis-software-hardware-for-complex-logic">Core Thesis: Software &gt; Hardware for Complex Logic</a></li></ul></li>
+<li><a href="#section-13.2">13.2 Pythia: Why Hardware RL Failed</a><ul class="toc-sub"><li><a href="#section-13.2.1">13.2.1 The Q-Learning Approach</a></li><li><a href="#section-13.2.2">13.2.2 Performance Results and Analysis</a></li><li><a href="#section-13.2.3">13.2.3 Why Pythia Didn't Ship</a></li></ul></li>
+<li><a href="#section-13.3">13.3 LVM: Can Learned Indexes Save Page Tables?</a><ul class="toc-sub"><li><a href="#section-13.3.1">13.3.1 The Learned Index Revolution</a></li><li><a href="#section-13.3.2">13.3.2 LVM Architecture and Results</a></li><li><a href="#section-13.3.3">13.3.3 Production Viability Analysis</a></li></ul></li>
+<li><a href="#section-13.4">13.4 LeCaR: The Rare Success (And Why)</a><ul class="toc-sub"><li><a href="#section-13.4.1">13.3.4.1 LeCaR Architecture</a></li><li><a href="#section-13.4.2">13.4.2 Why LeCaR Succeeded Where Pythia Failed</a></li></ul></li>
+<li><a href="#section-13.5">13.5 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 <h2 id="section-13.1">13.1 Introduction: The ML Seduction</h2>

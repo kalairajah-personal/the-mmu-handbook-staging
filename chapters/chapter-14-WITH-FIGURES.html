@@ -568,20 +568,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -699,30 +692,18 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 <h1 class="title">Chapter 14: Software-Managed Memory for AI Workloads</h1>
 </header>
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li><details class="toc-sec"><summary><a href="#section-14.1">14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving</a></summary>
-<ul><li><a href="#section-14.1.1">14.1.1 The Design Assumptions of Virtual Memory</a></li><li><a href="#section-14.1.2">14.1.2 LLM Memory Requirements: A Fundamental Mismatch</a></li><li><a href="#section-14.1.3">14.1.3 The TLB Reach Crisis</a></li><li><a href="#section-14.1.4">14.1.4 Memory Fragmentation in LLM Serving</a></li><li><a href="#section-14.1.5">14.1.5 Why Traditional Solutions Fall Short</a></li><li><a href="#section-14.1.6">14.1.6 The Software-Managed Memory Hypothesis</a></li><li><a href="#section-14.1.7">14.1.7 Translation-Bypass Mechanisms</a></li><li><a href="#section-14.1.8">14.1.8 Chapter Organization and Scope</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-14.2">14.2 Memory Management Failure Modes</a></summary>
-<ul><li><a href="#section-14.2.1">14.2.1 Fragmentation in Pre-Allocation Systems</a></li><li><a href="#section-14.2.2">14.2.2 Page Granularity Mismatch</a></li><li><a href="#section-14.2.3">14.2.3 Traditional Workloads vs. LLM Access Patterns</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-14.3">14.3 Software-Managed Memory: The vLLM System</a></summary>
-<ul><li><a href="#section-14.3.1">14.3.1 The PagedAttention Algorithm</a></li><li><a href="#section-14.3.2">14.3.2 Memory Management Architecture</a></li><li><a href="#section-14.3.3">14.3.3 Copy-on-Write and Memory Sharing</a></li><li><a href="#section-14.3.4">14.3.4 Experimental Evaluation</a></li><li><a href="#section-14.3.5">14.3.5 Implementation Details and Overhead Analysis</a></li><li><a href="#section-14.3.6">14.3.6 Proactive Memory Scheduling (MSched)</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-14.4">14.4 Translation-Bypass Mechanisms: Direct Segment Addressing</a></summary>
-<ul><li><a href="#section-14.4.1">14.4.1 Motivation and Design Principles</a></li><li><a href="#section-14.4.2">14.4.2 Integration with Existing Virtual Memory</a></li><li><a href="#section-14.4.3">14.4.3 Experimental Evaluation on Graph Analytics</a></li><li><a href="#section-14.4.4">14.4.4 Potential Application to LLM Workloads</a></li><li><a href="#section-14.4.5">14.4.5 Comparison with vLLM and Complementary Approaches</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-14.5">14.5 Comparative Analysis and Design Trade-offs</a></summary>
-<ul><li><a href="#section-14.5.1">14.5.1 Design Space Taxonomy</a></li><li><a href="#section-14.5.2">14.5.2 Performance Characteristics from Published Results</a></li><li><a href="#section-14.5.3">14.5.3 Trade-off Analysis</a></li><li><a href="#section-14.5.4">14.5.4 When to Use Each Approach</a></li><li><a href="#section-14.5.5">14.5.5 Limitations and Unresolved Challenges</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-14.6">14.6 Future Research Directions</a></summary>
-<ul><li><a href="#section-14.6.1">14.6.1 Open Problems from vLLM (Kwon et al., 2023)</a></li><li><a href="#section-14.6.2">14.6.2 Open Problems from Direct Segments (Basu et al., 2013)</a></li><li><a href="#section-14.6.3">14.6.3 Research Gaps Not Addressed by Existing Work</a></li><li><a href="#section-14.6.4">14.6.4 Methodological Gaps</a></li><li><a href="#section-14.6.5">14.6.5 Long-Term Research Questions</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#section-14.7">14.7 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-14.1">14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving</a><ul class="toc-sub"><li><a href="#section-14.1.1">14.1.1 The Design Assumptions of Virtual Memory</a></li><li><a href="#section-14.1.2">14.1.2 LLM Memory Requirements: A Fundamental Mismatch</a></li><li><a href="#section-14.1.3">14.1.3 The TLB Reach Crisis</a></li><li><a href="#section-14.1.4">14.1.4 Memory Fragmentation in LLM Serving</a></li><li><a href="#section-14.1.5">14.1.5 Why Traditional Solutions Fall Short</a></li><li><a href="#section-14.1.6">14.1.6 The Software-Managed Memory Hypothesis</a></li><li><a href="#section-14.1.7">14.1.7 Translation-Bypass Mechanisms</a></li><li><a href="#section-14.1.8">14.1.8 Chapter Organization and Scope</a></li></ul></li>
+<li><a href="#section-14.2">14.2 Memory Management Failure Modes</a><ul class="toc-sub"><li><a href="#section-14.2.1">14.2.1 Fragmentation in Pre-Allocation Systems</a></li><li><a href="#section-14.2.2">14.2.2 Page Granularity Mismatch</a></li><li><a href="#section-14.2.3">14.2.3 Traditional Workloads vs. LLM Access Patterns</a></li></ul></li>
+<li><a href="#section-14.3">14.3 Software-Managed Memory: The vLLM System</a><ul class="toc-sub"><li><a href="#section-14.3.1">14.3.1 The PagedAttention Algorithm</a></li><li><a href="#section-14.3.2">14.3.2 Memory Management Architecture</a></li><li><a href="#section-14.3.3">14.3.3 Copy-on-Write and Memory Sharing</a></li><li><a href="#section-14.3.4">14.3.4 Experimental Evaluation</a></li><li><a href="#section-14.3.5">14.3.5 Implementation Details and Overhead Analysis</a></li><li><a href="#section-14.3.6">14.3.6 Proactive Memory Scheduling (MSched)</a></li></ul></li>
+<li><a href="#section-14.4">14.4 Translation-Bypass Mechanisms: Direct Segment Addressing</a><ul class="toc-sub"><li><a href="#section-14.4.1">14.4.1 Motivation and Design Principles</a></li><li><a href="#section-14.4.2">14.4.2 Integration with Existing Virtual Memory</a></li><li><a href="#section-14.4.3">14.4.3 Experimental Evaluation on Graph Analytics</a></li><li><a href="#section-14.4.4">14.4.4 Potential Application to LLM Workloads</a></li><li><a href="#section-14.4.5">14.4.5 Comparison with vLLM and Complementary Approaches</a></li></ul></li>
+<li><a href="#section-14.5">14.5 Comparative Analysis and Design Trade-offs</a><ul class="toc-sub"><li><a href="#section-14.5.1">14.5.1 Design Space Taxonomy</a></li><li><a href="#section-14.5.2">14.5.2 Performance Characteristics from Published Results</a></li><li><a href="#section-14.5.3">14.5.3 Trade-off Analysis</a></li><li><a href="#section-14.5.4">14.5.4 When to Use Each Approach</a></li><li><a href="#section-14.5.5">14.5.5 Limitations and Unresolved Challenges</a></li></ul></li>
+<li><a href="#section-14.6">14.6 Future Research Directions</a><ul class="toc-sub"><li><a href="#section-14.6.1">14.6.1 Open Problems from vLLM (Kwon et al., 2023)</a></li><li><a href="#section-14.6.2">14.6.2 Open Problems from Direct Segments (Basu et al., 2013)</a></li><li><a href="#section-14.6.3">14.6.3 Research Gaps Not Addressed by Existing Work</a></li><li><a href="#section-14.6.4">14.6.4 Methodological Gaps</a></li><li><a href="#section-14.6.5">14.6.5 Long-Term Research Questions</a></li></ul></li>
+<li><a href="#section-14.7">14.7 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 <p><em>This chapter examines software-managed memory approaches for large language model workloads, demonstrating how application-controlled memory allocation can achieve 2-4× throughput improvements over traditional OS-managed virtual memory. We analyze two peer-reviewed systems—vLLM's PagedAttention (SOSP 2023) and Direct Segments (ISCA 2013)—presenting comprehensive technical evaluations, comparative analysis, and future research directions.</em></p>

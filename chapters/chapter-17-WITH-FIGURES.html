@@ -568,20 +568,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -700,37 +693,21 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </header>
 
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li class="toc-leaf"><a href="#section-17.1">17.1 Introduction: The Hidden Machine Inside the MMU</a></li>
-<li><details class="toc-sec"><summary><a href="#section-17.2">17.2 PTW Pipeline Stages and Latency</a></summary>
-<ul><li><a href="#stage-0-tlb-miss-detection">Stage 0 — TLB miss detection</a></li><li><a href="#stage-1-cr3-load">Stage 1 — CR3 load</a></li><li><a href="#stages-2-5-pml4e-pdpte-pde-pte-fetches">Stages 2–5 — PML4E, PDPTE, PDE, PTE fetches</a></li><li><a href="#stage-6-tlb-fill">Stage 6 — TLB fill</a></li><li><a href="#latency-model-and-huge-page-impact">Latency model and huge page impact</a></li><li><a href="#measuring-walk-latency-in-practice">Measuring walk latency in practice</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-17.3">17.3 Page Walk Caches</a></summary>
-<ul><li><a href="#pwc-structure-and-tagging">PWC structure and tagging</a></li><li><a href="#pwc-invalidation">PWC invalidation</a></li><li><a href="#pwc-hit-rates-in-practice">PWC hit rates in practice</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-17.4">17.4 Miss-Status Holding Registers and Concurrent Walks</a></summary>
-<ul><li><a href="#mshr-allocation-and-coalescing">MSHR allocation and coalescing</a></li><li><a href="#concurrent-walker-capacity-by-microarchitecture">Concurrent walker capacity by microarchitecture</a></li><li><a href="#coalescing-window-and-temporal-locality">Coalescing window and temporal locality</a></li><li><a href="#mshr-starvation-and-the-ptw-bottleneck">MSHR starvation and the PTW bottleneck</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-17.5">17.5 Speculative Page Table Walks</a></summary>
-<ul><li><a href="#the-security-critical-case-speculative-walks-on-p-0-ptes">The security-critical case: speculative walks on P=0 PTEs</a></li><li><a href="#l1-terminal-fault-foreshadow-cve-2018-3615-3620-3646">L1 Terminal Fault (Foreshadow) — CVE-2018-3615/3620/3646</a></li><li><a href="#mitigations-and-residual-risk">Mitigations and residual risk</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-17.6">17.6 PTW Parallelism and Throughput</a></summary>
-<ul><li><a href="#throughput-ceiling-analysis">Throughput ceiling analysis</a></li><li><a href="#pipelining-between-walks">Pipelining between walks</a></li><li><a href="#interaction-with-huge-pages">Interaction with huge pages</a></li><li><a href="#workload-characterisation-and-the-tlb-to-ptw-handoff">Workload characterisation and the TLB-to-PTW handoff</a></li><li><a href="#practical-throughput-optimisation-strategies">Practical throughput optimisation strategies</a></li><li><a href="#numa-effects-on-ptw-latency">NUMA effects on PTW latency</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-17.7">17.7 x86-64 PTW Microarchitecture</a></summary>
-<ul><li><a href="#fsm-structure-and-microcode-handoff">FSM structure and microcode handoff</a></li><li><a href="#pcid-interaction-and-context-switch-optimisation">PCID interaction and context-switch optimisation</a></li><li><a href="#microcode-update-mechanics-for-ptw-behaviour">Microcode update mechanics for PTW behaviour</a></li><li><a href="#sec-5-level-paging-la57">5-level paging (LA57)</a></li><li><a href="#accessed-and-dirty-bit-maintenance">Accessed and Dirty bit maintenance</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-17.8">17.8 ARM64 Translation Table Walk</a></summary>
-<ul><li><a href="#ttw-structure-and-ttbr-organisation">TTW structure and TTBR organisation</a></li><li><a href="#stage-2-translation-and-nested-walks">Stage-2 translation and nested walks</a></li><li><a href="#tlbi-instruction-granularity">TLBI instruction granularity</a></li><li><a href="#hardware-dirty-state-management-hdbm">Hardware Dirty State Management (HDBM)</a></li><li><a href="#implementation-survey-apple-m-series-and-aws-graviton">Implementation survey: Apple M-series and AWS Graviton</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-17.9">17.9 RISC-V Software-Managed PTW</a></summary>
-<ul><li><a href="#base-risc-v-tlb-miss-handling">Base RISC-V TLB miss handling</a></li><li><a href="#sv39-sv48-sv57-and-sv64-modes">Sv39, Sv48, Sv57, and Sv64 modes</a></li><li><a href="#hardware-walker-extensions">Hardware walker extensions</a></li><li><a href="#cost-model-and-software-hardware-tradeoff">Cost model and software-hardware tradeoff</a></li><li><a href="#impact-on-os-design">Impact on OS design</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#section-17.10">17.10 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-17.1">17.1 Introduction: The Hidden Machine Inside the MMU</a></li>
+<li><a href="#section-17.2">17.2 PTW Pipeline Stages and Latency</a><ul class="toc-sub"><li><a href="#stage-0-tlb-miss-detection">Stage 0 — TLB miss detection</a></li><li><a href="#stage-1-cr3-load">Stage 1 — CR3 load</a></li><li><a href="#stages-2-5-pml4e-pdpte-pde-pte-fetches">Stages 2–5 — PML4E, PDPTE, PDE, PTE fetches</a></li><li><a href="#stage-6-tlb-fill">Stage 6 — TLB fill</a></li><li><a href="#latency-model-and-huge-page-impact">Latency model and huge page impact</a></li><li><a href="#measuring-walk-latency-in-practice">Measuring walk latency in practice</a></li></ul></li>
+<li><a href="#section-17.3">17.3 Page Walk Caches</a><ul class="toc-sub"><li><a href="#pwc-structure-and-tagging">PWC structure and tagging</a></li><li><a href="#pwc-invalidation">PWC invalidation</a></li><li><a href="#pwc-hit-rates-in-practice">PWC hit rates in practice</a></li></ul></li>
+<li><a href="#section-17.4">17.4 Miss-Status Holding Registers and Concurrent Walks</a><ul class="toc-sub"><li><a href="#mshr-allocation-and-coalescing">MSHR allocation and coalescing</a></li><li><a href="#concurrent-walker-capacity-by-microarchitecture">Concurrent walker capacity by microarchitecture</a></li><li><a href="#coalescing-window-and-temporal-locality">Coalescing window and temporal locality</a></li><li><a href="#mshr-starvation-and-the-ptw-bottleneck">MSHR starvation and the PTW bottleneck</a></li></ul></li>
+<li><a href="#section-17.5">17.5 Speculative Page Table Walks</a><ul class="toc-sub"><li><a href="#the-security-critical-case-speculative-walks-on-p-0-ptes">The security-critical case: speculative walks on P=0 PTEs</a></li><li><a href="#l1-terminal-fault-foreshadow-cve-2018-3615-3620-3646">L1 Terminal Fault (Foreshadow) — CVE-2018-3615/3620/3646</a></li><li><a href="#mitigations-and-residual-risk">Mitigations and residual risk</a></li></ul></li>
+<li><a href="#section-17.6">17.6 PTW Parallelism and Throughput</a><ul class="toc-sub"><li><a href="#throughput-ceiling-analysis">Throughput ceiling analysis</a></li><li><a href="#pipelining-between-walks">Pipelining between walks</a></li><li><a href="#interaction-with-huge-pages">Interaction with huge pages</a></li><li><a href="#workload-characterisation-and-the-tlb-to-ptw-handoff">Workload characterisation and the TLB-to-PTW handoff</a></li><li><a href="#practical-throughput-optimisation-strategies">Practical throughput optimisation strategies</a></li><li><a href="#numa-effects-on-ptw-latency">NUMA effects on PTW latency</a></li></ul></li>
+<li><a href="#section-17.7">17.7 x86-64 PTW Microarchitecture</a><ul class="toc-sub"><li><a href="#fsm-structure-and-microcode-handoff">FSM structure and microcode handoff</a></li><li><a href="#pcid-interaction-and-context-switch-optimisation">PCID interaction and context-switch optimisation</a></li><li><a href="#microcode-update-mechanics-for-ptw-behaviour">Microcode update mechanics for PTW behaviour</a></li><li><a href="#sec-5-level-paging-la57">5-level paging (LA57)</a></li><li><a href="#accessed-and-dirty-bit-maintenance">Accessed and Dirty bit maintenance</a></li></ul></li>
+<li><a href="#section-17.8">17.8 ARM64 Translation Table Walk</a><ul class="toc-sub"><li><a href="#ttw-structure-and-ttbr-organisation">TTW structure and TTBR organisation</a></li><li><a href="#stage-2-translation-and-nested-walks">Stage-2 translation and nested walks</a></li><li><a href="#tlbi-instruction-granularity">TLBI instruction granularity</a></li><li><a href="#hardware-dirty-state-management-hdbm">Hardware Dirty State Management (HDBM)</a></li><li><a href="#implementation-survey-apple-m-series-and-aws-graviton">Implementation survey: Apple M-series and AWS Graviton</a></li></ul></li>
+<li><a href="#section-17.9">17.9 RISC-V Software-Managed PTW</a><ul class="toc-sub"><li><a href="#base-risc-v-tlb-miss-handling">Base RISC-V TLB miss handling</a></li><li><a href="#sv39-sv48-sv57-and-sv64-modes">Sv39, Sv48, Sv57, and Sv64 modes</a></li><li><a href="#hardware-walker-extensions">Hardware walker extensions</a></li><li><a href="#cost-model-and-software-hardware-tradeoff">Cost model and software-hardware tradeoff</a></li><li><a href="#impact-on-os-design">Impact on OS design</a></li></ul></li>
+<li><a href="#section-17.10">17.10 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 <h2 id="section-17.1">17.1 Introduction: The Hidden Machine Inside the MMU</h2>

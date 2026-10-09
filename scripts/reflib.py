@@ -173,6 +173,7 @@ def ensure_h3_ids(page):
 
 
 def toc_html(heads):
+    """Flat h2 list with h3 sub-lists; ONE toggle (label + hidden checkbox) shows/hides all sub-lists. No JS."""
     esc = lambda s: H.escape(s, quote=False)
     groups = []
     for lvl, hid, t in heads:
@@ -181,14 +182,13 @@ def toc_html(heads):
         else:
             groups[-1][1].append((hid, t))
     lines = ['<nav id="TOC" role="doc-toc">',
-             '<details class="toc" open><summary>Contents</summary>', '<ul>']
+             '<input type="checkbox" id="toc-expand" class="toc-expand" hidden>',
+             '<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>',
+             '<ul>']
     for (hid, t), subs in groups:
         a = f'<a href="#{hid}">{esc(t)}</a>'
-        if not subs:
-            lines.append(f'<li class="toc-leaf">{a}</li>')
-            continue
-        lines.append(f'<li><details class="toc-sec"><summary>{a}</summary>')
-        lines.append('<ul>' + ''.join(f'<li><a href="#{i}">{esc(x)}</a></li>' for i, x in subs) + '</ul>')
-        lines.append('</details></li>')
-    lines += ['</ul>', '</details>', '</nav>']
+        if subs:
+            a += '<ul class="toc-sub">' + ''.join(f'<li><a href="#{i}">{esc(x)}</a></li>' for i, x in subs) + '</ul>'
+        lines.append(f'<li>{a}</li>')
+    lines += ['</ul>', '</nav>']
     return '\n'.join(lines)

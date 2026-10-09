@@ -568,20 +568,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -815,44 +808,22 @@ border-radius: 4px;
 <h1 class="title">Chapter 5: IOMMU and DMA Remapping - Deep Dive</h1>
 </header>
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li><details class="toc-sec"><summary><a href="#section-5.1">5.1 Introduction: The I/O Device Memory Access Problem</a></summary>
-<ul><li><a href="#direct-memory-access-dma-basics">5.1.1 Direct Memory Access (DMA) Basics</a></li><li><a href="#problems-with-traditional-dma">5.1.2 Problems with Traditional DMA</a></li><li><a href="#the-iommu-solution">5.1.3 The IOMMU Solution</a></li><li><a href="#iommu-benefits-realized">5.1.4 IOMMU Benefits Realized</a></li><li><a href="#iommu-vs-cpu-mmu-similarities-and-differences">5.1.5 IOMMU vs CPU MMU: Similarities and Differences</a></li><li><a href="#iommu-platforms-intel-amd-arm">5.1.6 IOMMU Platforms: Intel, AMD, ARM</a></li><li><a href="#chapter-roadmap">5.1.7 Chapter Roadmap</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.2">5.2 IOMMU Architecture Fundamentals</a></summary>
-<ul><li><a href="#core-components">5.2.1 Core Components</a></li><li><a href="#device-identification">5.2.2 Device Identification</a></li><li><a href="#complete-translation-flow">5.2.3 Complete Translation Flow</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.3">5.3 Intel VT-d (Virtualization Technology for Directed I/O)</a></summary>
-<ul><li><a href="#vt-d-overview-and-evolution">5.3.1 VT-d Overview and Evolution</a></li><li><a href="#root-table-and-context-entries">5.3.2 Root Table and Context Entries</a></li><li><a href="#scalable-mode-vs-legacy-mode">5.3.3 Scalable Mode vs Legacy Mode</a></li><li><a href="#pasid-process-address-space-id">5.3.4 PASID (Process Address Space ID)</a></li><li><a href="#intel-vt-d-page-tables">5.3.5 Intel VT-d Page Tables</a></li><li><a href="#intel-iotlb-structure">5.3.6 Intel IOTLB Structure</a></li><li><a href="#interrupt-remapping">5.3.7 Interrupt Remapping</a></li><li><a href="#posted-interrupts">5.3.8 Posted Interrupts</a></li><li><a href="#real-hardware-intel-sapphire-rapids-vt-d">5.3.9 Real Hardware: Intel Sapphire Rapids VT-d</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.4">5.4 AMD IOMMU (AMD-Vi)</a></summary>
-<ul><li><a href="#amd-vi-overview">5.4.1 AMD-Vi Overview</a></li><li><a href="#device-table-structure">5.4.2 Device Table Structure</a></li><li><a href="#amd-io-page-tables">5.4.3 AMD I/O Page Tables</a></li><li><a href="#amd-iotlb">5.4.4 AMD IOTLB</a></li><li><a href="#amd-interrupt-remapping">5.4.5 AMD Interrupt Remapping</a></li><li><a href="#guestnested-paging">5.4.6 Guest/Nested Paging</a></li><li><a href="#amd-iommu-vs-intel-vt-d-comparison">5.4.7 AMD IOMMU vs Intel VT-d Comparison</a></li><li><a href="#amd-epyc-iommu-performance">5.4.8 AMD EPYC IOMMU Performance</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.5">5.5 ARM SMMU (System Memory Management Unit)</a></summary>
-<ul><li><a href="#arm-smmu-overview-and-evolution">5.5.1 ARM SMMU Overview and Evolution</a></li><li><a href="#stream-ids-and-stream-table">5.5.2 Stream IDs and Stream Table</a></li><li><a href="#two-stage-translation">5.5.3 Two-Stage Translation</a></li><li><a href="#smmu-tlb-structure">5.5.4 SMMU TLB Structure</a></li><li><a href="#command-queue-and-event-queue">5.5.5 Command Queue and Event Queue</a></li><li><a href="#page-request-interface-pri">5.5.6 Page Request Interface (PRI)</a></li><li><a href="#smmuv3-enhancements">5.5.7 SMMUv3 Enhancements</a></li><li><a href="#arm-neoverse-smmu-example">5.5.8 ARM Neoverse SMMU Example</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.6">5.6 IOMMU Page Tables: Cross-Platform Analysis</a></summary>
-<ul><li><a href="#page-table-format-comparison">5.6.1 Page Table Format Comparison</a></li><li><a href="#translation-walk-algorithms">5.6.2 Translation Walk Algorithms</a></li><li><a href="#large-page-support-comparison">5.6.3 Large Page Support Comparison</a></li><li><a href="#shared-vs-separate-page-tables">5.6.4 Shared vs Separate Page Tables</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.7">5.7 IOTLB Performance and Optimization</a></summary>
-<ul><li><a href="#iotlb-architecture-deep-dive">5.7.1 IOTLB Architecture Deep Dive</a></li><li><a href="#iotlb-miss-penalties">5.7.2 IOTLB Miss Penalties</a></li><li><a href="#measuring-iotlb-performance">5.7.3 Measuring IOTLB Performance</a></li><li><a href="#optimization-techniques">5.7.4 Optimization Techniques</a></li><li><a href="#real-world-performance-analysis">5.7.5 Real-World Performance Analysis</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.8">5.8 Device Assignment and SR-IOV</a></summary>
-<ul><li><a href="#device-passthrough-basics">5.8.1 Device Passthrough Basics</a></li><li><a href="#device-assignment-workflow">5.8.2 Device Assignment Workflow</a></li><li><a href="#vfio-virtual-function-io-framework">5.8.3 VFIO (Virtual Function I/O) Framework</a></li><li><a href="#sr-iov-single-root-io-virtualization">5.8.4 SR-IOV (Single Root I/O Virtualization)</a></li><li><a href="#sr-iov-with-iommu">5.8.5 SR-IOV with IOMMU</a></li><li><a href="#nested-translation-for-sr-iov">5.8.6 Nested Translation for SR-IOV</a></li><li><a href="#device-assignment-security-considerations">5.8.7 Device Assignment Security Considerations</a></li><li><a href="#performance-measurements">5.8.8 Performance Measurements</a></li><li><a href="#tlb-tagging-vmid-asid">5.8.9 TLB Tagging for Virtual Contexts: VMID, ASID, and PCID</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.9">5.9 IOMMU in Operating Systems</a></summary>
-<ul><li><a href="#linux-iommu-subsystem">5.10.1 Linux IOMMU Subsystem</a></li><li><a href="#linux-iommu-api">5.10.2 Linux IOMMU API</a></li><li><a href="#linux-dma-api-with-iommu">5.10.3 Linux DMA API with IOMMU</a></li><li><a href="#linux-vfio-framework">5.10.4 Linux VFIO Framework</a></li><li><a href="#windows-iommu-support">5.10.5 Windows IOMMU Support</a></li><li><a href="#debugging-iommu-issues">5.10.6 Debugging IOMMU Issues</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.10">5.10 Performance Optimization and Best Practices</a></summary>
-<ul><li><a href="#optimization-decision-tree">5.11.1 Optimization Decision Tree</a></li><li><a href="#comprehensive-best-practices">5.11.2 Comprehensive Best Practices</a></li><li><a href="#performance-tuning-checklist">5.11.3 Performance Tuning Checklist</a></li><li><a href="#common-pitfalls-and-solutions">5.11.4 Common Pitfalls and Solutions</a></li><li><a href="#troubleshooting-guide">5.11.5 Troubleshooting Guide</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-5.11">5.11 Chapter Summary</a></summary>
-<ul><li><a href="#core-concepts-recap">5.9.1 Core Concepts Recap</a></li><li><a href="#platform-comparison-summary">5.9.2 Platform Comparison Summary</a></li><li><a href="#performance-guidelines">5.9.3 Performance Guidelines</a></li><li><a href="#security-considerations">5.9.4 Security Considerations</a></li><li><a href="#use-case-decision-matrix">5.9.5 Use Case Decision Matrix</a></li><li><a href="#future-directions">5.9.6 Future Directions</a></li><li><a href="#cxl-compute-express-link-with-iommu">5.12.1 CXL (Compute Express Link) with IOMMU</a></li><li><a href="#confidential-computing">5.12.2 Confidential Computing</a></li><li><a href="#aiml-accelerator-challenges">5.12.3 AI/ML Accelerator Challenges</a></li><li><a href="#scalable-iov-intel">5.12.4 Scalable IOV (Intel)</a></li><li><a href="#research-directions">5.12.5 Research Directions</a></li><li><a href="#industry-trends">5.12.6 Industry Trends</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-5.1">5.1 Introduction: The I/O Device Memory Access Problem</a><ul class="toc-sub"><li><a href="#direct-memory-access-dma-basics">5.1.1 Direct Memory Access (DMA) Basics</a></li><li><a href="#problems-with-traditional-dma">5.1.2 Problems with Traditional DMA</a></li><li><a href="#the-iommu-solution">5.1.3 The IOMMU Solution</a></li><li><a href="#iommu-benefits-realized">5.1.4 IOMMU Benefits Realized</a></li><li><a href="#iommu-vs-cpu-mmu-similarities-and-differences">5.1.5 IOMMU vs CPU MMU: Similarities and Differences</a></li><li><a href="#iommu-platforms-intel-amd-arm">5.1.6 IOMMU Platforms: Intel, AMD, ARM</a></li><li><a href="#chapter-roadmap">5.1.7 Chapter Roadmap</a></li></ul></li>
+<li><a href="#section-5.2">5.2 IOMMU Architecture Fundamentals</a><ul class="toc-sub"><li><a href="#core-components">5.2.1 Core Components</a></li><li><a href="#device-identification">5.2.2 Device Identification</a></li><li><a href="#complete-translation-flow">5.2.3 Complete Translation Flow</a></li></ul></li>
+<li><a href="#section-5.3">5.3 Intel VT-d (Virtualization Technology for Directed I/O)</a><ul class="toc-sub"><li><a href="#vt-d-overview-and-evolution">5.3.1 VT-d Overview and Evolution</a></li><li><a href="#root-table-and-context-entries">5.3.2 Root Table and Context Entries</a></li><li><a href="#scalable-mode-vs-legacy-mode">5.3.3 Scalable Mode vs Legacy Mode</a></li><li><a href="#pasid-process-address-space-id">5.3.4 PASID (Process Address Space ID)</a></li><li><a href="#intel-vt-d-page-tables">5.3.5 Intel VT-d Page Tables</a></li><li><a href="#intel-iotlb-structure">5.3.6 Intel IOTLB Structure</a></li><li><a href="#interrupt-remapping">5.3.7 Interrupt Remapping</a></li><li><a href="#posted-interrupts">5.3.8 Posted Interrupts</a></li><li><a href="#real-hardware-intel-sapphire-rapids-vt-d">5.3.9 Real Hardware: Intel Sapphire Rapids VT-d</a></li></ul></li>
+<li><a href="#section-5.4">5.4 AMD IOMMU (AMD-Vi)</a><ul class="toc-sub"><li><a href="#amd-vi-overview">5.4.1 AMD-Vi Overview</a></li><li><a href="#device-table-structure">5.4.2 Device Table Structure</a></li><li><a href="#amd-io-page-tables">5.4.3 AMD I/O Page Tables</a></li><li><a href="#amd-iotlb">5.4.4 AMD IOTLB</a></li><li><a href="#amd-interrupt-remapping">5.4.5 AMD Interrupt Remapping</a></li><li><a href="#guestnested-paging">5.4.6 Guest/Nested Paging</a></li><li><a href="#amd-iommu-vs-intel-vt-d-comparison">5.4.7 AMD IOMMU vs Intel VT-d Comparison</a></li><li><a href="#amd-epyc-iommu-performance">5.4.8 AMD EPYC IOMMU Performance</a></li></ul></li>
+<li><a href="#section-5.5">5.5 ARM SMMU (System Memory Management Unit)</a><ul class="toc-sub"><li><a href="#arm-smmu-overview-and-evolution">5.5.1 ARM SMMU Overview and Evolution</a></li><li><a href="#stream-ids-and-stream-table">5.5.2 Stream IDs and Stream Table</a></li><li><a href="#two-stage-translation">5.5.3 Two-Stage Translation</a></li><li><a href="#smmu-tlb-structure">5.5.4 SMMU TLB Structure</a></li><li><a href="#command-queue-and-event-queue">5.5.5 Command Queue and Event Queue</a></li><li><a href="#page-request-interface-pri">5.5.6 Page Request Interface (PRI)</a></li><li><a href="#smmuv3-enhancements">5.5.7 SMMUv3 Enhancements</a></li><li><a href="#arm-neoverse-smmu-example">5.5.8 ARM Neoverse SMMU Example</a></li></ul></li>
+<li><a href="#section-5.6">5.6 IOMMU Page Tables: Cross-Platform Analysis</a><ul class="toc-sub"><li><a href="#page-table-format-comparison">5.6.1 Page Table Format Comparison</a></li><li><a href="#translation-walk-algorithms">5.6.2 Translation Walk Algorithms</a></li><li><a href="#large-page-support-comparison">5.6.3 Large Page Support Comparison</a></li><li><a href="#shared-vs-separate-page-tables">5.6.4 Shared vs Separate Page Tables</a></li></ul></li>
+<li><a href="#section-5.7">5.7 IOTLB Performance and Optimization</a><ul class="toc-sub"><li><a href="#iotlb-architecture-deep-dive">5.7.1 IOTLB Architecture Deep Dive</a></li><li><a href="#iotlb-miss-penalties">5.7.2 IOTLB Miss Penalties</a></li><li><a href="#measuring-iotlb-performance">5.7.3 Measuring IOTLB Performance</a></li><li><a href="#optimization-techniques">5.7.4 Optimization Techniques</a></li><li><a href="#real-world-performance-analysis">5.7.5 Real-World Performance Analysis</a></li></ul></li>
+<li><a href="#section-5.8">5.8 Device Assignment and SR-IOV</a><ul class="toc-sub"><li><a href="#device-passthrough-basics">5.8.1 Device Passthrough Basics</a></li><li><a href="#device-assignment-workflow">5.8.2 Device Assignment Workflow</a></li><li><a href="#vfio-virtual-function-io-framework">5.8.3 VFIO (Virtual Function I/O) Framework</a></li><li><a href="#sr-iov-single-root-io-virtualization">5.8.4 SR-IOV (Single Root I/O Virtualization)</a></li><li><a href="#sr-iov-with-iommu">5.8.5 SR-IOV with IOMMU</a></li><li><a href="#nested-translation-for-sr-iov">5.8.6 Nested Translation for SR-IOV</a></li><li><a href="#device-assignment-security-considerations">5.8.7 Device Assignment Security Considerations</a></li><li><a href="#performance-measurements">5.8.8 Performance Measurements</a></li><li><a href="#tlb-tagging-vmid-asid">5.8.9 TLB Tagging for Virtual Contexts: VMID, ASID, and PCID</a></li></ul></li>
+<li><a href="#section-5.9">5.9 IOMMU in Operating Systems</a><ul class="toc-sub"><li><a href="#linux-iommu-subsystem">5.10.1 Linux IOMMU Subsystem</a></li><li><a href="#linux-iommu-api">5.10.2 Linux IOMMU API</a></li><li><a href="#linux-dma-api-with-iommu">5.10.3 Linux DMA API with IOMMU</a></li><li><a href="#linux-vfio-framework">5.10.4 Linux VFIO Framework</a></li><li><a href="#windows-iommu-support">5.10.5 Windows IOMMU Support</a></li><li><a href="#debugging-iommu-issues">5.10.6 Debugging IOMMU Issues</a></li></ul></li>
+<li><a href="#section-5.10">5.10 Performance Optimization and Best Practices</a><ul class="toc-sub"><li><a href="#optimization-decision-tree">5.11.1 Optimization Decision Tree</a></li><li><a href="#comprehensive-best-practices">5.11.2 Comprehensive Best Practices</a></li><li><a href="#performance-tuning-checklist">5.11.3 Performance Tuning Checklist</a></li><li><a href="#common-pitfalls-and-solutions">5.11.4 Common Pitfalls and Solutions</a></li><li><a href="#troubleshooting-guide">5.11.5 Troubleshooting Guide</a></li></ul></li>
+<li><a href="#section-5.11">5.11 Chapter Summary</a><ul class="toc-sub"><li><a href="#core-concepts-recap">5.9.1 Core Concepts Recap</a></li><li><a href="#platform-comparison-summary">5.9.2 Platform Comparison Summary</a></li><li><a href="#performance-guidelines">5.9.3 Performance Guidelines</a></li><li><a href="#security-considerations">5.9.4 Security Considerations</a></li><li><a href="#use-case-decision-matrix">5.9.5 Use Case Decision Matrix</a></li><li><a href="#future-directions">5.9.6 Future Directions</a></li><li><a href="#cxl-compute-express-link-with-iommu">5.12.1 CXL (Compute Express Link) with IOMMU</a></li><li><a href="#confidential-computing">5.12.2 Confidential Computing</a></li><li><a href="#aiml-accelerator-challenges">5.12.3 AI/ML Accelerator Challenges</a></li><li><a href="#scalable-iov-intel">5.12.4 Scalable IOV (Intel)</a></li><li><a href="#research-directions">5.12.5 Research Directions</a></li><li><a href="#industry-trends">5.12.6 Industry Trends</a></li></ul></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 <p><strong>Note:</strong> This chapter builds on concepts from Chapters
 3 (Page Tables) and 4 (TLB). Familiarity with virtual memory, page table

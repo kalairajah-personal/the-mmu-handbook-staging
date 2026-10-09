@@ -6,7 +6,7 @@
   G12c  every reference <li> has a unique id="ref-…"                    ERROR
   G12d  reference has a.ref-link, or ledger status mismatch/none        WARN (ERROR with --strict)
   G12e  ledger entry/alias points at a reference that does not exist    ERROR
-  G12f  TOC is the collapsible tree and matches h2/h3 order             ERROR
+  G12f  TOC has one expand/collapse toggle and matches h2/h3 order             ERROR
   G12g  link_refs.py / build_toc.py would change the file (not idempotent / not applied)  ERROR
 
 Usage: python3 scripts/audit_links.py [--strict] [chapters/]
@@ -64,8 +64,8 @@ def audit(path, entries, aliases, strict=False, missing=()):
         if k.startswith(f'ch{ch}:') and v.removeprefix('ref-') not in keys:
             errs.append(f'G12e alias {k} -> {v} matches no reference')
     # G12f / G12g
-    if '<details class="toc"' not in page:
-        errs.append('G12f TOC is not the collapsible tree')
+    if 'id="toc-expand"' not in page:
+        errs.append('G12f TOC lacks the single expand/collapse toggle')
     try:
         if T.process(page) != page:
             errs.append('G12g build_toc.py would change this file')

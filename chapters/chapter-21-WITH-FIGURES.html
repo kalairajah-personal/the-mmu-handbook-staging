@@ -570,20 +570,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -701,21 +694,21 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </header>
 
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li class="toc-leaf"><a href="#section-21.1">21.1 Introduction: The Memory Safety Gap Below the Page Boundary</a></li>
-<li class="toc-leaf"><a href="#section-21.2">21.2 A Taxonomy of Memory Safety Violations</a></li>
-<li class="toc-leaf"><a href="#section-21.3">21.3 Software Mitigations and Their Limits</a></li>
-<li class="toc-leaf"><a href="#section-21.4">21.4 Memory Tagging: Lock-and-Key Protection</a></li>
-<li class="toc-leaf"><a href="#section-21.5">21.5 ARM MTE: Architecture, Modes, and MMU Interaction</a></li>
-<li class="toc-leaf"><a href="#section-21.6">21.6 CHERI Capabilities: Fat Pointers with Hardware Enforcement</a></li>
-<li class="toc-leaf"><a href="#section-21.7">21.7 CHERI ISA: Bounds Compression, Permissions, and Sealing</a></li>
-<li class="toc-leaf"><a href="#section-21.8">21.8 Morello, CheriBSD, and CHERIoT</a></li>
-<li class="toc-leaf"><a href="#section-21.9">21.9 CHERI and the MMU: Two Orthogonal Gates</a></li>
-<li class="toc-leaf"><a href="#section-21.10">21.10 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-21.1">21.1 Introduction: The Memory Safety Gap Below the Page Boundary</a></li>
+<li><a href="#section-21.2">21.2 A Taxonomy of Memory Safety Violations</a></li>
+<li><a href="#section-21.3">21.3 Software Mitigations and Their Limits</a></li>
+<li><a href="#section-21.4">21.4 Memory Tagging: Lock-and-Key Protection</a></li>
+<li><a href="#section-21.5">21.5 ARM MTE: Architecture, Modes, and MMU Interaction</a></li>
+<li><a href="#section-21.6">21.6 CHERI Capabilities: Fat Pointers with Hardware Enforcement</a></li>
+<li><a href="#section-21.7">21.7 CHERI ISA: Bounds Compression, Permissions, and Sealing</a></li>
+<li><a href="#section-21.8">21.8 Morello, CheriBSD, and CHERIoT</a></li>
+<li><a href="#section-21.9">21.9 CHERI and the MMU: Two Orthogonal Gates</a></li>
+<li><a href="#section-21.10">21.10 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 <h2 id="section-21.1">21.1 Introduction: The Memory Safety Gap Below the Page Boundary</h2>

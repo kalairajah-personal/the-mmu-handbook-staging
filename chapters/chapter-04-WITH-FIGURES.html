@@ -571,20 +571,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -703,51 +696,25 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 Dive</h1>
 </header>
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li><details class="toc-sec"><summary><a href="#section-4.1">4.1 Introduction: The Most Critical Cache You've Never Heard Of</a></summary>
-<ul><li><a href="#why-the-tlb-deserves-deep-study">Why the TLB Deserves Deep Study</a></li><li><a href="#what-well-cover">What We'll Cover</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.2">4.2 TLB Architecture and Organization</a></summary>
-<ul><li><a href="#the-tlb-hierarchy-why-multiple-levels">4.2.1 The TLB Hierarchy: Why Multiple Levels?</a></li><li><a href="#tlb-entry-structure-what-does-each-entry-store">4.2.2 TLB Entry Structure: What Does Each Entry Store?</a></li><li><a href="#associativity-and-replacement-policies">4.2.3 Associativity and Replacement Policies</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.3">4.3 TLB Management: Hardware vs Software</a></summary>
-<ul><li><a href="#hardware-managed-tlbs-the-x86-and-arm-approach">4.3.1 Hardware-Managed TLBs: The x86 and ARM Approach</a></li><li><a href="#software-managed-tlbs-the-risc-v-and-mips-approach">4.3.2 Software-Managed TLBs: The RISC-V and MIPS Approach</a></li><li><a href="#hybrid-approaches-and-modern-trends">4.3.3 Hybrid Approaches and Modern Trends</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.4">4.4 Address Space Identifiers: ASID, PCID, and VMID</a></summary>
-<ul><li><a href="#the-context-switch-problem">4.4.1 The Context Switch Problem</a></li><li><a href="#asid-arms-address-space-identifier">4.4.2 ASID: ARM's Address Space Identifier</a></li><li><a href="#pcid-x86-64s-process-context-identifier">4.4.3 PCID: x86-64's Process Context Identifier</a></li><li><a href="#vmid-virtualization-machine-identifier">4.4.4 VMID: Virtualization Machine Identifier</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.5">4.5 TLB Operations and Instructions</a></summary>
-<ul><li><a href="#tlb-invalidation-instructions">4.5.1 TLB Invalidation Instructions</a></li><li><a href="#tlb-shootdown-multicore-synchronization">4.5.2 TLB Shootdown: Multicore Synchronization</a></li><li><a href="#batching-and-optimization">4.5.3 Batching and Optimization</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.6">4.6 Large Pages and TLB Coverage</a></summary>
-<ul><li><a href="#the-tlb-coverage-problem">4.6.1 The TLB Coverage Problem</a></li><li><a href="#large-page-sizes">4.6.2 Large Page Sizes</a></li><li><a href="#tlb-coverage-improvement-with-large-pages">4.6.3 TLB Coverage Improvement with Large Pages</a></li><li><a href="#hardware-support-for-large-pages">4.6.4 Hardware Support for Large Pages</a></li><li><a href="#operating-system-support-transparent-huge-pages">4.6.5 Operating System Support: Transparent Huge Pages</a></li><li><a href="#huge-page-performance-measurements">4.6.6 Huge Page Performance Measurements</a></li><li><a href="#gb-page-support">4.6.7 1GB Page Support</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.7">4.7 Multicore TLB Coherency</a></summary>
-<ul><li><a href="#the-tlb-coherency-problem">4.7.1 The TLB Coherency Problem</a></li><li><a href="#tlb-shootdown-protocol-revisited">4.7.2 TLB Shootdown Protocol (Revisited)</a></li><li><a href="#hardware-tlb-coherency-support">4.7.3 Hardware TLB Coherency Support</a></li><li><a href="#tlb-coherency-and-memory-ordering">4.7.4 TLB Coherency and Memory Ordering</a></li><li><a href="#batched-tlb-shootdown-optimization">4.7.5 Batched TLB Shootdown Optimization</a></li><li><a href="#tlb-coherency-in-numa-systems">4.7.6 TLB Coherency in NUMA Systems</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.8">4.8 Platform-Specific TLB Implementations</a></summary>
-<ul><li><a href="#intel-x86-64-tlb-architecture">4.8.1 Intel x86-64 TLB Architecture</a></li><li><a href="#amd-zen-4-tlb-architecture-2022">4.8.2 AMD Zen 4 TLB Architecture (2022)</a></li><li><a href="#arm-cortex-a78-tlb-architecture-2020">4.8.3 ARM Cortex-A78 TLB Architecture (2020)</a></li><li><a href="#risc-v-implementation-sifive-u74-2020">4.8.4 RISC-V Implementation: SiFive U74 (2020)</a></li><li><a href="#apple-m-series-tlb-architecture">4.8.5 Apple M-Series TLB Architecture</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.9">4.9 Alternative Page Table Structures and TLB Implications</a></summary>
-<ul><li><a href="#inverted-page-tables">4.9.1 Inverted Page Tables</a></li><li><a href="#shadow-page-tables-for-virtualization">4.9.2 Shadow Page Tables for Virtualization</a></li><li><a href="#other-page-table-variations">4.9.4 Other Page Table Variations</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.10">4.10 Self-Modifying Code and Instruction/Data Coherency</a></summary>
-<ul><li><a href="#the-coherency-problem">4.10.1 The Coherency Problem</a></li><li><a href="#architecture-specific-handling">4.10.2 Architecture-Specific Handling</a></li><li><a href="#jit-compilers-and-dynamic-code-generation">4.10.3 JIT Compilers and Dynamic Code Generation</a></li><li><a href="#write-xor-execute-wx-security">4.10.4 Write XOR Execute (W^X) Security</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.11">4.11 Multithreading and TLB Sharing</a></summary>
-<ul><li><a href="#smt-architectures-intel-hyperthreading-and-amd-smt">4.11.1 SMT Architectures: Intel Hyperthreading and AMD SMT</a></li><li><a href="#tlb-partitioning-strategies">4.11.2 TLB Partitioning Strategies</a></li><li><a href="#tlb-miss-handling-with-smt">4.11.3 TLB Miss Handling with SMT</a></li><li><a href="#asidpcid-with-smt">4.11.4 ASID/PCID with SMT</a></li><li><a href="#performance-impact-of-smt-on-tlb">4.11.5 Performance Impact of SMT on TLB</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.12">4.12 Virtualization with Mismatched Page Sizes</a></summary>
-<ul><li><a href="#two-stage-translation-recap">4.12.1 Two-Stage Translation Recap</a></li><li><a href="#mismatched-page-sizes-the-problem">4.12.2 Mismatched Page Sizes: The Problem</a></li><li><a href="#intel-ept-with-mixed-page-sizes">4.12.3 Intel EPT with Mixed Page Sizes</a></li><li><a href="#amd-npt-with-mixed-page-sizes">4.12.4 AMD NPT with Mixed Page Sizes</a></li><li><a href="#arm64-stage-2-translation">4.12.5 ARM64 Stage 2 Translation</a></li><li><a href="#risc-v-hypervisor-extension">4.12.6 RISC-V Hypervisor Extension</a></li><li><a href="#performance-recommendations">4.12.7 Performance Recommendations</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-4.13">4.13 GPU and Hardware Accelerator MMUs</a></summary>
-<ul><li><a href="#why-gpus-need-mmus">4.13.1 Why GPUs Need MMUs</a></li><li><a href="#nvidia-gpu-mmu-architecture">4.13.2 NVIDIA GPU MMU Architecture</a></li><li><a href="#gpu-page-fault-handling">4.13.3 GPU Page Fault Handling</a></li><li><a href="#amd-gpu-mmu-iommu-integration">4.13.4 AMD GPU MMU (IOMMU Integration)</a></li><li><a href="#intel-gpus-and-shared-virtual-memory">4.13.5 Intel GPUs and Shared Virtual Memory</a></li><li><a href="#apple-m-series-unified-memory">4.13.6 Apple M-series Unified Memory</a></li><li><a href="#iommu-and-dma-remapping">4.13.7 IOMMU and DMA Remapping</a></li><li><a href="#performance-considerations">4.13.8 Performance Considerations</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#section-4.14">4.14 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-4.1">4.1 Introduction: The Most Critical Cache You've Never Heard Of</a><ul class="toc-sub"><li><a href="#why-the-tlb-deserves-deep-study">Why the TLB Deserves Deep Study</a></li><li><a href="#what-well-cover">What We'll Cover</a></li></ul></li>
+<li><a href="#section-4.2">4.2 TLB Architecture and Organization</a><ul class="toc-sub"><li><a href="#the-tlb-hierarchy-why-multiple-levels">4.2.1 The TLB Hierarchy: Why Multiple Levels?</a></li><li><a href="#tlb-entry-structure-what-does-each-entry-store">4.2.2 TLB Entry Structure: What Does Each Entry Store?</a></li><li><a href="#associativity-and-replacement-policies">4.2.3 Associativity and Replacement Policies</a></li></ul></li>
+<li><a href="#section-4.3">4.3 TLB Management: Hardware vs Software</a><ul class="toc-sub"><li><a href="#hardware-managed-tlbs-the-x86-and-arm-approach">4.3.1 Hardware-Managed TLBs: The x86 and ARM Approach</a></li><li><a href="#software-managed-tlbs-the-risc-v-and-mips-approach">4.3.2 Software-Managed TLBs: The RISC-V and MIPS Approach</a></li><li><a href="#hybrid-approaches-and-modern-trends">4.3.3 Hybrid Approaches and Modern Trends</a></li></ul></li>
+<li><a href="#section-4.4">4.4 Address Space Identifiers: ASID, PCID, and VMID</a><ul class="toc-sub"><li><a href="#the-context-switch-problem">4.4.1 The Context Switch Problem</a></li><li><a href="#asid-arms-address-space-identifier">4.4.2 ASID: ARM's Address Space Identifier</a></li><li><a href="#pcid-x86-64s-process-context-identifier">4.4.3 PCID: x86-64's Process Context Identifier</a></li><li><a href="#vmid-virtualization-machine-identifier">4.4.4 VMID: Virtualization Machine Identifier</a></li></ul></li>
+<li><a href="#section-4.5">4.5 TLB Operations and Instructions</a><ul class="toc-sub"><li><a href="#tlb-invalidation-instructions">4.5.1 TLB Invalidation Instructions</a></li><li><a href="#tlb-shootdown-multicore-synchronization">4.5.2 TLB Shootdown: Multicore Synchronization</a></li><li><a href="#batching-and-optimization">4.5.3 Batching and Optimization</a></li></ul></li>
+<li><a href="#section-4.6">4.6 Large Pages and TLB Coverage</a><ul class="toc-sub"><li><a href="#the-tlb-coverage-problem">4.6.1 The TLB Coverage Problem</a></li><li><a href="#large-page-sizes">4.6.2 Large Page Sizes</a></li><li><a href="#tlb-coverage-improvement-with-large-pages">4.6.3 TLB Coverage Improvement with Large Pages</a></li><li><a href="#hardware-support-for-large-pages">4.6.4 Hardware Support for Large Pages</a></li><li><a href="#operating-system-support-transparent-huge-pages">4.6.5 Operating System Support: Transparent Huge Pages</a></li><li><a href="#huge-page-performance-measurements">4.6.6 Huge Page Performance Measurements</a></li><li><a href="#gb-page-support">4.6.7 1GB Page Support</a></li></ul></li>
+<li><a href="#section-4.7">4.7 Multicore TLB Coherency</a><ul class="toc-sub"><li><a href="#the-tlb-coherency-problem">4.7.1 The TLB Coherency Problem</a></li><li><a href="#tlb-shootdown-protocol-revisited">4.7.2 TLB Shootdown Protocol (Revisited)</a></li><li><a href="#hardware-tlb-coherency-support">4.7.3 Hardware TLB Coherency Support</a></li><li><a href="#tlb-coherency-and-memory-ordering">4.7.4 TLB Coherency and Memory Ordering</a></li><li><a href="#batched-tlb-shootdown-optimization">4.7.5 Batched TLB Shootdown Optimization</a></li><li><a href="#tlb-coherency-in-numa-systems">4.7.6 TLB Coherency in NUMA Systems</a></li></ul></li>
+<li><a href="#section-4.8">4.8 Platform-Specific TLB Implementations</a><ul class="toc-sub"><li><a href="#intel-x86-64-tlb-architecture">4.8.1 Intel x86-64 TLB Architecture</a></li><li><a href="#amd-zen-4-tlb-architecture-2022">4.8.2 AMD Zen 4 TLB Architecture (2022)</a></li><li><a href="#arm-cortex-a78-tlb-architecture-2020">4.8.3 ARM Cortex-A78 TLB Architecture (2020)</a></li><li><a href="#risc-v-implementation-sifive-u74-2020">4.8.4 RISC-V Implementation: SiFive U74 (2020)</a></li><li><a href="#apple-m-series-tlb-architecture">4.8.5 Apple M-Series TLB Architecture</a></li></ul></li>
+<li><a href="#section-4.9">4.9 Alternative Page Table Structures and TLB Implications</a><ul class="toc-sub"><li><a href="#inverted-page-tables">4.9.1 Inverted Page Tables</a></li><li><a href="#shadow-page-tables-for-virtualization">4.9.2 Shadow Page Tables for Virtualization</a></li><li><a href="#other-page-table-variations">4.9.4 Other Page Table Variations</a></li></ul></li>
+<li><a href="#section-4.10">4.10 Self-Modifying Code and Instruction/Data Coherency</a><ul class="toc-sub"><li><a href="#the-coherency-problem">4.10.1 The Coherency Problem</a></li><li><a href="#architecture-specific-handling">4.10.2 Architecture-Specific Handling</a></li><li><a href="#jit-compilers-and-dynamic-code-generation">4.10.3 JIT Compilers and Dynamic Code Generation</a></li><li><a href="#write-xor-execute-wx-security">4.10.4 Write XOR Execute (W^X) Security</a></li></ul></li>
+<li><a href="#section-4.11">4.11 Multithreading and TLB Sharing</a><ul class="toc-sub"><li><a href="#smt-architectures-intel-hyperthreading-and-amd-smt">4.11.1 SMT Architectures: Intel Hyperthreading and AMD SMT</a></li><li><a href="#tlb-partitioning-strategies">4.11.2 TLB Partitioning Strategies</a></li><li><a href="#tlb-miss-handling-with-smt">4.11.3 TLB Miss Handling with SMT</a></li><li><a href="#asidpcid-with-smt">4.11.4 ASID/PCID with SMT</a></li><li><a href="#performance-impact-of-smt-on-tlb">4.11.5 Performance Impact of SMT on TLB</a></li></ul></li>
+<li><a href="#section-4.12">4.12 Virtualization with Mismatched Page Sizes</a><ul class="toc-sub"><li><a href="#two-stage-translation-recap">4.12.1 Two-Stage Translation Recap</a></li><li><a href="#mismatched-page-sizes-the-problem">4.12.2 Mismatched Page Sizes: The Problem</a></li><li><a href="#intel-ept-with-mixed-page-sizes">4.12.3 Intel EPT with Mixed Page Sizes</a></li><li><a href="#amd-npt-with-mixed-page-sizes">4.12.4 AMD NPT with Mixed Page Sizes</a></li><li><a href="#arm64-stage-2-translation">4.12.5 ARM64 Stage 2 Translation</a></li><li><a href="#risc-v-hypervisor-extension">4.12.6 RISC-V Hypervisor Extension</a></li><li><a href="#performance-recommendations">4.12.7 Performance Recommendations</a></li></ul></li>
+<li><a href="#section-4.13">4.13 GPU and Hardware Accelerator MMUs</a><ul class="toc-sub"><li><a href="#why-gpus-need-mmus">4.13.1 Why GPUs Need MMUs</a></li><li><a href="#nvidia-gpu-mmu-architecture">4.13.2 NVIDIA GPU MMU Architecture</a></li><li><a href="#gpu-page-fault-handling">4.13.3 GPU Page Fault Handling</a></li><li><a href="#amd-gpu-mmu-iommu-integration">4.13.4 AMD GPU MMU (IOMMU Integration)</a></li><li><a href="#intel-gpus-and-shared-virtual-memory">4.13.5 Intel GPUs and Shared Virtual Memory</a></li><li><a href="#apple-m-series-unified-memory">4.13.6 Apple M-series Unified Memory</a></li><li><a href="#iommu-and-dma-remapping">4.13.7 IOMMU and DMA Remapping</a></li><li><a href="#performance-considerations">4.13.8 Performance Considerations</a></li></ul></li>
+<li><a href="#section-4.14">4.14 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 <h2 id="section-4.1">4.1
 Introduction: The Most Critical Cache You've Never Heard Of</h2>

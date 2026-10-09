@@ -82,11 +82,12 @@ def test_idempotent():
 
 def test_toc_tree():
     out = T.process(PAGE)
-    assert '<details class="toc" open><summary>Contents</summary>' in out
-    assert '<li><details class="toc-sec"><summary><a href="#section-2.1">2.1 Intro</a></summary>' in out
-    assert '<ul><li><a href="#a">2.1.1 Alpha</a></li></ul>' in out
-    assert '<li class="toc-leaf"><a href="#section-2.2">2.2 Next</a></li>' in out
-    assert '<li class="toc-leaf"><a href="#references">References</a></li>' in out
+    assert '<input type="checkbox" id="toc-expand" class="toc-expand" hidden>' in out
+    assert '<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>' in out
+    assert ('<li><a href="#section-2.1">2.1 Intro</a><ul class="toc-sub"><li><a href="#a">2.1.1 Alpha</a></li></ul></li>') in out
+    assert '<li><a href="#section-2.2">2.2 Next</a></li>' in out
+    assert '<li><a href="#references">References</a></li>' in out
+    assert 'details' not in out.split('<nav id="TOC"')[1].split('</nav>')[0]
 
 
 def test_h3_without_id_gets_slug():

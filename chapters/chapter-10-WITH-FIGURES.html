@@ -568,20 +568,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -700,33 +693,19 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 Access</h1>
 </header>
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li><details class="toc-sec"><summary><a href="#section-10.1">10.1 Introduction: Beyond the CPU Core</a></summary>
-<ul><li><a href="#the-evolution-of-device-memory-access">The Evolution of Device Memory Access</a></li><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#why-these-mechanisms-matter">Why These Mechanisms Matter</a></li><li><a href="#relationship-to-previous-chapters">Relationship to Previous Chapters</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-10.2">10.2 IOMMU Architecture Deep Dive</a></summary>
-<ul><li><a href="#the-core-challenge-per-device-isolation">The Core Challenge: Per-Device Isolation</a></li><li><a href="#intel-vt-d-architecture">Intel VT-d Architecture</a></li><li><a href="#iommu-page-fault-handling">IOMMU Page Fault Handling</a></li><li><a href="#performance-case-study-nvme-with-iommu">Performance Case Study: NVMe with IOMMU</a></li><li><a href="#amd-iommu-amd-vi-differences">AMD IOMMU (AMD-Vi) Differences</a></li><li><a href="#arm-smmu-system-memory-management-unit">ARM SMMU (System Memory Management Unit)</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-10.3">10.3 PCIe ATS and Address Translation Services</a></summary>
-<ul><li><a href="#the-ats-innovation">The ATS Innovation</a></li><li><a href="#ats-protocol-messages">ATS Protocol Messages</a></li><li><a href="#pasid-process-address-space-id">PASID: Process Address Space ID</a></li><li><a href="#pri-page-request-interface">PRI: Page Request Interface</a></li><li><a href="#performance-analysis-rdma-with-ats">Performance Analysis: RDMA with ATS</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-10.4">10.4 RDMA and Memory Registration</a></summary>
-<ul><li><a href="#the-rdma-model">The RDMA Model</a></li><li><a href="#traditional-memory-registration">Traditional Memory Registration</a></li><li><a href="#the-registration-problem-in-practice">The Registration Problem in Practice</a></li><li><a href="#solution-1-pre-registration">Solution 1: Pre-Registration</a></li><li><a href="#solution-2-memory-registration-cache">Solution 2: Memory Registration Cache</a></li><li><a href="#solution-3-on-demand-paging-odp">Solution 3: On-Demand Paging (ODP)</a></li><li><a href="#hybrid-approach-explicit-odp">Hybrid Approach: Explicit + ODP</a></li><li><a href="#case-study-redis-with-rdma">Case Study: Redis with RDMA</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-10.5">10.5 Smart NICs and Data Processing Units</a></summary>
-<ul><li><a href="#nvidia-bluefield-dpu-architecture">NVIDIA BlueField DPU Architecture</a></li><li><a href="#accessing-host-memory-from-dpu">Accessing Host Memory from DPU</a></li><li><a href="#use-case-1-ovs-offload">Use Case 1: OVS Offload</a></li><li><a href="#use-case-2-nvme-of-target">Use Case 2: NVMe-oF Target</a></li><li><a href="#coherency-challenges">Coherency Challenges</a></li><li><a href="#real-world-deployment-cloud-provider-networking">Real-World Deployment: Cloud Provider Networking</a></li><li><a href="#fpga-coherent-accelerators">FPGA Coherent Accelerators</a></li><li><a href="#intel-pac-programmable-acceleration-card-with-cci-p">Intel PAC (Programmable Acceleration Card) with CCI-P</a></li><li><a href="#fpga-cpu-memory-access-example">FPGA → CPU Memory Access Example</a></li><li><a href="#use-case-genomics-alignment">Use Case: Genomics Alignment</a></li><li><a href="#cache-coherency-protocol">Cache Coherency Protocol</a></li><li><a href="#amd-ccix-cache-coherent-interconnect-for-accelerators">AMD CCIX (Cache Coherent Interconnect for Accelerators)</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-10.6">10.6 Video and Media Accelerators</a></summary>
-<ul><li><a href="#intel-quicksync-architecture">Intel QuickSync Architecture</a></li><li><a href="#nvidia-nvencnvdec">NVIDIA NVENC/NVDEC</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-10.7">10.7 Multi-Device Coherency and Coordination</a></summary>
-<ul><li><a href="#the-tlb-shootdown-problem">The TLB Shootdown Problem</a></li><li><a href="#batching-tlb-invalidations">Batching TLB Invalidations</a></li><li><a href="#cross-device-ordering">Cross-Device Ordering</a></li><li><a href="#deadlock-avoidance">Deadlock Avoidance</a></li><li><a href="#system-architecture">System Architecture</a></li><li><a href="#memory-layout-and-sharing">Memory Layout and Sharing</a></li><li><a href="#iommu-configuration">IOMMU Configuration</a></li><li><a href="#device-synchronization">Device Synchronization</a></li><li><a href="#tlb-coherency-across-devices">TLB Coherency Across Devices</a></li><li><a href="#performance-results">Performance Results</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#section-10.8">10.8 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-10.1">10.1 Introduction: Beyond the CPU Core</a><ul class="toc-sub"><li><a href="#the-evolution-of-device-memory-access">The Evolution of Device Memory Access</a></li><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#why-these-mechanisms-matter">Why These Mechanisms Matter</a></li><li><a href="#relationship-to-previous-chapters">Relationship to Previous Chapters</a></li></ul></li>
+<li><a href="#section-10.2">10.2 IOMMU Architecture Deep Dive</a><ul class="toc-sub"><li><a href="#the-core-challenge-per-device-isolation">The Core Challenge: Per-Device Isolation</a></li><li><a href="#intel-vt-d-architecture">Intel VT-d Architecture</a></li><li><a href="#iommu-page-fault-handling">IOMMU Page Fault Handling</a></li><li><a href="#performance-case-study-nvme-with-iommu">Performance Case Study: NVMe with IOMMU</a></li><li><a href="#amd-iommu-amd-vi-differences">AMD IOMMU (AMD-Vi) Differences</a></li><li><a href="#arm-smmu-system-memory-management-unit">ARM SMMU (System Memory Management Unit)</a></li></ul></li>
+<li><a href="#section-10.3">10.3 PCIe ATS and Address Translation Services</a><ul class="toc-sub"><li><a href="#the-ats-innovation">The ATS Innovation</a></li><li><a href="#ats-protocol-messages">ATS Protocol Messages</a></li><li><a href="#pasid-process-address-space-id">PASID: Process Address Space ID</a></li><li><a href="#pri-page-request-interface">PRI: Page Request Interface</a></li><li><a href="#performance-analysis-rdma-with-ats">Performance Analysis: RDMA with ATS</a></li></ul></li>
+<li><a href="#section-10.4">10.4 RDMA and Memory Registration</a><ul class="toc-sub"><li><a href="#the-rdma-model">The RDMA Model</a></li><li><a href="#traditional-memory-registration">Traditional Memory Registration</a></li><li><a href="#the-registration-problem-in-practice">The Registration Problem in Practice</a></li><li><a href="#solution-1-pre-registration">Solution 1: Pre-Registration</a></li><li><a href="#solution-2-memory-registration-cache">Solution 2: Memory Registration Cache</a></li><li><a href="#solution-3-on-demand-paging-odp">Solution 3: On-Demand Paging (ODP)</a></li><li><a href="#hybrid-approach-explicit-odp">Hybrid Approach: Explicit + ODP</a></li><li><a href="#case-study-redis-with-rdma">Case Study: Redis with RDMA</a></li></ul></li>
+<li><a href="#section-10.5">10.5 Smart NICs and Data Processing Units</a><ul class="toc-sub"><li><a href="#nvidia-bluefield-dpu-architecture">NVIDIA BlueField DPU Architecture</a></li><li><a href="#accessing-host-memory-from-dpu">Accessing Host Memory from DPU</a></li><li><a href="#use-case-1-ovs-offload">Use Case 1: OVS Offload</a></li><li><a href="#use-case-2-nvme-of-target">Use Case 2: NVMe-oF Target</a></li><li><a href="#coherency-challenges">Coherency Challenges</a></li><li><a href="#real-world-deployment-cloud-provider-networking">Real-World Deployment: Cloud Provider Networking</a></li><li><a href="#fpga-coherent-accelerators">FPGA Coherent Accelerators</a></li><li><a href="#intel-pac-programmable-acceleration-card-with-cci-p">Intel PAC (Programmable Acceleration Card) with CCI-P</a></li><li><a href="#fpga-cpu-memory-access-example">FPGA → CPU Memory Access Example</a></li><li><a href="#use-case-genomics-alignment">Use Case: Genomics Alignment</a></li><li><a href="#cache-coherency-protocol">Cache Coherency Protocol</a></li><li><a href="#amd-ccix-cache-coherent-interconnect-for-accelerators">AMD CCIX (Cache Coherent Interconnect for Accelerators)</a></li></ul></li>
+<li><a href="#section-10.6">10.6 Video and Media Accelerators</a><ul class="toc-sub"><li><a href="#intel-quicksync-architecture">Intel QuickSync Architecture</a></li><li><a href="#nvidia-nvencnvdec">NVIDIA NVENC/NVDEC</a></li></ul></li>
+<li><a href="#section-10.7">10.7 Multi-Device Coherency and Coordination</a><ul class="toc-sub"><li><a href="#the-tlb-shootdown-problem">The TLB Shootdown Problem</a></li><li><a href="#batching-tlb-invalidations">Batching TLB Invalidations</a></li><li><a href="#cross-device-ordering">Cross-Device Ordering</a></li><li><a href="#deadlock-avoidance">Deadlock Avoidance</a></li><li><a href="#system-architecture">System Architecture</a></li><li><a href="#memory-layout-and-sharing">Memory Layout and Sharing</a></li><li><a href="#iommu-configuration">IOMMU Configuration</a></li><li><a href="#device-synchronization">Device Synchronization</a></li><li><a href="#tlb-coherency-across-devices">TLB Coherency Across Devices</a></li><li><a href="#performance-results">Performance Results</a></li></ul></li>
+<li><a href="#section-10.8">10.8 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 <h2 id="section-10.1">10.1 Introduction: Beyond the
 CPU Core</h2>

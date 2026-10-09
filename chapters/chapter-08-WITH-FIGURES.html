@@ -568,20 +568,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -701,36 +694,20 @@ and Optimization</h1>
 </header>
 
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li><details class="toc-sec"><summary><a href="#section-8.1">8.1 Introduction: The Crisis Point</a></summary>
-<ul><li><a href="#the-three-scenarios">8.1.1 Three Real-World Scenarios</a></li><li><a href="#the-hardware-software-contract">8.1.2 The Hardware–Software Contract</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-8.2">8.2 Nested Page Tables: Beyond the Basics</a></summary>
-<ul><li><a href="#nested-fault-taxonomy">8.2.1 Nested Fault Taxonomy</a></li><li><a href="#ept-prepopulation">8.2.2 EPT Pre-population and Large EPT Pages</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-8.3">8.3 Architecture Differences in Nested Fault Handling</a></summary>
-<ul><li><a href="#x86-64-ept-violations">8.3.1 x86-64 EPT Violations</a></li><li><a href="#arm64-stage2">8.3.2 ARM64 Stage-2 Faults</a></li><li><a href="#riscv-h-extension">8.3.3 RISC-V H Extension</a></li><li><a href="#cross-architecture-comparison">8.3.4 Practical Guidance for Hypervisor Developers</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-8.4">8.4 Accessed and Dirty Bits: Hardware–Software Cooperation</a></summary>
-<ul><li><a href="#ad-mechanisms">8.4.1 Hardware A/D Bit Mechanisms</a></li><li><a href="#software-aging-cycle">8.4.2 The Clear-and-Check Aging Cycle</a></li><li><a href="#dirty-bit-eviction-cost">8.4.3 Dirty Bit and Eviction Cost</a></li><li><a href="#cross-reference-ch2">8.4.4 Relationship to Page Replacement Algorithms</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-8.5">8.5 Page Replacement Algorithms: From Theory to Practice</a></summary>
-<ul><li><a href="#the-ideal-perfect-lru">8.5.1 The Ideal: Perfect LRU</a></li><li><a href="#clock-algorithm-practical-lru-approximation-1">8.5.2 Clock Algorithm: Practical LRU Approximation</a></li><li><a href="#two-handed-clock-considering-cleanliness">8.5.3 Two-Handed Clock: Considering Cleanliness</a></li><li><a href="#multi-generational-lru-mglru-modern-sophistication">8.5.4 Multi-Generational LRU (MGLRU): Modern Sophistication</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-8.6">8.6 Memory Reclaim: When and How to Free Pages</a></summary>
-<ul><li><a href="#watermarks-detecting-memory-pressure-1">8.6.1 Watermarks: Detecting Memory Pressure</a></li><li><a href="#kswapd-background-reclaim-daemon-1">8.6.2 kswapd: Background Reclaim Daemon</a></li><li><a href="#direct-reclaim-the-emergency-path-1">8.6.3 Direct Reclaim: The Emergency Path</a></li><li><a href="#swappiness-tuning-reclaim-behavior">8.6.4 Swappiness: Tuning Reclaim Behavior</a></li><li><a href="#oom-killer-the-last-resort-1">8.6.5 OOM Killer: The Last Resort</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-8.7">8.7 Page Table Management: The Meta-Problem</a></summary>
-<ul><li><a href="#page-table-overhead-calculations">8.7.1 Page Table Overhead Calculations</a></li><li><a href="#lazy-allocation-avoiding-waste">8.7.2 Lazy Allocation: Avoiding Waste</a></li><li><a href="#page-table-reclamation">8.7.3 Page Table Reclamation</a></li><li><a href="#compact-vs-sparse-layouts">8.7.4 Compact vs Sparse Layouts</a></li><li><a href="#huge-pages-the-ultimate-optimization">8.7.5 Huge Pages: The Ultimate Optimization</a></li></ul>
-</details></li>
-<li><details class="toc-sec"><summary><a href="#section-8.8">8.8 Performance Analysis and Tuning</a></summary>
-<ul><li><a href="#essential-profiling-tools">8.8.1 Essential Profiling Tools</a></li><li><a href="#common-performance-issues">8.8.2 Common Performance Issues</a></li><li><a href="#tuning-parameters">8.8.3 Tuning Parameters</a></li></ul>
-</details></li>
-<li class="toc-leaf"><a href="#section-8.9">8.9 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-8.1">8.1 Introduction: The Crisis Point</a><ul class="toc-sub"><li><a href="#the-three-scenarios">8.1.1 Three Real-World Scenarios</a></li><li><a href="#the-hardware-software-contract">8.1.2 The Hardware–Software Contract</a></li></ul></li>
+<li><a href="#section-8.2">8.2 Nested Page Tables: Beyond the Basics</a><ul class="toc-sub"><li><a href="#nested-fault-taxonomy">8.2.1 Nested Fault Taxonomy</a></li><li><a href="#ept-prepopulation">8.2.2 EPT Pre-population and Large EPT Pages</a></li></ul></li>
+<li><a href="#section-8.3">8.3 Architecture Differences in Nested Fault Handling</a><ul class="toc-sub"><li><a href="#x86-64-ept-violations">8.3.1 x86-64 EPT Violations</a></li><li><a href="#arm64-stage2">8.3.2 ARM64 Stage-2 Faults</a></li><li><a href="#riscv-h-extension">8.3.3 RISC-V H Extension</a></li><li><a href="#cross-architecture-comparison">8.3.4 Practical Guidance for Hypervisor Developers</a></li></ul></li>
+<li><a href="#section-8.4">8.4 Accessed and Dirty Bits: Hardware–Software Cooperation</a><ul class="toc-sub"><li><a href="#ad-mechanisms">8.4.1 Hardware A/D Bit Mechanisms</a></li><li><a href="#software-aging-cycle">8.4.2 The Clear-and-Check Aging Cycle</a></li><li><a href="#dirty-bit-eviction-cost">8.4.3 Dirty Bit and Eviction Cost</a></li><li><a href="#cross-reference-ch2">8.4.4 Relationship to Page Replacement Algorithms</a></li></ul></li>
+<li><a href="#section-8.5">8.5 Page Replacement Algorithms: From Theory to Practice</a><ul class="toc-sub"><li><a href="#the-ideal-perfect-lru">8.5.1 The Ideal: Perfect LRU</a></li><li><a href="#clock-algorithm-practical-lru-approximation-1">8.5.2 Clock Algorithm: Practical LRU Approximation</a></li><li><a href="#two-handed-clock-considering-cleanliness">8.5.3 Two-Handed Clock: Considering Cleanliness</a></li><li><a href="#multi-generational-lru-mglru-modern-sophistication">8.5.4 Multi-Generational LRU (MGLRU): Modern Sophistication</a></li></ul></li>
+<li><a href="#section-8.6">8.6 Memory Reclaim: When and How to Free Pages</a><ul class="toc-sub"><li><a href="#watermarks-detecting-memory-pressure-1">8.6.1 Watermarks: Detecting Memory Pressure</a></li><li><a href="#kswapd-background-reclaim-daemon-1">8.6.2 kswapd: Background Reclaim Daemon</a></li><li><a href="#direct-reclaim-the-emergency-path-1">8.6.3 Direct Reclaim: The Emergency Path</a></li><li><a href="#swappiness-tuning-reclaim-behavior">8.6.4 Swappiness: Tuning Reclaim Behavior</a></li><li><a href="#oom-killer-the-last-resort-1">8.6.5 OOM Killer: The Last Resort</a></li></ul></li>
+<li><a href="#section-8.7">8.7 Page Table Management: The Meta-Problem</a><ul class="toc-sub"><li><a href="#page-table-overhead-calculations">8.7.1 Page Table Overhead Calculations</a></li><li><a href="#lazy-allocation-avoiding-waste">8.7.2 Lazy Allocation: Avoiding Waste</a></li><li><a href="#page-table-reclamation">8.7.3 Page Table Reclamation</a></li><li><a href="#compact-vs-sparse-layouts">8.7.4 Compact vs Sparse Layouts</a></li><li><a href="#huge-pages-the-ultimate-optimization">8.7.5 Huge Pages: The Ultimate Optimization</a></li></ul></li>
+<li><a href="#section-8.8">8.8 Performance Analysis and Tuning</a><ul class="toc-sub"><li><a href="#essential-profiling-tools">8.8.1 Essential Profiling Tools</a></li><li><a href="#common-performance-issues">8.8.2 Common Performance Issues</a></li><li><a href="#tuning-parameters">8.8.3 Tuning Parameters</a></li></ul></li>
+<li><a href="#section-8.9">8.9 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 

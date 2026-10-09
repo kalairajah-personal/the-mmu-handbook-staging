@@ -570,20 +570,13 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 }
 
 
-/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
-#TOC details.toc > ul { padding-left: 0; }
-#TOC details > summary { cursor: pointer; list-style: none; }
-#TOC details > summary::-webkit-details-marker { display: none; }
-#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
-#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
-#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
-#TOC details.toc-sec > summary::before {
-  content: "\25B8"; display: inline-block; width: 1.1em;
-  color: #5E81AC; transition: transform 0.15s;
-}
-#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
-#TOC li.toc-leaf { padding-left: 1.1em; }
-#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+/* ── In-page TOC: one toggle expands/collapses all subsections (PIPELINE §7.6) ── */
+#TOC .toc-head { display: inline-block; cursor: pointer; font-weight: 600; margin-bottom: 0.4em; user-select: none; }
+#TOC .toc-head::after { content: " \25BE"; color: #5E81AC; }
+#TOC .toc-expand:checked + .toc-head::after { content: " \25B4"; }
+#TOC ul.toc-sub { display: none; padding-left: 1.3em; font-size: 0.95em; margin: 0.15em 0 0.35em; }
+#TOC .toc-expand:checked ~ ul ul.toc-sub { display: block; }
+@media print { #TOC ul.toc-sub { display: block; } #TOC .toc-head::after { content: none; } }
 
 /* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
 a.cite { text-decoration: none; color: #5E81AC; }
@@ -701,21 +694,21 @@ a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </header>
 
 <nav id="TOC" role="doc-toc">
-<details class="toc" open><summary>Contents</summary>
+<input type="checkbox" id="toc-expand" class="toc-expand" hidden>
+<label for="toc-expand" class="toc-head" title="Show/hide subsections">Contents</label>
 <ul>
-<li class="toc-leaf"><a href="#section-20.1">20.1 Introduction: When the Hypervisor Is the Attacker</a></li>
-<li class="toc-leaf"><a href="#section-20.2">20.2 The Conventional Virtualisation Trust Model and Its Limits</a></li>
-<li class="toc-leaf"><a href="#section-20.3">20.3 Intel TDX: Trust Domain Extensions — MMU Microarchitecture</a></li>
-<li class="toc-leaf"><a href="#section-20.4">20.4 AMD SEV-SNP: Secure Encrypted Virtualisation — Secure Nested Paging</a></li>
-<li class="toc-leaf"><a href="#section-20.5">20.5 ARM Confidential Compute Architecture: The Realm Management Extension</a></li>
-<li class="toc-leaf"><a href="#section-20.6">20.6 GPU Confidential Computing — The New Frontier</a></li>
-<li class="toc-leaf"><a href="#section-20.7">20.7 Confidential CXL: The Open Problem</a></li>
-<li class="toc-leaf"><a href="#section-20.8">20.8 Performance: What Confidential Computing Costs in Production</a></li>
-<li class="toc-leaf"><a href="#section-20.9">20.9 OS and Hypervisor Support: Linux CC Architecture</a></li>
-<li class="toc-leaf"><a href="#section-20.10">20.10 Chapter Summary</a></li>
-<li class="toc-leaf"><a href="#references">References</a></li>
+<li><a href="#section-20.1">20.1 Introduction: When the Hypervisor Is the Attacker</a></li>
+<li><a href="#section-20.2">20.2 The Conventional Virtualisation Trust Model and Its Limits</a></li>
+<li><a href="#section-20.3">20.3 Intel TDX: Trust Domain Extensions — MMU Microarchitecture</a></li>
+<li><a href="#section-20.4">20.4 AMD SEV-SNP: Secure Encrypted Virtualisation — Secure Nested Paging</a></li>
+<li><a href="#section-20.5">20.5 ARM Confidential Compute Architecture: The Realm Management Extension</a></li>
+<li><a href="#section-20.6">20.6 GPU Confidential Computing — The New Frontier</a></li>
+<li><a href="#section-20.7">20.7 Confidential CXL: The Open Problem</a></li>
+<li><a href="#section-20.8">20.8 Performance: What Confidential Computing Costs in Production</a></li>
+<li><a href="#section-20.9">20.9 OS and Hypervisor Support: Linux CC Architecture</a></li>
+<li><a href="#section-20.10">20.10 Chapter Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-</details>
 </nav>
 
 <h2 id="section-20.1">20.1 Introduction: When the Hypervisor Is the Attacker</h2>
