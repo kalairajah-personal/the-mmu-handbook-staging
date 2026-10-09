@@ -17,6 +17,7 @@ Checks (all auto-inferred chapter count):
   B8  No JS console errors
   B9  Cross-chapter navigation: click Ch1→ChN, verify active updates
   B10 index.html card count == N
+  B13 Collapsible TOC toggles/navigates; a.cite targets exist
 
 Requires: pip install playwright && playwright install chromium --with-deps
 """
@@ -133,6 +134,34 @@ def check_chapter(browser, path, N, pdf_dir):
         ''')
         if toc_broken:
             issues.append(f"B4: Broken TOC anchors: {toc_broken[:3]}")
+
+        # B13: collapsible TOC (details tree) + citation targets (PIPELINE §7)
+        b13 = page.evaluate('''() => {
+            const toc = document.querySelector('#TOC details.toc');
+            const sec = document.querySelector('#TOC details.toc-sec');
+            let toggles = true, navigates = true;
+            if (sec) {
+                const was = sec.open;
+                sec.querySelector('summary').click();
+                toggles = sec.open !== was;
+                sec.querySelector('summary').click();
+                const a = sec.querySelector('summary a');
+                a.click();
+                navigates = location.hash === a.getAttribute('href');
+            }
+            const broken = [...document.querySelectorAll('a.cite')]
+                .filter(a => !document.getElementById(a.getAttribute('href').slice(1)))
+                .map(a => a.getAttribute('href'));
+            return {toc: !!toc, toggles, navigates, broken};
+        }''')
+        if not b13['toc']:
+            issues.append("B13: in-page TOC is not the collapsible <details> tree")
+        if not b13['toggles']:
+            issues.append("B13: TOC section summary click does not toggle")
+        if not b13['navigates']:
+            issues.append("B13: TOC link inside <summary> does not navigate")
+        if b13['broken']:
+            issues.append(f"B13: Broken citation links: {b13['broken'][:3]}")
 
         # B5: Sidebar broken anchors
         sidebar_broken = page.evaluate('''() =>

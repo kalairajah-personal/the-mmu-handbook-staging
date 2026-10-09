@@ -567,6 +567,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -676,19 +699,37 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h1 class="title">Chapter 9: Advanced Page Table Optimizations</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-9.1">9.1 Introduction: The Container Crisis</a></li>
-<li><a href="#section-9.2">9.2 Memory Deduplication: Kernel Samepage Merging</a></li>
-<li><a href="#section-9.3">9.3 Page Table Locking and Concurrency</a></li>
-<li><a href="#section-9.4">9.4 NUMA-Aware Page Table Management</a></li>
-<li><a href="#section-9.5">9.5 Advanced Huge Page Strategies</a></li>
-<li><a href="#section-9.6">9.6 Page Table Compaction and Sharing</a></li>
-<li><a href="#section-9.7">9.7 Parallel Page Table Operations</a></li>
-<li><a href="#section-9.8">9.8 Memory Compression Integration</a></li>
-<li><a href="#section-9.9">9.9 Production Case Study: Cloud Provider Memory Optimization Stack</a></li>
-<li><a href="#section-9.10">9.10 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-9.1">9.1 Introduction: The Container Crisis</a></summary>
+<ul><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#why-these-optimizations-matter">Why These Optimizations Matter</a></li><li><a href="#relationship-to-previous-chapters">Relationship to Previous Chapters</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-9.2">9.2 Memory Deduplication: Kernel Samepage Merging</a></summary>
+<ul><li><a href="#the-problem-redundancy-everywhere">The Problem: Redundancy Everywhere</a></li><li><a href="#how-ksm-works-the-three-phase-algorithm">How KSM Works: The Three-Phase Algorithm</a></li><li><a href="#page-table-implications">Page Table Implications</a></li><li><a href="#performance-characteristics">Performance Characteristics</a></li><li><a href="#real-world-case-study-cloud-vm-consolidation">Real-World Case Study: Cloud VM Consolidation</a></li><li><a href="#when-ksm-helps-vs.-when-it-hurts">When KSM Helps vs. When It Hurts</a></li><li><a href="#security-considerations-deduplication-side-channels">Security Considerations: Deduplication Side Channels</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-9.3">9.3 Page Table Locking and Concurrency</a></summary>
+<ul><li><a href="#the-challenge-128-threads-one-mm_struct">The Challenge: 128 Threads, One mm_struct</a></li><li><a href="#page-table-locking-hierarchy">Page Table Locking Hierarchy</a></li><li><a href="#locking-strategy-for-page-fault-handling">Locking Strategy for Page Fault Handling</a></li><li><a href="#the-major-fault-complication">The Major Fault Complication</a></li><li><a href="#rcu-for-lockless-page-table-walks">RCU for Lockless Page Table Walks</a></li><li><a href="#batched-tlb-shootdown-optimization">Batched TLB Shootdown Optimization</a></li><li><a href="#contention-measurement-and-analysis">Contention Measurement and Analysis</a></li><li><a href="#case-study-database-fork-contention">Case Study: Database Fork Contention</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-9.4">9.4 NUMA-Aware Page Table Management</a></summary>
+<ul><li><a href="#numa-topology-primer">NUMA Topology Primer</a></li><li><a href="#the-page-table-placement-problem">The Page Table Placement Problem</a></li><li><a href="#linux-page-table-allocation-policy">Linux Page Table Allocation Policy</a></li><li><a href="#measuring-numa-page-table-locality">Measuring NUMA Page Table Locality</a></li><li><a href="#optimization-1-explicit-numa-binding">Optimization 1: Explicit NUMA Binding</a></li><li><a href="#optimization-2-page-table-migration">Optimization 2: Page Table Migration</a></li><li><a href="#optimization-3-interleaved-allocation">Optimization 3: Interleaved Allocation</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-9.5">9.5 Advanced Huge Page Strategies</a></summary>
+<ul><li><a href="#the-fragmentation-problem">The Fragmentation Problem</a></li><li><a href="#memory-compaction-fighting-fragmentation">Memory Compaction: Fighting Fragmentation</a></li><li><a href="#compaction-strategies">Compaction Strategies</a></li><li><a href="#production-tuning-database-workload-case-study">Production Tuning: Database Workload Case Study</a></li><li><a href="#hugetlb-vs.-thp-choosing-the-right-tool">HugeTLB vs. THP: Choosing the Right Tool</a></li><li><a href="#huge-page-migration">Huge Page Migration</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-9.6">9.6 Page Table Compaction and Sharing</a></summary>
+<ul><li><a href="#identifying-sparse-page-tables">Identifying Sparse Page Tables</a></li><li><a href="#page-table-sharing-for-read-only-mappings">Page Table Sharing for Read-Only Mappings</a></li><li><a href="#page-table-entry-compression">Page Table Entry Compression</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-9.7">9.7 Parallel Page Table Operations</a></summary>
+<ul><li><a href="#parallel-page-fault-handling">Parallel Page Fault Handling</a></li><li><a href="#batched-mmap-munmap-operations">Batched mmap/munmap Operations</a></li><li><a href="#lock-free-page-table-walks-get_user_pages_fast">Lock-Free Page Table Walks (get_user_pages_fast)</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-9.8">9.8 Memory Compression Integration</a></summary>
+<ul><li><a href="#zswap-architecture">zswap Architecture</a></li><li><a href="#compression-algorithms-and-trade-offs">Compression Algorithms and Trade-offs</a></li><li><a href="#page-fault-path-with-zswap">Page Fault Path with zswap</a></li><li><a href="#configuration-and-tuning">Configuration and Tuning</a></li><li><a href="#case-study-container-host-with-zswap">Case Study: Container Host with zswap</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-9.9">9.9 Production Case Study: Cloud Provider Memory Optimization Stack</a></li>
+<li class="toc-leaf"><a href="#section-9.10">9.10 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 <h2 id="section-9.1">9.1 Introduction: The
 Container Crisis</h2>
@@ -5135,18 +5176,18 @@ wouldn't have identified page tables as the bottleneck.</p></li>
 </script>
 <h2 id="references">References</h2>
 <ol type="1">
-<li><p>Arcangeli, A. and Iftimie, I. "Kernel Samepage Merging (KSM)." Linux kernel documentation, 2009. https://www.kernel.org/doc/html/latest/admin-guide/mm/ksm.html</p></li>
-<li><p>Arcangeli, A. "Transparent Huge Pages." Linux kernel documentation, 2011. https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html</p></li>
-<li><p>Lameter, C. "NUMA (Non-Uniform Memory Access): An Overview." <em>ACM Queue</em>, 11(7), 2013. DOI: 10.1145/2508834.2513149</p></li>
-<li><p>Blagodurov, S., Zhuravlev, S., and Fedorova, A. "A Case for NUMA-Aware Contention Management on Multicore Systems." <em>2011 USENIX Annual Technical Conference (USENIX ATC 2011)</em>. USENIX, 2011.</p></li>
-<li><p>Gorman, M. <em>Understanding the Linux Virtual Memory Manager</em>. Prentice Hall, 2004. ISBN: 0-13-145348-3.</p></li>
-<li><p>Zhao, Y. "Multi-Gen LRU." Linux kernel mailing list. Merged in Linux 6.1, 2022. https://lore.kernel.org/lkml/20220918080010.2920238-1-yuzhao@google.com/</p></li>
-<li><p>Corbet, J. "zswap: compressed swap caching." <em>LWN.net</em>, September 2012. https://lwn.net/Articles/529682/</p></li>
-<li><p>Guo, F., Bhardwaj, S., Goel, A., Eshghi, K., and Sethuraman, A. "SmartMD: A High Performance Deduplication Engine with Mixed Pages." <em>2017 USENIX Annual Technical Conference (USENIX ATC 2017)</em>. USENIX, 2017.</p></li>
-<li><p>Linux Kernel Documentation. "Page Migration." https://www.kernel.org/doc/html/latest/vm/page_migration.html</p></li>
-<li><p>Bovet, D.P. and Cesati, M. <em>Understanding the Linux Kernel</em>, 3rd Edition. O'Reilly Media, 2005. Chapter 17: Page Frame Reclaiming.</p></li>
-<li><p>Silberschatz, A., Galvin, P.B., and Gagne, G. <em>Operating System Concepts</em>, 10th Edition. John Wiley &amp; Sons, 2018. Chapter 10: Virtual Memory.</p></li>
-<li><p>Corbet, J. "Compaction for unevictable pages." <em>LWN.net</em>, October 2012. https://lwn.net/Articles/522555/</p></li>
+<li id="ref-arcangeli-2009"><p>Arcangeli, A. and Iftimie, I. "Kernel Samepage Merging (KSM)." Linux kernel documentation, 2009. <a class="ref-link" href="https://www.kernel.org/doc/html/latest/admin-guide/mm/ksm.html">https://www.kernel.org/doc/html/latest/admin-guide/mm/ksm.html</a></p></li>
+<li id="ref-arcangeli-2011"><p>Arcangeli, A. "Transparent Huge Pages." Linux kernel documentation, 2011. <a class="ref-link" href="https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html">https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html</a></p></li>
+<li id="ref-lameter-2013"><p>Lameter, C. "NUMA (Non-Uniform Memory Access): An Overview." <em>ACM Queue</em>, 11(7), 2013. <a class="ref-link" href="https://doi.org/10.1145/2508834.2513149">DOI: 10.1145/2508834.2513149</a></p></li>
+<li id="ref-blagodurov-2011"><p>Blagodurov, S., Zhuravlev, S., and Fedorova, A. "A Case for NUMA-Aware Contention Management on Multicore Systems." <em>2011 USENIX Annual Technical Conference (USENIX ATC 2011)</em>. USENIX, 2011.</p></li>
+<li id="ref-gorman-2004"><p>Gorman, M. <em>Understanding the Linux Virtual Memory Manager</em>. Prentice Hall, 2004. ISBN: 0-13-145348-3.</p></li>
+<li id="ref-zhao-2022"><p>Zhao, Y. "Multi-Gen LRU." Linux kernel mailing list. Merged in Linux 6.1, 2022. <a class="ref-link" href="https://lore.kernel.org/lkml/20220918080010.2920238-1-yuzhao@google.com/">https://lore.kernel.org/lkml/20220918080010.2920238-1-yuzhao@google.com/</a></p></li>
+<li id="ref-corbet-2012a"><p>Corbet, J. "zswap: compressed swap caching." <em>LWN.net</em>, September 2012. <a class="ref-link" href="https://lwn.net/Articles/529682/">https://lwn.net/Articles/529682/</a></p></li>
+<li id="ref-guo-2017"><p>Guo, F., Bhardwaj, S., Goel, A., Eshghi, K., and Sethuraman, A. "SmartMD: A High Performance Deduplication Engine with Mixed Pages." <em>2017 USENIX Annual Technical Conference (USENIX ATC 2017)</em>. USENIX, 2017.</p></li>
+<li id="ref-linux-nd"><p>Linux Kernel Documentation. "Page Migration." <a class="ref-link" href="https://www.kernel.org/doc/html/latest/vm/page_migration.html">https://www.kernel.org/doc/html/latest/vm/page_migration.html</a></p></li>
+<li id="ref-bovet-2005"><p>Bovet, D.P. and Cesati, M. <em>Understanding the Linux Kernel</em>, 3rd Edition. O'Reilly Media, 2005. Chapter 17: Page Frame Reclaiming.</p></li>
+<li id="ref-silberschatz-2018"><p>Silberschatz, A., Galvin, P.B., and Gagne, G. <em>Operating System Concepts</em>, 10th Edition. John Wiley &amp; Sons, 2018. Chapter 10: Virtual Memory.</p></li>
+<li id="ref-corbet-2012b"><p>Corbet, J. "Compaction for unevictable pages." <em>LWN.net</em>, October 2012. <a class="ref-link" href="https://lwn.net/Articles/522555/">https://lwn.net/Articles/522555/</a></p></li>
 </ol>
 
 </body>

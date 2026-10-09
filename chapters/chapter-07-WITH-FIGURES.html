@@ -567,6 +567,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
     <style>
 
@@ -677,24 +700,54 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h1 class="title">Chapter 7: Page Faults and Exception Handling</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-7.1">7.1 Introduction: When Address Translation Fails</a></li>
-<li><a href="#section-7.2">7.2 Page Fault Fundamentals</a></li>
-<li><a href="#section-7.3">7.3 x86-64 Page Faults (#PF)</a></li>
-<li><a href="#section-7.4">7.4 ARM64 Data and Instruction Aborts</a></li>
-<li><a href="#section-7.5">7.5 RISC-V Page Faults</a></li>
-<li><a href="#section-7.6">7.6 TLB-Related Exceptions</a></li>
-<li><a href="#section-7.7">7.7 Page Table Walk Failures</a></li>
-<li><a href="#section-7.8">7.8 Page Overlapping and Aliasing Faults</a></li>
-<li><a href="#section-7.9">7.9 Permission Violations</a></li>
-<li><a href="#section-7.10">7.10 Page Fault Handling Flow</a></li>
-<li><a href="#section-7.11">7.11 Performance Implications</a></li>
-<li><a href="#section-7.12">7.12 Historical Architectures: SPARC, MIPS, PowerPC</a></li>
-<li><a href="#section-7.13">7.13 Architecture Comparison</a></li>
-<li><a href="#section-7.14">7.14 Debugging Page Faults</a></li>
-<li><a href="#section-7.15">7.15 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-7.1">7.1 Introduction: When Address Translation Fails</a></summary>
+<ul><li><a href="#page-faults-are-the-enforcement-mechanism">1. Page Faults Are the Enforcement Mechanism</a></li><li><a href="#page-faults-are-on-the-critical-path">2. Page Faults Are on the Critical Path</a></li><li><a href="#page-faults-are-security-boundaries">3. Page Faults Are Security Boundaries</a></li><li><a href="#page-faults-are-debugging-windows">4. Page Faults Are Debugging Windows</a></li><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#what-we-exclude">What We Exclude</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.2">7.2 Page Fault Fundamentals</a></summary>
+<ul><li><a href="#what-is-a-page-fault">7.2.1 What is a Page Fault?</a></li><li><a href="#page-fault-causes">7.2.2 Page Fault Causes</a></li><li><a href="#page-fault-types">7.2.3 Page Fault Types</a></li><li><a href="#hardware-vs-software-components">7.2.4 Hardware vs Software Components</a></li><li><a href="#page-fault-in-the-context-of-address-translation">7.2.5 Page Fault in the Context of Address Translation</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.3">7.3 x86-64 Page Faults (#PF)</a></summary>
+<ul><li><a href="#page-fault-exception-pf-vector-14">7.3.1 Page Fault Exception (#PF, Vector 14)</a></li><li><a href="#page-fault-error-code">7.3.2 Page Fault Error Code</a></li><li><a href="#cr2-register-the-faulting-address">7.3.3 CR2 Register: The Faulting Address</a></li><li><a href="#page-fault-handler-flow">7.3.4 Page Fault Handler Flow</a></li><li><a href="#common-x86-64-page-fault-scenarios">7.3.5 Common x86-64 Page Fault Scenarios</a></li><li><a href="#x86-64-error-code-summary-table">7.3.6 x86-64 Error Code Summary Table</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.4">7.4 ARM64 Data and Instruction Aborts</a></summary>
+<ul><li><a href="#arm64-synchronous-exception-model">7.4.1 ARM64 Synchronous Exception Model</a></li><li><a href="#data-abort-vs-instruction-abort">7.4.2 Data Abort vs Instruction Abort</a></li><li><a href="#exception-syndrome-register-esr_el1">7.4.3 Exception Syndrome Register (ESR_EL1)</a></li><li><a href="#fault-status-codes-dfscifsc">7.4.4 Fault Status Codes (DFSC/IFSC)</a></li><li><a href="#reading-exception-information">7.4.5 Reading Exception Information</a></li><li><a href="#arm64-exception-scenarios">7.4.6 ARM64 Exception Scenarios</a></li><li><a href="#pan-privileged-access-never">7.4.7 PAN (Privileged Access Never)</a></li><li><a href="#arm-realm-management-extension-rme-faults">7.4.8 ARM Realm Management Extension (RME) Faults</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.5">7.5 RISC-V Page Faults</a></summary>
+<ul><li><a href="#software-managed-tlb-and-page-faults">7.5.1 Software-Managed TLB and Page Faults</a></li><li><a href="#risc-v-exception-codes">7.5.2 RISC-V Exception Codes</a></li><li><a href="#risc-v-exception-registers">7.5.3 RISC-V Exception Registers</a></li><li><a href="#risc-v-page-table-walk-software-implementation">7.5.4 RISC-V Page Table Walk (Software Implementation)</a></li><li><a href="#risc-v-tlb-management">7.5.5 RISC-V TLB Management</a></li><li><a href="#risc-v-page-fault-handler-flow">7.5.6 RISC-V Page Fault Handler Flow</a></li><li><a href="#risc-v-page-fault-scenarios">7.5.7 RISC-V Page Fault Scenarios</a></li><li><a href="#risc-v-physical-memory-protection-pmp">7.5.8 RISC-V Physical Memory Protection (PMP)</a></li><li><a href="#risc-v-performance-considerations">7.5.9 RISC-V Performance Considerations</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.6">7.6 TLB-Related Exceptions</a></summary>
+<ul><li><a href="#tlb-misses-on-software-managed-tlbs">7.6.1 TLB Misses on Software-Managed TLBs</a></li><li><a href="#tlb-multi-hit-exceptions">7.6.2 TLB Multi-Hit Exceptions</a></li><li><a href="#tlb-shootdown-and-inter-processor-interrupts-ipis">7.6.3 TLB Shootdown and Inter-Processor Interrupts (IPIs)</a></li><li><a href="#tlb-maintenance-instructions-and-exceptions">7.6.4 TLB Maintenance Instructions and Exceptions</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.7">7.7 Page Table Walk Failures</a></summary>
+<ul><li><a href="#multi-level-page-table-failures">7.7.1 Multi-Level Page Table Failures</a></li><li><a href="#invalid-page-table-pointers">7.7.2 Invalid Page Table Pointers</a></li><li><a href="#nested-page-table-failures">7.7.3 Nested Page Table Failures</a></li><li><a href="#reserved-bits-and-future-proofing">7.7.4 Reserved Bits and Future-Proofing</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.8">7.8 Page Overlapping and Aliasing Faults</a></summary>
+<ul><li><a href="#what-is-page-aliasing">7.8.1 What is Page Aliasing?</a></li><li><a href="#x86-64-pat-page-attribute-table-conflicts">7.8.2 x86-64 PAT (Page Attribute Table) Conflicts</a></li><li><a href="#arm64-memory-attribute-conflicts">7.8.3 ARM64 Memory Attribute Conflicts</a></li><li><a href="#virtual-cache-aliasing-vipt-caches">7.8.4 Virtual Cache Aliasing (VIPT Caches)</a></li><li><a href="#detecting-and-preventing-virtual-aliasing">7.8.5 Detecting and Preventing Virtual Aliasing</a></li><li><a href="#security-rowhammer-and-aliasing-attacks">7.8.6 Security: Rowhammer and Aliasing Attacks</a></li><li><a href="#shared-memory-and-intentional-aliasing">7.8.7 Shared Memory and Intentional Aliasing</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.9">7.9 Permission Violations</a></summary>
+<ul><li><a href="#readwriteexecute-permission-faults">7.9.1 Read/Write/Execute Permission Faults</a></li><li><a href="#usersupervisor-violations">7.9.2 User/Supervisor Violations</a></li><li><a href="#smep-supervisor-mode-execution-prevention">7.9.3 SMEP (Supervisor Mode Execution Prevention)</a></li><li><a href="#smap-supervisor-mode-access-prevention">7.9.4 SMAP (Supervisor Mode Access Prevention)</a></li><li><a href="#arm-pan-privileged-access-never">7.9.5 ARM PAN (Privileged Access Never)</a></li><li><a href="#memory-protection-keys-mpkpku">7.9.6 Memory Protection Keys (MPK/PKU)</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.10">7.10 Page Fault Handling Flow</a></summary>
+<ul><li><a href="#hardware-steps">7.10.1 Hardware Steps</a></li><li><a href="#software-handler-entry">7.10.2 Software Handler Entry</a></li><li><a href="#finding-the-vma-virtual-memory-area">7.10.3 Finding the VMA (Virtual Memory Area)</a></li><li><a href="#permission-checking">7.10.4 Permission Checking</a></li><li><a href="#demand-paging-implementation">7.10.5 Demand Paging Implementation</a></li><li><a href="#copy-on-write-cow-implementation">7.10.6 Copy-on-Write (COW) Implementation</a></li><li><a href="#stack-growth-handling">7.10.7 Stack Growth Handling</a></li><li><a href="#complete-page-fault-handler">7.10.8 Complete Page Fault Handler</a></li><li><a href="#swap-handling">7.10.9 Swap Handling</a></li><li><a href="#returning-from-page-fault">7.10.10 Returning from Page Fault</a></li><li><a href="#hardware-steps-architecture-independent">7.10.11 Hardware Steps (Architecture-Independent)</a></li><li><a href="#software-handler-steps">7.10.12 Software Handler Steps</a></li><li><a href="#demand-paging-implementation-1">7.10.13 Demand Paging Implementation</a></li><li><a href="#copy-on-write-cow-implementation-1">7.10.14 Copy-on-Write (COW) Implementation</a></li><li><a href="#swap-in-major-page-fault">7.10.15 Swap-In (Major Page Fault)</a></li><li><a href="#stack-growth">7.10.16 Stack Growth</a></li><li><a href="#invalid-fault-handling">7.10.17 Invalid Fault Handling</a></li><li><a href="#complete-page-fault-handler-integrated">7.10.18 Complete Page Fault Handler (Integrated)</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.11">7.11 Performance Implications</a></summary>
+<ul><li><a href="#page-fault-cost-breakdown">7.11.1 Page Fault Cost Breakdown</a></li><li><a href="#page-fault-rate-impact">7.11.2 Page Fault Rate Impact</a></li><li><a href="#real-world-page-fault-profiling">7.11.3 Real-World Page Fault Profiling</a></li><li><a href="#reducing-page-faults">7.11.4 Reducing Page Faults</a></li><li><a href="#page-fault-performance-anti-patterns">7.11.5 Page Fault Performance Anti-Patterns</a></li><li><a href="#page-fault-performance-monitoring">7.11.6 Page Fault Performance Monitoring</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.12">7.12 Historical Architectures: SPARC, MIPS, PowerPC</a></summary>
+<ul><li><a href="#sparc-architecture-sun-microsystems">7.12.1 SPARC Architecture (Sun Microsystems)</a></li><li><a href="#mips-architecture">7.12.2 MIPS Architecture</a></li><li><a href="#powerpc-architecture-ibmmotorola">7.12.3 PowerPC Architecture (IBM/Motorola)</a></li><li><a href="#comparison-table">7.12.4 Comparison Table</a></li><li><a href="#lessons-learned">7.12.5 Lessons Learned</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.13">7.13 Architecture Comparison</a></summary>
+<ul><li><a href="#fault-detection-and-reporting">7.13.1 Fault Detection and Reporting</a></li><li><a href="#hardware-vs-software-responsibility">7.13.2 Hardware vs Software Responsibility</a></li><li><a href="#protection-mechanisms">7.13.3 Protection Mechanisms</a></li><li><a href="#exception-priority">7.13.4 Exception Priority</a></li><li><a href="#performance-characteristics">7.13.5 Performance Characteristics</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-7.14">7.14 Debugging Page Faults</a></summary>
+<ul><li><a href="#common-page-fault-patterns">7.14.1 Common Page Fault Patterns</a></li><li><a href="#reading-kernel-oops-messages">7.14.2 Reading Kernel Oops Messages</a></li><li><a href="#gdb-debugging-of-page-faults">7.14.3 GDB Debugging of Page Faults</a></li><li><a href="#using-straceltrace">7.14.4 Using strace/ltrace</a></li><li><a href="#performance-debugging">7.14.5 Performance Debugging</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-7.15">7.15 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 <h2 id="section-7.1">7.1 Introduction:
 When Address Translation Fails</h2>
@@ -8284,24 +8337,24 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb189-1"><a href
 </script>
 <h2 id="references">References</h2>
 <ol type="1">
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 6: Interrupt and Exception Handling. Intel Corporation, 2023.</p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual for A-profile Architecture</em>. Document DDI0487J.a, Chapter D1: AArch64 System-Level Architecture. ARM Limited, 2023.</p></li>
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 20211203, Chapter 4: Supervisor-Level ISA. RISC-V International, 2021.</p></li>
-<li><p>Bovet, D.P. and Cesati, M. <em>Understanding the Linux Kernel</em>, 3rd Edition. O'Reilly Media, 2005. ISBN: 978-0-596-00565-8. Chapter 9: Memory Region Handling.</p></li>
-<li><p>Silberschatz, A., Galvin, P.B., and Gagne, G. <em>Operating System Concepts</em>, 10th Edition. John Wiley &amp; Sons, 2018. Chapter 10: Virtual Memory.</p></li>
-<li><p>Lipp, M., Schwarz, M., Gruss, D., Prescher, T., Haas, W., Fogh, A., Horn, J., Mangard, S., Kocher, P., Genkin, D., Yarom, Y., and Hamburg, M. "Meltdown: Reading Kernel Memory from User Space." <em>27th USENIX Security Symposium (USENIX Security 2018)</em>. USENIX, 2018.</p></li>
-<li><p>Kocher, P., Horn, J., Fogh, A., Genkin, D., Gruss, D., Haas, W., Hamburg, M., Lipp, M., Mangard, S., Prescher, T., Schwarz, M., and Yarom, Y. "Spectre Attacks: Exploiting Speculative Execution." <em>2019 IEEE Symposium on Security and Privacy (S&amp;P 2019)</em>. IEEE, 2019. DOI: 10.1109/SP.2019.00002</p></li>
-<li><p>Bugnion, E., Devine, S., and Rosenblum, M. "DISCO: Running Commodity Operating Systems on Scalable Multiprocessors." <em>ACM Transactions on Computer Systems (TOCS)</em>, 15(4), 412–447, 1997. DOI: 10.1145/265924.265930</p></li>
-<li><p>Bhattacharjee, A. "Large-Reach Memory Management Unit Caches." <em>46th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO 2013)</em>. IEEE/ACM, 2013. DOI: 10.1145/2540708.2540741</p></li>
-<li><p>Denning, P.J. "Thrashing: Its Causes and Prevention." <em>AFIPS 1968 Fall Joint Computer Conference</em>. ACM, 1968. DOI: 10.1145/1476589.1476705</p></li>
-<li><p>Corbet, J. "KAISER: Kernel Address Isolation to have Side-channels Efficiently Removed." <em>LWN.net</em>, November 2017. https://lwn.net/Articles/738975/</p></li>
-<li><p>Sun, X., Barker, K., Carrington, L., and Snavely, A. "Performance Estimation and Workload Characterization for the Memory Subsystem." <em>IEEE International Symposium on Workload Characterization (IISWC 2009)</em>. IEEE, 2009. DOI: 10.1109/IISWC.2009.5306794</p></li>
+<li id="ref-intel-2023"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 6: Interrupt and Exception Handling. Intel Corporation, 2023.</p></li>
+<li id="ref-arm-2023"><p>ARM Limited. <em>ARM Architecture Reference Manual for A-profile Architecture</em>. Document DDI0487J.a, Chapter D1: AArch64 System-Level Architecture. ARM Limited, 2023.</p></li>
+<li id="ref-riscv-2021"><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 20211203, Chapter 4: Supervisor-Level ISA. RISC-V International, 2021.</p></li>
+<li id="ref-bovet-2005"><p>Bovet, D.P. and Cesati, M. <em>Understanding the Linux Kernel</em>, 3rd Edition. O'Reilly Media, 2005. ISBN: 978-0-596-00565-8. Chapter 9: Memory Region Handling.</p></li>
+<li id="ref-silberschatz-2018"><p>Silberschatz, A., Galvin, P.B., and Gagne, G. <em>Operating System Concepts</em>, 10th Edition. John Wiley &amp; Sons, 2018. Chapter 10: Virtual Memory.</p></li>
+<li id="ref-lipp-2018"><p>Lipp, M., Schwarz, M., Gruss, D., Prescher, T., Haas, W., Fogh, A., Horn, J., Mangard, S., Kocher, P., Genkin, D., Yarom, Y., and Hamburg, M. "Meltdown: Reading Kernel Memory from User Space." <em>27th USENIX Security Symposium (USENIX Security 2018)</em>. USENIX, 2018.</p></li>
+<li id="ref-kocher-2019"><p>Kocher, P., Horn, J., Fogh, A., Genkin, D., Gruss, D., Haas, W., Hamburg, M., Lipp, M., Mangard, S., Prescher, T., Schwarz, M., and Yarom, Y. "Spectre Attacks: Exploiting Speculative Execution." <em>2019 IEEE Symposium on Security and Privacy (S&amp;P 2019)</em>. IEEE, 2019. <a class="ref-link" href="https://doi.org/10.1109/SP.2019.00002">DOI: 10.1109/SP.2019.00002</a></p></li>
+<li id="ref-bugnion-1997"><p>Bugnion, E., Devine, S., and Rosenblum, M. "DISCO: Running Commodity Operating Systems on Scalable Multiprocessors." <em>ACM Transactions on Computer Systems (TOCS)</em>, 15(4), 412–447, 1997. <a class="ref-link" href="https://doi.org/10.1145/265924.265930">DOI: 10.1145/265924.265930</a></p></li>
+<li id="ref-bhattacharjee-2013"><p>Bhattacharjee, A. "Large-Reach Memory Management Unit Caches." <em>46th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO 2013)</em>. IEEE/ACM, 2013. <a class="ref-link" href="https://doi.org/10.1145/2540708.2540741">DOI: 10.1145/2540708.2540741</a></p></li>
+<li id="ref-denning-1968"><p>Denning, P.J. "Thrashing: Its Causes and Prevention." <em>AFIPS 1968 Fall Joint Computer Conference</em>. ACM, 1968. <a class="ref-link" href="https://doi.org/10.1145/1476589.1476705">DOI: 10.1145/1476589.1476705</a></p></li>
+<li id="ref-corbet-2017"><p>Corbet, J. "KAISER: Kernel Address Isolation to have Side-channels Efficiently Removed." <em>LWN.net</em>, November 2017. <a class="ref-link" href="https://lwn.net/Articles/738975/">https://lwn.net/Articles/738975/</a></p></li>
+<li id="ref-sun-2009"><p>Sun, X., Barker, K., Carrington, L., and Snavely, A. "Performance Estimation and Workload Characterization for the Memory Subsystem." <em>IEEE International Symposium on Workload Characterization (IISWC 2009)</em>. IEEE, 2009. <a class="ref-link" href="https://doi.org/10.1109/IISWC.2009.5306794">DOI: 10.1109/IISWC.2009.5306794</a></p></li>
 </ol>
 <h3 id="7-11-gpu-page-fault-costs-dma-and-pcie-latency">§7.11 — GPU Page Fault Costs: DMA and PCIe Latency</h3>
 <ol type="1" start="13">
-<li><p>Mittal, S. "A survey of techniques for architecting TLBs." <em>Concurrency and Computation: Practice and Experience (CPE)</em>, 29(10), 2016. (§"TLB management in GPUs and CPU-GPU systems," citing Vesely et al. on 25× PCIe miss latency penalty.)
-    <a href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">DOI: 10.1002/cpe.4061</a></p></li>
-<li><p>Vesely, J., Basu, A., Oskin, M., Loh, G. H., Bhattacharjee, A., Tuck, J., and Ceze, L. "Observation and exploitation of narrow width loads in high-performance processors." <em>Proceedings of the 21st International Symposium on High Performance Computer Architecture (HPCA)</em>, 2015.</p></li>
+<li id="ref-mittal-2016"><p>Mittal, S. "A survey of techniques for architecting TLBs." <em>Concurrency and Computation: Practice and Experience (CPE)</em>, 29(10), 2016. (§"TLB management in GPUs and CPU-GPU systems," citing Vesely et al. on 25× PCIe miss latency penalty.)
+    <a class="ref-link" href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">DOI: 10.1002/cpe.4061</a></p></li>
+<li id="ref-vesely-2015"><p>Vesely, J., Basu, A., Oskin, M., Loh, G. H., Bhattacharjee, A., Tuck, J., and Ceze, L. "Observation and exploitation of narrow width loads in high-performance processors." <em>Proceedings of the 21st International Symposium on High Performance Computer Architecture (HPCA)</em>, 2015.</p></li>
 </ol>
 
 </body>

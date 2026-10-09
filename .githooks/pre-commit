@@ -45,5 +45,9 @@ if [ $AUDIT_EXIT -ne 0 ]; then
   exit 1
 fi
 
+# Citations / reference links / collapsible TOC gate (G12, PIPELINE §7)
+python3 "$(git rev-parse --show-toplevel)/scripts/audit_links.py" "$CHAPTERS_DIR" || {
+  echo "COMMIT BLOCKED — G12 citation/reference/TOC check failed."; exit 1; }
+
 echo "Pre-commit gate passed — proceeding with commit."
 exit 0

@@ -570,6 +570,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -680,23 +703,51 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 Dive</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-4.1">4.1 Introduction: The Most Critical Cache You've Never Heard Of</a></li>
-<li><a href="#section-4.2">4.2 TLB Architecture and Organization</a></li>
-<li><a href="#section-4.3">4.3 TLB Management: Hardware vs Software</a></li>
-<li><a href="#section-4.4">4.4 Address Space Identifiers: ASID, PCID, and VMID</a></li>
-<li><a href="#section-4.5">4.5 TLB Operations and Instructions</a></li>
-<li><a href="#section-4.6">4.6 Large Pages and TLB Coverage</a></li>
-<li><a href="#section-4.7">4.7 Multicore TLB Coherency</a></li>
-<li><a href="#section-4.8">4.8 Platform-Specific TLB Implementations</a></li>
-<li><a href="#section-4.9">4.9 Alternative Page Table Structures and TLB Implications</a></li>
-<li><a href="#section-4.10">4.10 Self-Modifying Code and Instruction/Data Coherency</a></li>
-<li><a href="#section-4.11">4.11 Multithreading and TLB Sharing</a></li>
-<li><a href="#section-4.12">4.12 Virtualization with Mismatched Page Sizes</a></li>
-<li><a href="#section-4.13">4.13 GPU and Hardware Accelerator MMUs</a></li>
-<li><a href="#section-4.14">4.14 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-4.1">4.1 Introduction: The Most Critical Cache You've Never Heard Of</a></summary>
+<ul><li><a href="#why-the-tlb-deserves-deep-study">Why the TLB Deserves Deep Study</a></li><li><a href="#what-well-cover">What We'll Cover</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.2">4.2 TLB Architecture and Organization</a></summary>
+<ul><li><a href="#the-tlb-hierarchy-why-multiple-levels">4.2.1 The TLB Hierarchy: Why Multiple Levels?</a></li><li><a href="#tlb-entry-structure-what-does-each-entry-store">4.2.2 TLB Entry Structure: What Does Each Entry Store?</a></li><li><a href="#associativity-and-replacement-policies">4.2.3 Associativity and Replacement Policies</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.3">4.3 TLB Management: Hardware vs Software</a></summary>
+<ul><li><a href="#hardware-managed-tlbs-the-x86-and-arm-approach">4.3.1 Hardware-Managed TLBs: The x86 and ARM Approach</a></li><li><a href="#software-managed-tlbs-the-risc-v-and-mips-approach">4.3.2 Software-Managed TLBs: The RISC-V and MIPS Approach</a></li><li><a href="#hybrid-approaches-and-modern-trends">4.3.3 Hybrid Approaches and Modern Trends</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.4">4.4 Address Space Identifiers: ASID, PCID, and VMID</a></summary>
+<ul><li><a href="#the-context-switch-problem">4.4.1 The Context Switch Problem</a></li><li><a href="#asid-arms-address-space-identifier">4.4.2 ASID: ARM's Address Space Identifier</a></li><li><a href="#pcid-x86-64s-process-context-identifier">4.4.3 PCID: x86-64's Process Context Identifier</a></li><li><a href="#vmid-virtualization-machine-identifier">4.4.4 VMID: Virtualization Machine Identifier</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.5">4.5 TLB Operations and Instructions</a></summary>
+<ul><li><a href="#tlb-invalidation-instructions">4.5.1 TLB Invalidation Instructions</a></li><li><a href="#tlb-shootdown-multicore-synchronization">4.5.2 TLB Shootdown: Multicore Synchronization</a></li><li><a href="#batching-and-optimization">4.5.3 Batching and Optimization</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.6">4.6 Large Pages and TLB Coverage</a></summary>
+<ul><li><a href="#the-tlb-coverage-problem">4.6.1 The TLB Coverage Problem</a></li><li><a href="#large-page-sizes">4.6.2 Large Page Sizes</a></li><li><a href="#tlb-coverage-improvement-with-large-pages">4.6.3 TLB Coverage Improvement with Large Pages</a></li><li><a href="#hardware-support-for-large-pages">4.6.4 Hardware Support for Large Pages</a></li><li><a href="#operating-system-support-transparent-huge-pages">4.6.5 Operating System Support: Transparent Huge Pages</a></li><li><a href="#huge-page-performance-measurements">4.6.6 Huge Page Performance Measurements</a></li><li><a href="#gb-page-support">4.6.7 1GB Page Support</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.7">4.7 Multicore TLB Coherency</a></summary>
+<ul><li><a href="#the-tlb-coherency-problem">4.7.1 The TLB Coherency Problem</a></li><li><a href="#tlb-shootdown-protocol-revisited">4.7.2 TLB Shootdown Protocol (Revisited)</a></li><li><a href="#hardware-tlb-coherency-support">4.7.3 Hardware TLB Coherency Support</a></li><li><a href="#tlb-coherency-and-memory-ordering">4.7.4 TLB Coherency and Memory Ordering</a></li><li><a href="#batched-tlb-shootdown-optimization">4.7.5 Batched TLB Shootdown Optimization</a></li><li><a href="#tlb-coherency-in-numa-systems">4.7.6 TLB Coherency in NUMA Systems</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.8">4.8 Platform-Specific TLB Implementations</a></summary>
+<ul><li><a href="#intel-x86-64-tlb-architecture">4.8.1 Intel x86-64 TLB Architecture</a></li><li><a href="#amd-zen-4-tlb-architecture-2022">4.8.2 AMD Zen 4 TLB Architecture (2022)</a></li><li><a href="#arm-cortex-a78-tlb-architecture-2020">4.8.3 ARM Cortex-A78 TLB Architecture (2020)</a></li><li><a href="#risc-v-implementation-sifive-u74-2020">4.8.4 RISC-V Implementation: SiFive U74 (2020)</a></li><li><a href="#apple-m-series-tlb-architecture">4.8.5 Apple M-Series TLB Architecture</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.9">4.9 Alternative Page Table Structures and TLB Implications</a></summary>
+<ul><li><a href="#inverted-page-tables">4.9.1 Inverted Page Tables</a></li><li><a href="#shadow-page-tables-for-virtualization">4.9.2 Shadow Page Tables for Virtualization</a></li><li><a href="#other-page-table-variations">4.9.4 Other Page Table Variations</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.10">4.10 Self-Modifying Code and Instruction/Data Coherency</a></summary>
+<ul><li><a href="#the-coherency-problem">4.10.1 The Coherency Problem</a></li><li><a href="#architecture-specific-handling">4.10.2 Architecture-Specific Handling</a></li><li><a href="#jit-compilers-and-dynamic-code-generation">4.10.3 JIT Compilers and Dynamic Code Generation</a></li><li><a href="#write-xor-execute-wx-security">4.10.4 Write XOR Execute (W^X) Security</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.11">4.11 Multithreading and TLB Sharing</a></summary>
+<ul><li><a href="#smt-architectures-intel-hyperthreading-and-amd-smt">4.11.1 SMT Architectures: Intel Hyperthreading and AMD SMT</a></li><li><a href="#tlb-partitioning-strategies">4.11.2 TLB Partitioning Strategies</a></li><li><a href="#tlb-miss-handling-with-smt">4.11.3 TLB Miss Handling with SMT</a></li><li><a href="#asidpcid-with-smt">4.11.4 ASID/PCID with SMT</a></li><li><a href="#performance-impact-of-smt-on-tlb">4.11.5 Performance Impact of SMT on TLB</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.12">4.12 Virtualization with Mismatched Page Sizes</a></summary>
+<ul><li><a href="#two-stage-translation-recap">4.12.1 Two-Stage Translation Recap</a></li><li><a href="#mismatched-page-sizes-the-problem">4.12.2 Mismatched Page Sizes: The Problem</a></li><li><a href="#intel-ept-with-mixed-page-sizes">4.12.3 Intel EPT with Mixed Page Sizes</a></li><li><a href="#amd-npt-with-mixed-page-sizes">4.12.4 AMD NPT with Mixed Page Sizes</a></li><li><a href="#arm64-stage-2-translation">4.12.5 ARM64 Stage 2 Translation</a></li><li><a href="#risc-v-hypervisor-extension">4.12.6 RISC-V Hypervisor Extension</a></li><li><a href="#performance-recommendations">4.12.7 Performance Recommendations</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-4.13">4.13 GPU and Hardware Accelerator MMUs</a></summary>
+<ul><li><a href="#why-gpus-need-mmus">4.13.1 Why GPUs Need MMUs</a></li><li><a href="#nvidia-gpu-mmu-architecture">4.13.2 NVIDIA GPU MMU Architecture</a></li><li><a href="#gpu-page-fault-handling">4.13.3 GPU Page Fault Handling</a></li><li><a href="#amd-gpu-mmu-iommu-integration">4.13.4 AMD GPU MMU (IOMMU Integration)</a></li><li><a href="#intel-gpus-and-shared-virtual-memory">4.13.5 Intel GPUs and Shared Virtual Memory</a></li><li><a href="#apple-m-series-unified-memory">4.13.6 Apple M-series Unified Memory</a></li><li><a href="#iommu-and-dma-remapping">4.13.7 IOMMU and DMA Remapping</a></li><li><a href="#performance-considerations">4.13.8 Performance Considerations</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-4.14">4.14 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 <h2 id="section-4.1">4.1
 Introduction: The Most Critical Cache You've Never Heard Of</h2>
@@ -4795,219 +4846,219 @@ Integrated GPU (Apple M1)      28 ms     0 (unified memory)</code></pre>
 <h2 id="references">References</h2>
 <h3 id="general-tlb-architecture-and-design">General TLB Architecture and Design</h3>
 <ol type="1">
-<li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures
+<li id="ref-intel-2023a"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures
 Optimization Reference Manual</em>. Order Number: 248966-046. June 2023.
 Section 2.5: "Translation Lookaside Buffers."</p></li>
-<li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software
+<li id="ref-intel-2024a"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software
 Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>.
 Chapter 4: "Paging" and Section 8.1.3: "Handling Self-Modifying Code."
 2024.</p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, for
+<li id="ref-arm-2023a"><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, for
 ARMv8-A architecture profile</em>. ARM DDI 0487J.a. March 2023. Chapter
 D5: "The AArch64 Virtual Memory System Architecture" and Section D5.10:
 "TLB maintenance instructions" and Section B2.2.5: "Maintenance of
 caches and memory hierarchy."</p></li>
-<li><p>ARM Limited. <em>ARM Cortex-A78 Core Technical Reference
+<li id="ref-arm-2020a"><p>ARM Limited. <em>ARM Cortex-A78 Core Technical Reference
 Manual</em>. ARM 100230_0002_00_en. 2020.</p></li>
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual,
+<li id="ref-riscv-2019"><p>RISC-V International. <em>The RISC-V Instruction Set Manual,
 Volume I: Unprivileged ISA</em>. Version 20191213. Section 2.7: "FENCE.I
 Instruction." December 2019.</p></li>
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual,
+<li id="ref-riscv-2021"><p>RISC-V International. <em>The RISC-V Instruction Set Manual,
 Volume II: Privileged Architecture</em>. Version 20211203. December
 2021. Section 4.2.1: "Supervisor Memory-Management Fence
 Instruction."</p></li>
-<li><p>AMD. <em>Software Optimization Guide for AMD Family 19h
+<li id="ref-amd-2023"><p>AMD. <em>Software Optimization Guide for AMD Family 19h
 Processors</em>. Publication # 56665. June 2023.</p></li>
-<li><p>Jacob, Bruce, and Trevor Mudge. "Virtual Memory: Issues of
-Implementation." <em>IEEE Computer</em> 31.6 (1998): 33-43. DOI:
-10.1109/2.683005</p></li>
-<li><p>Bhattacharjee, Abhishek, and Daniel Lustig. <em>Architectural
+<li id="ref-jacob-1998"><p>Jacob, Bruce, and Trevor Mudge. "Virtual Memory: Issues of
+Implementation." <em>IEEE Computer</em> 31.6 (1998): 33-43. <a class="ref-link" href="https://doi.org/10.1109/2.683005">DOI:
+10.1109/2.683005</a></p></li>
+<li id="ref-bhattacharjee-2017"><p>Bhattacharjee, Abhishek, and Daniel Lustig. <em>Architectural
 Support for Address Translation</em>. Synthesis Lectures on Computer
-Architecture. Morgan &amp; Claypool, 2017. DOI:
-10.2200/S00752ED1V01Y201610CAC037</p></li>
+Architecture. Morgan &amp; Claypool, 2017. <a class="ref-link" href="https://doi.org/10.2200/S00752ED1V01Y201610CAC037">DOI:
+10.2200/S00752ED1V01Y201610CAC037</a></p></li>
 </ol>
 <h3 id="tlb-management-and-multicore-systems">TLB Management and Multicore Systems</h3>
 <ol type="1" start="10">
-<li><p>Baumann, Andrew, et al. "The Multikernel: A new OS architecture
+<li id="ref-baumann-2009"><p>Baumann, Andrew, et al. "The Multikernel: A new OS architecture
 for scalable multicore systems." <em>Proceedings of the ACM SIGOPS 22nd
 symposium on Operating systems principles (SOSP 2009)</em>. ACM, 2009.
-DOI: 10.1145/1629575.1629579</p></li>
-<li><p>Amit, Nadav, et al. "Optimizing the TLB shootdown algorithm with
+<a class="ref-link" href="https://doi.org/10.1145/1629575.1629579">DOI: 10.1145/1629575.1629579</a></p></li>
+<li id="ref-amit-2017"><p>Amit, Nadav, et al. "Optimizing the TLB shootdown algorithm with
 page access tracking." <em>2017 USENIX Annual Technical Conference (ATC
 17)</em>. 2017. Pages 27-39.</p></li>
-<li><p>Vilanova, Lluís, et al. "CODOMs: Protecting software with
+<li id="ref-vilanova-2014"><p>Vilanova, Lluís, et al. "CODOMs: Protecting software with
 code-centric memory domains." <em>Proceedings of the 41st ACM SIGARCH
 International Symposium on Computer Architecture (ISCA 2014)</em>.
 2014.</p></li>
 </ol>
 <h3 id="large-pages-and-tlb-coverage">Large Pages and TLB Coverage</h3>
 <ol type="1" start="13">
-<li><p>Bienia, Christian, et al. "The PARSEC benchmark suite:
+<li id="ref-bienia-2008"><p>Bienia, Christian, et al. "The PARSEC benchmark suite:
 Characterization and architectural implications." <em>Proceedings of the
 17th international conference on Parallel architectures and compilation
-techniques (PACT 2008)</em>. ACM, 2008. DOI:
-10.1145/1454115.1454128</p></li>
-<li><p>Kwon, Youngjin, et al. "Coordinated and Efficient Huge Page
+techniques (PACT 2008)</em>. ACM, 2008. <a class="ref-link" href="https://doi.org/10.1145/1454115.1454128">DOI:
+10.1145/1454115.1454128</a></p></li>
+<li id="ref-kwon-2016"><p>Kwon, Youngjin, et al. "Coordinated and Efficient Huge Page
 Management with Ingens." <em>12th USENIX Symposium on Operating Systems
 Design and Implementation (OSDI 2016)</em>. 2016. Pages
 705-721.</p></li>
-<li><p>Navarro, Juan, et al. "Practical, transparent operating system
+<li id="ref-navarro-2002"><p>Navarro, Juan, et al. "Practical, transparent operating system
 support for superpages." <em>5th USENIX Symposium on Operating Systems
 Design and Implementation (OSDI 2002)</em>. 2002. Pages 89-104.</p></li>
 </ol>
 <h3 id="page-walk-caches">Page Walk Caches</h3>
 <ol type="1" start="16">
-<li><p>Barr, T. W., Cox, A. L., &amp; Rixner, S. "Translation caching:
+<li id="ref-barr-2011"><p>Barr, T. W., Cox, A. L., &amp; Rixner, S. "Translation caching:
 skip, don't walk (the page table)." <em>ACM SIGARCH Computer
-Architecture News</em>, 39(3) (2011): 48-59. DOI:
-10.1145/2024723.2000118</p></li>
+Architecture News</em>, 39(3) (2011): 48-59. <a class="ref-link" href="https://doi.org/10.1145/2024723.2000118">DOI:
+10.1145/2024723.2000118</a></p></li>
 </ol>
 <h3 id="alternative-page-table-structures">Alternative Page Table Structures</h3>
 <ol type="1" start="17">
-<li><p>Talluri, M., &amp; Hill, M. D. "Surpassing the TLB performance of
+<li id="ref-talluri-1994"><p>Talluri, M., &amp; Hill, M. D. "Surpassing the TLB performance of
 superpages with less operating system support." <em>ACM SIGPLAN
-Notices</em>, 29(11) (1994): 171-182. DOI: 10.1145/191126.191235
+Notices</em>, 29(11) (1994): 171-182. <a class="ref-link" href="https://doi.org/10.1145/191126.191235">DOI: 10.1145/191126.191235</a>
 [Inverted page tables analysis]</p></li>
-<li><p>Liedtke, Jochen. "Address space sparsity and fine granularity."
+<li id="ref-liedtke-1995"><p>Liedtke, Jochen. "Address space sparsity and fine granularity."
 <em>ACM SIGARCH Computer Architecture News</em> 23.5 (1995): 78-86. DOI:
-10.1145/224021.224028 <a href="#clustered-page-tables">Clustered page
+10.1145/224021.224028 <a class="ref-link" href="#clustered-page-tables">Clustered page
 tables</a></p></li>
-<li><p>Chang, Albert, and Mark F. Mergen. "801 storage: Architecture and
+<li id="ref-chang-1988"><p>Chang, Albert, and Mark F. Mergen. "801 storage: Architecture and
 programming." <em>ACM Transactions on Computer Systems (TOCS)</em> 6.1
-(1988): 28-50. DOI: 10.1145/35037.35039 [Early inverted page table
+(1988): 28-50. <a class="ref-link" href="https://doi.org/10.1145/35037.35039">DOI: 10.1145/35037.35039</a> [Early inverted page table
 implementation]</p></li>
 </ol>
 <h3 id="virtualization-and-shadow-page-tables">Virtualization and Shadow Page Tables</h3>
 <ol type="1" start="20">
-<li><p>Waldspurger, C. A. "Memory resource management in VMware ESX
+<li id="ref-waldspurger-2002"><p>Waldspurger, C. A. "Memory resource management in VMware ESX
 server." <em>ACM SIGOPS Operating Systems Review</em>, 36(SI) (2002):
-181-194. DOI: 10.1145/844128.844146 [Classic shadow page table
+181-194. <a class="ref-link" href="https://doi.org/10.1145/844128.844146">DOI: 10.1145/844128.844146</a> [Classic shadow page table
 paper]</p></li>
-<li><p>Adams, Keith, and Ole Agesen. "A comparison of software and
+<li id="ref-adams-2006"><p>Adams, Keith, and Ole Agesen. "A comparison of software and
 hardware techniques for x86 virtualization." <em>Proceedings of the 12th
 international conference on Architectural support for programming
-languages and operating systems (ASPLOS 2006)</em>. ACM, 2006. DOI:
-10.1145/1168857.1168860</p></li>
-<li><p>Bhargava, Ravi, et al. "Accelerating two-dimensional page walks
+languages and operating systems (ASPLOS 2006)</em>. ACM, 2006. <a class="ref-link" href="https://doi.org/10.1145/1168857.1168860">DOI:
+10.1145/1168857.1168860</a></p></li>
+<li id="ref-bhargava-2008"><p>Bhargava, Ravi, et al. "Accelerating two-dimensional page walks
 for virtualized systems." <em>ACM SIGARCH Computer Architecture
-News</em> 36.1 (2008): 26-35. DOI: 10.1145/1353534.1346286</p></li>
-<li><p>Ahn, J., Jin, S., &amp; Huh, J. "Revisiting hardware-assisted
+News</em> 36.1 (2008): 26-35. <a class="ref-link" href="https://doi.org/10.1145/1353534.1346286">DOI: 10.1145/1353534.1346286</a></p></li>
+<li id="ref-ahn-2012a"><p>Ahn, J., Jin, S., &amp; Huh, J. "Revisiting hardware-assisted
 page walks for virtualized systems." <em>Proceedings of the 39th Annual
 International Symposium on Computer Architecture (ISCA 2012)</em>. IEEE,
-2012. DOI: 10.1109/ISCA.2012.6237040 [EPT/NPT TLB performance analysis
+2012. <a class="ref-link" href="https://doi.org/10.1109/ISCA.2012.6237040">DOI: 10.1109/ISCA.2012.6237040</a> [EPT/NPT TLB performance analysis
 with mismatched page sizes]</p></li>
 </ol>
 <h3 id="self-modifying-code-and-cache-coherency">Self-Modifying Code and Cache Coherency</h3>
 <ol type="1" start="24">
-<li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software
+<li id="ref-intel-2024b"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software
 Developer's Manual, Volume 3A</em>. Section 11.6: "Self-Modifying Code."
 2024.</p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8</em>.
+<li id="ref-arm-2023b"><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8</em>.
 Section D4.4.4: "Instruction caches and memory coherency."
 2023.</p></li>
-<li><p>Boehm, Hans-J., and Sarita V. Adve. "Foundations of the C++
+<li id="ref-boehm-2008"><p>Boehm, Hans-J., and Sarita V. Adve. "Foundations of the C++
 concurrency memory model." <em>Proceedings of the 29th ACM SIGPLAN
 Conference on Programming Language Design and Implementation (PLDI
-2008)</em>. 2008. DOI: 10.1145/1375581.1375591</p></li>
+2008)</em>. 2008. <a class="ref-link" href="https://doi.org/10.1145/1375581.1375591">DOI: 10.1145/1375581.1375591</a></p></li>
 </ol>
 <h3 id="gpu-and-accelerator-mmus">GPU and Accelerator MMUs</h3>
 <ol type="1" start="27">
-<li><p>NVIDIA Corporation. <em>NVIDIA CUDA C Programming Guide</em>.
+<li id="ref-nvidia-2023"><p>NVIDIA Corporation. <em>NVIDIA CUDA C Programming Guide</em>.
 Version 12.0. 2023. Chapter 3.2: "Unified Memory Programming."</p></li>
-<li><p>AMD. <em>Graphics Core Next Architecture, Generation 3</em>.
+<li id="ref-amd-2016a"><p>AMD. <em>Graphics Core Next Architecture, Generation 3</em>.
 White Paper. 2016.</p></li>
-<li><p>Intel Corporation. <em>Intel® Data Center GPU Max Series Software
+<li id="ref-intel-2023b"><p>Intel Corporation. <em>Intel® Data Center GPU Max Series Software
 Developer's Guide</em>. Document Number: 767252-001. 2023.</p></li>
-<li><p>ARM Limited. <em>ARM CoreLink MMU-600 System Memory Management
+<li id="ref-arm-2020b"><p>ARM Limited. <em>ARM CoreLink MMU-600 System Memory Management
 Unit Technical Reference Manual</em>. ARM 100310_0200_00_en. 2020.
 [IOMMU/SMMU for accelerators]</p></li>
-<li><p>Silicon Graphics, Inc. (SGI). <em>OpenGL on SGI Reality Engine
+<li id="ref-silicongraphics-1994"><p>Silicon Graphics, Inc. (SGI). <em>OpenGL on SGI Reality Engine
 Graphics</em>. Technical Report. 1994. [Early GPU virtual memory
 concepts]</p></li>
-<li><p>Pichai, Bharath, et al. "Architectural support for address
+<li id="ref-pichai-2014"><p>Pichai, Bharath, et al. "Architectural support for address
 translation on GPUs: Designing memory management units for CPU/GPUs with
 unified address spaces." <em>ACM SIGPLAN Notices</em> 49.4 (2014):
-743-758. DOI: 10.1145/2644865.2541940</p></li>
-<li><p>Power, Jason, et al. "Supporting x86-64 address translation for
+743-758. <a class="ref-link" href="https://doi.org/10.1145/2644865.2541940">DOI: 10.1145/2644865.2541940</a></p></li>
+<li id="ref-power-2014"><p>Power, Jason, et al. "Supporting x86-64 address translation for
 100s of GPU lanes." <em>2014 IEEE 20th International Symposium on High
-Performance Computer Architecture (HPCA)</em>. IEEE, 2014. DOI:
-10.1109/HPCA.2014.6835960</p></li>
-<li><p>Ausavarungnirun, Rachata, et al. "Mosaic: A GPU memory manager
+Performance Computer Architecture (HPCA)</em>. IEEE, 2014. <a class="ref-link" href="https://doi.org/10.1109/HPCA.2014.6835960">DOI:
+10.1109/HPCA.2014.6835960</a></p></li>
+<li id="ref-ausavarungnirun-2017"><p>Ausavarungnirun, Rachata, et al. "Mosaic: A GPU memory manager
 with application-transparent support for multiple page sizes."
 <em>Proceedings of the 50th Annual IEEE/ACM International Symposium on
-Microarchitecture (MICRO 2017)</em>. ACM, 2017. DOI:
-10.1145/3123939.3123975 [GPU TLB with mixed page sizes]</p></li>
+Microarchitecture (MICRO 2017)</em>. ACM, 2017. <a class="ref-link" href="https://doi.org/10.1145/3123939.3123975">DOI:
+10.1145/3123939.3123975</a> [GPU TLB with mixed page sizes]</p></li>
 </ol>
 <h3 id="iommu-and-dma-remapping-references">IOMMU and DMA Remapping</h3>
 <ol type="1" start="35">
-<li><p>Intel Corporation. <em>Intel® Virtualization Technology for
+<li id="ref-intel-2020"><p>Intel Corporation. <em>Intel® Virtualization Technology for
 Directed I/O (VT-d): Architecture Specification</em>. Revision 3.3.
 September 2020.</p></li>
-<li><p>Ben-Yehuda, Muli, et al. "The price of safety: Evaluating IOMMU
+<li id="ref-benyehuda-2007"><p>Ben-Yehuda, Muli, et al. "The price of safety: Evaluating IOMMU
 performance." <em>Linux Symposium</em>. Vol. 9. 2007. Pages
 9-20.</p></li>
-<li><p>ARM Limited. <em>ARM System Memory Management Unit Architecture
+<li id="ref-arm-2019"><p>ARM Limited. <em>ARM System Memory Management Unit Architecture
 Specification, SMMU architecture version 3</em>. ARM IHI 0070D.b.
 2019.</p></li>
 </ol>
 <h3 id="performance-analysis-and-benchmarking">Performance Analysis and Benchmarking</h3>
 <ol type="1" start="38">
-<li><p>Basu, Arkaprava, et al. "Efficient virtual memory for big memory
+<li id="ref-basu-2013"><p>Basu, Arkaprava, et al. "Efficient virtual memory for big memory
 servers." <em>Proceedings of the 40th Annual International Symposium on
-Computer Architecture (ISCA 2013)</em>. ACM, 2013. DOI:
-10.1145/2485922.2485943</p></li>
-<li><p>Karakostas, Vasileios, et al. "Redundant memory mappings for fast
+Computer Architecture (ISCA 2013)</em>. ACM, 2013. <a class="ref-link" href="https://doi.org/10.1145/2485922.2485943">DOI:
+10.1145/2485922.2485943</a></p></li>
+<li id="ref-karakostas-2015"><p>Karakostas, Vasileios, et al. "Redundant memory mappings for fast
 access to large memories." <em>Proceedings of the 42nd Annual
 International Symposium on Computer Architecture (ISCA 2015)</em>. IEEE,
-2015. DOI: 10.1145/2749469.2750383</p></li>
-<li><p>Cox, Russ, and William Josephson. "Optimizing network
+2015. <a class="ref-link" href="https://doi.org/10.1145/2749469.2750383">DOI: 10.1145/2749469.2750383</a></p></li>
+<li id="ref-cox-2006"><p>Cox, Russ, and William Josephson. "Optimizing network
 virtualization in Xen." <em>Proceedings of the USENIX Annual Technical
 Conference</em>. 2006.</p></li>
-<li><p>Gandhi, Jayneel, et al. "Badger TLB: A mechanism for optimizing
+<li id="ref-gandhi-2014"><p>Gandhi, Jayneel, et al. "Badger TLB: A mechanism for optimizing
 TLB miss handling." <em>2014 47th Annual IEEE/ACM International
-Symposium on Microarchitecture</em>. IEEE, 2014. DOI:
-10.1109/MICRO.2014.45</p></li>
+Symposium on Microarchitecture</em>. IEEE, 2014. <a class="ref-link" href="https://doi.org/10.1109/MICRO.2014.45">DOI:
+10.1109/MICRO.2014.45</a></p></li>
 </ol>
 <h3 id="historical-and-survey-papers">Historical and Survey Papers</h3>
 <ol type="1" start="42">
-<li><p>Smith, Alan Jay, and James R. Goodman. "The impact of memory
+<li id="ref-smith-1983"><p>Smith, Alan Jay, and James R. Goodman. "The impact of memory
 management on commercial computer systems." <em>Communications of the
-ACM</em> 26.12 (1983): 1002-1011. DOI: 10.1145/358476.358484</p></li>
-<li><p>Denning, Peter J. "Virtual memory." <em>ACM Computing Surveys
-(CSUR)</em> 2.3 (1970): 153-189. DOI: 10.1145/356571.356573 [Seminal
+ACM</em> 26.12 (1983): 1002-1011. <a class="ref-link" href="https://doi.org/10.1145/358476.358484">DOI: 10.1145/358476.358484</a></p></li>
+<li id="ref-denning-1970"><p>Denning, Peter J. "Virtual memory." <em>ACM Computing Surveys
+(CSUR)</em> 2.3 (1970): 153-189. <a class="ref-link" href="https://doi.org/10.1145/356571.356573">DOI: 10.1145/356571.356573</a> [Seminal
 paper on virtual memory]</p></li>
-<li><p>Kilburn, Tom, et al. "One-level storage system." <em>IRE
-Transactions on Electronic Computers</em> 2 (1962): 223-235. DOI:
-10.1109/IREELC.1962.5408922 [Atlas computer - first virtual memory
+<li id="ref-kilburn-1962"><p>Kilburn, Tom, et al. "One-level storage system." <em>IRE
+Transactions on Electronic Computers</em> 2 (1962): 223-235. <a class="ref-link" href="https://doi.org/10.1109/IREELC.1962.5408922">DOI:
+10.1109/IREELC.1962.5408922</a> [Atlas computer - first virtual memory
 system]</p></li>
 </ol>
 <h3 id="additional-resources">Additional Resources</h3>
 <ol type="1" start="45">
-<li><p>Rosenblum, Mendel. "The design and implementation of a
+<li id="ref-rosenblum-1992"><p>Rosenblum, Mendel. "The design and implementation of a
 log-structured file system." <em>ACM Transactions on Computer Systems
 (TOCS)</em> 10.1 (1992): 26-52. [Discusses TLB implications of different
 page table designs]</p></li>
-<li><p>Saulsbury, Ashley, Fredrik Dahlgren, and Per Stenström.
+<li id="ref-saulsbury-2000"><p>Saulsbury, Ashley, Fredrik Dahlgren, and Per Stenström.
 "Recency-based TLB preloading." <em>ACM SIGARCH Computer Architecture
-News</em> 28.2 (2000): 117-127. DOI: 10.1145/342001.339668</p></li>
-<li><p>Marwaha, Manish, and Abhishek Bhattacharjee. "Spatiotemporal
+News</em> 28.2 (2000): 117-127. <a class="ref-link" href="https://doi.org/10.1145/342001.339668">DOI: 10.1145/342001.339668</a></p></li>
+<li id="ref-marwaha-2022"><p>Marwaha, Manish, and Abhishek Bhattacharjee. "Spatiotemporal
 optimizations for multi-GPU systems via decoupled modules." <em>IEEE
 Computer Architecture Letters</em> 21.2 (2022): 85-88. [Modern GPU MMU
 optimizations]</p></li>
 </ol>
 <h3 id="4-12-virtualization-tlb-performance">§4.12 — Virtualization TLB Performance</h3>
 <ol type="1" start="48">
-<li><p>Ahn, J., Jin, S., and Huh, J. "Revisiting hardware-assisted page walks for virtualized systems." <em>Proceedings of the 39th Annual International Symposium on Computer Architecture (ISCA)</em>, pp. 476–487, 2012.
-    <a href="https://doi.org/10.1145/2366231.2337200" target="_blank" rel="noopener">DOI: 10.1145/2366231.2337200</a></p></li>
+<li id="ref-ahn-2012b"><p>Ahn, J., Jin, S., and Huh, J. "Revisiting hardware-assisted page walks for virtualized systems." <em>Proceedings of the 39th Annual International Symposium on Computer Architecture (ISCA)</em>, pp. 476–487, 2012.
+    <a class="ref-link" href="https://doi.org/10.1145/2366231.2337200" target="_blank" rel="noopener">DOI: 10.1145/2366231.2337200</a></p></li>
 </ol>
 <h3 id="4-13-gpu-and-accelerator-tlbs">§4.13 — GPU and Accelerator TLBs</h3>
 <ol type="1" start="49">
-<li><p>NVIDIA Corporation. <em>CUDA C++ Programming Guide</em>. Chapter 3.2: "Unified Memory Programming." 2024.
-    <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/" target="_blank" rel="noopener">docs.nvidia.com/cuda</a></p></li>
-<li><p>AMD. <em>AMD Graphics Core Next Architecture, Generation 3</em>. Section 5: "Memory Hierarchy." 2016.
-    <a href="https://gpuopen.com/wp-content/uploads/2016/08/GCN3_Instruction_Set_Architecture_rev1.1.pdf" target="_blank" rel="noopener">gpuopen.com/GCN3</a></p></li>
-<li><p>Intel Corporation. <em>Intel Data Center GPU Flex Series Product Brief</em>. 2023.
-    <a href="https://www.intel.com/content/www/us/en/products/docs/discrete-gpus/data-center-gpu/flex-series/overview.html" target="_blank" rel="noopener">intel.com/data-center-gpu-flex</a></p></li>
+<li id="ref-nvidia-2024"><p>NVIDIA Corporation. <em>CUDA C++ Programming Guide</em>. Chapter 3.2: "Unified Memory Programming." 2024.
+    <a class="ref-link" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/" target="_blank" rel="noopener">docs.nvidia.com/cuda</a></p></li>
+<li id="ref-amd-2016b"><p>AMD. <em>AMD Graphics Core Next Architecture, Generation 3</em>. Section 5: "Memory Hierarchy." 2016.
+    <a class="ref-link" href="https://gpuopen.com/wp-content/uploads/2016/08/GCN3_Instruction_Set_Architecture_rev1.1.pdf" target="_blank" rel="noopener">gpuopen.com/GCN3</a></p></li>
+<li id="ref-intel-2023c"><p>Intel Corporation. <em>Intel Data Center GPU Flex Series Product Brief</em>. 2023.
+    <a class="ref-link" href="https://www.intel.com/content/www/us/en/products/docs/discrete-gpus/data-center-gpu/flex-series/overview.html" target="_blank" rel="noopener">intel.com/data-center-gpu-flex</a></p></li>
 </ol>
 
 <script>

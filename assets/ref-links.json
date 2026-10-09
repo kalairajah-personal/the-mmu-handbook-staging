@@ -1,0 +1,17 @@
+{
+  "_doc": "PIPELINE.md §7.5. entries: 'chNN:<ref key>' -> {doi|url, status verified|search|mismatch|none, verified_by, checked}. aliases: 'chNN:<cite author>,<year>' -> 'ref-<key>'. missing: citations to works absent from References (fix in item 2).",
+  "entries": {},
+  "aliases": {
+    "ch01:University of Manchester,1962": "ref-kilburn-1962",
+    "ch02:Peter Denning,1968": "ref-denning-1968",
+    "ch03:Barr et al.,2010": "ref-barr-2010a",
+    "ch12:IEEE Transactions on Computers,1978": "ref-censier-1978",
+    "ch16:SpecTLB,2011": "ref-barr-2011",
+    "ch16:Avatar,2024": "ref-memory-2024",
+    "ch16:FlexPointer,2023": "ref-compiler-2023"
+  },
+  "missing": [
+    "ch01:[Bhattacharjee &amp; Lustig, 2017]",
+    "ch01:[Fotheringham, 1961; Kilburn et al., 1962]"
+  ]
+}

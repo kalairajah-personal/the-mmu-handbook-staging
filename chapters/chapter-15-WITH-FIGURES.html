@@ -567,6 +567,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
   <style>
 
@@ -676,15 +699,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h1 class="title">Chapter 15: Beyond Traditional MMU - Alternative Translation Architectures</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-15.1">15.1 Introduction</a></li>
-<li><a href="#section-15.2">15.2 Network-Level Translation</a></li>
-<li><a href="#section-15.3">15.3 Processing-in-Memory Translation (PIM-TLB)</a></li>
-<li><a href="#section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</a></li>
-<li><a href="#section-15.5">15.5 Comparative Analysis</a></li>
-<li><a href="#section-15.6">15.6 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-15.1">15.1 Introduction</a></summary>
+<ul><li><a href="#why-question-this-assumption">Why Question This Assumption Now?</a></li><li><a href="#what-makes-an-alternative-architecture">What Makes an "Alternative" Architecture?</a></li><li><a href="#chapter-roadmap">Chapter Roadmap</a></li><li><a href="#relationship-to-previous-chapters">Relationship to Previous Chapters</a></li><li><a href="#scope-and-limitations">Scope and Limitations</a></li><li><a href="#evaluation-framework">Evaluation Framework</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-15.2">15.2 Network-Level Translation</a></summary>
+<ul><li><a href="#mind-memory-in-network-disaggregation">15.2.1 MIND: Memory-in-Network Disaggregation</a></li><li><a href="#pulse-distributed-translation-for-far-memory">15.2.2 pulse: Distributed Translation for Far Memory</a></li><li><a href="#network-translation-implications">15.2.3 Network Translation: Implications and Limitations</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-15.3">15.3 Processing-in-Memory Translation (PIM-TLB)</a></summary>
+<ul><li><a href="#motivation-memory-wall-and-pim">15.3.1 Motivation: The Memory Wall and PIM</a></li><li><a href="#vpim-scalable-pim-translation">15.3.2 vPIM: Scalable Virtual Address Translation for PIM</a></li><li><a href="#imprint-page-translation-in-hbm">15.3.3 IMPRINT: Page Translation Table in HBM Logic Layer</a></li><li><a href="#emerging-pim-tlb-research">15.3.4 Emerging PIM-TLB Research (2025)</a></li><li><a href="#pim-tlb-synthesis">15.3.5 PIM-TLB Synthesis and Outlook</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</a></summary>
+<ul><li><a href="#motivation-the-flexibility-performance-tradeoff">15.4.1 Motivation: The Flexibility-Performance Trade-off</a></li><li><a href="#utopia-architecture">15.4.2 Utopia Architecture: Automatic Hybrid Translation</a></li><li><a href="#performance-evaluation">15.4.3 Performance Evaluation</a></li><li><a href="#implementation-challenges">15.4.4 Implementation Challenges</a></li><li><a href="#relationship-to-chapter-14">15.4.5 Relationship to Chapter 14</a></li><li><a href="#deployment-outlook">15.4.6 Deployment Outlook</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-15.5">15.5 Comparative Analysis</a></summary>
+<ul><li><a href="#architectural-comparison">15.5.1 Architectural Comparison</a></li><li><a href="#workload-suitability">15.5.2 Workload Suitability</a></li><li><a href="#deployment-considerations">15.5.3 Deployment Considerations</a></li><li><a href="#coexistence-and-combination">15.5.4 Coexistence and Combination</a></li><li><a href="#relationship-to-traditional-mmu-1">15.5.5 Relationship to Traditional MMU</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-15.6">15.6 Chapter Summary</a></summary>
+<ul><li><a href="#key-findings">Key Findings</a></li><li><a href="#relationship-to-book-narrative">Relationship to Book Narrative</a></li><li><a href="#deployment-reality-check">Deployment Reality Check</a></li><li><a href="#lessons-for-system-designers">Lessons for System Designers</a></li><li><a href="#open-questions">Open Questions</a></li><li><a href="#looking-forward">Looking Forward</a></li><li><a href="#final-thoughts">Final Thoughts</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 
 <h2 id="section-15.1">15.1 Introduction</h2>
@@ -746,7 +783,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p><strong>Section 15.4: Utopia—Hybrid Radix-Segments</strong></p>
 
-<p>While Chapter 14 examined Direct Segments in depth, Utopia (2022) represents a different architectural choice: rather than choosing between radix page tables or segments, it combines both. Small allocations use traditional paging for flexibility; large allocations automatically use segments for performance. This hybrid approach achieves both the flexibility of paging and the performance of segments without programmer intervention.</p>
+<p>While Chapter 14 examined Direct Segments in depth, Utopia [<a class="cite" href="#ref-utopiaresearchteam-2022">2022</a>] represents a different architectural choice: rather than choosing between radix page tables or segments, it combines both. Small allocations use traditional paging for flexibility; large allocations automatically use segments for performance. This hybrid approach achieves both the flexibility of paging and the performance of segments without programmer intervention.</p>
 
 <h3 id="relationship-to-previous-chapters">Relationship to Previous Chapters</h3>
 
@@ -3814,7 +3851,7 @@ Different trade-off than general-purpose CPU
 
 <h2 id="section-15.4">15.4 Utopia: Hybrid Radix-Segments Architecture</h2>
 
-<p>Chapter 14, Section 14.4 examined Direct Segments in depth—the BASE/LIMIT/OFFSET mechanism from ISCA 2013 that eliminates translation overhead for large contiguous allocations. Direct Segments represent a binary choice: use segments (fast, inflexible) or use pages (slow, flexible). Utopia (2022) asks a different question: <strong>why choose?</strong></p>
+<p>Chapter 14, Section 14.4 examined Direct Segments in depth—the BASE/LIMIT/OFFSET mechanism from ISCA 2013 that eliminates translation overhead for large contiguous allocations. Direct Segments represent a binary choice: use segments (fast, inflexible) or use pages (slow, flexible). Utopia [<a class="cite" href="#ref-utopiaresearchteam-2022">2022</a>] asks a different question: <strong>why choose?</strong></p>
 <figure id="fig-15-5" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
   <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
     <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
@@ -4853,27 +4890,27 @@ Best of all approaches, selected automatically based on access pattern!
 <h2 id="references">References</h2>
 <h3 id="network-level-translation">Network-Level Translation</h3>
 <ol type="1">
-<li><p>Abhishek Bhattacharjee et al., "MIND: In-Network Memory Management for Disaggregated Data Centers," SOSP 2021.</p></li>
-<li><p>Hao Tang et al., "pulse: Accelerating Distributed Page Table Walks with Programmable NICs," ASPLOS 2025.</p></li>
-<li><p>Maruf, H. A., Ghosh, A., Bhattacharjee, A., and Srikantaiah, S. "Effectively Prefetching Remote Memory with Leap." <em>USENIX ATC 2020 (USENIX Annual Technical Conference)</em>, 2020, pp. 843–857.</p></li>
-<li><p>Lim, K., Chang, J., Mudge, T., Ranganathan, P., Reinhardt, S. K., and Wenisch, T. F. "Disaggregated Memory for Expansion and Sharing in Blade Servers." <em>ISCA 2009 (36th Annual International Symposium on Computer Architecture)</em>, 2009, pp. 267–278. <a href="https://doi.org/10.1145/1555754.1555789" target="_blank" rel="noopener">DOI: 10.1145/1555754.1555789</a></p></li>
+<li id="ref-abhishek-2021"><p>Abhishek Bhattacharjee et al., "MIND: In-Network Memory Management for Disaggregated Data Centers," SOSP 2021.</p></li>
+<li id="ref-hao-2025"><p>Hao Tang et al., "pulse: Accelerating Distributed Page Table Walks with Programmable NICs," ASPLOS 2025.</p></li>
+<li id="ref-maruf-2020"><p>Maruf, H. A., Ghosh, A., Bhattacharjee, A., and Srikantaiah, S. "Effectively Prefetching Remote Memory with Leap." <em>USENIX ATC 2020 (USENIX Annual Technical Conference)</em>, 2020, pp. 843–857.</p></li>
+<li id="ref-lim-2009"><p>Lim, K., Chang, J., Mudge, T., Ranganathan, P., Reinhardt, S. K., and Wenisch, T. F. "Disaggregated Memory for Expansion and Sharing in Blade Servers." <em>ISCA 2009 (36th Annual International Symposium on Computer Architecture)</em>, 2009, pp. 267–278. <a class="ref-link" href="https://doi.org/10.1145/1555754.1555789" target="_blank" rel="noopener">DOI: 10.1145/1555754.1555789</a></p></li>
 </ol>
 <h3 id="pim-tlb">PIM-TLB</h3>
 <ol type="1" start="3">
-<li><p>Fatima Adlat et al., "vPIM: Scalable Virtual Address Translation for Processing-in-Memory Architectures," DAC 2023.</p></li>
-<li><p>IMPRINT research team, "IMPRINT: In-Memory Page Translation Table for Processing-in-Memory," MEMSYS.</p></li>
-<li><p>NDPage research team, "Near-Data Page Tables for Processing Efficiency," arXiv preprint, February 2025 (NOT peer-reviewed).</p></li>
-<li><p>H2M2 research team, "Heterogeneous MMU with Dual Translation," arXiv preprint, April 2025 (NOT peer-reviewed).</p></li>
+<li id="ref-fatima-2023"><p>Fatima Adlat et al., "vPIM: Scalable Virtual Address Translation for Processing-in-Memory Architectures," DAC 2023.</p></li>
+<li id="ref-imprintresearchteam-nd"><p>IMPRINT research team, "IMPRINT: In-Memory Page Translation Table for Processing-in-Memory," MEMSYS.</p></li>
+<li id="ref-ndpageresearchteam-2025"><p>NDPage research team, "Near-Data Page Tables for Processing Efficiency," arXiv preprint, February 2025 (NOT peer-reviewed).</p></li>
+<li id="ref-h2m2researchteam-2025"><p>H2M2 research team, "Heterogeneous MMU with Dual Translation," arXiv preprint, April 2025 (NOT peer-reviewed).</p></li>
 </ol>
 <h3 id="utopia-hybrid">Utopia Hybrid</h3>
 <ol type="1" start="7">
-<li><p>Utopia research team, "Utopia: Automatic Hybrid Segmentation for Large Address Spaces," 2022.</p></li>
+<li id="ref-utopiaresearchteam-2022"><p>Utopia research team, "Utopia: Automatic Hybrid Segmentation for Large Address Spaces," 2022.</p></li>
 </ol>
 <h3 id="related-work-from-previous-chapters">Related Work (from previous chapters)</h3>
 <ol type="1" start="8">
-<li><p>Jayneel Gandhi, Arkaprava Basu, Mark D. Hill, "Direct Segments for Near-Native Performance," ISCA 2013 (detailed in Chapter 14.4).</p></li>
-<li><p>Norman Jouppi et al., "TPU v4: Optically Reconfigurable Supercomputer," ISCA 2023 (discussed in Chapter 11.2).</p></li>
-<li><p>Xulong Tang et al., "GRIT: Scalable TLB Management for Multi-GPU Systems," HPCA 2024 (detailed in Chapter 12.2).</p></li>
+<li id="ref-jayneelgandhi-2013"><p>Jayneel Gandhi, Arkaprava Basu, Mark D. Hill, "Direct Segments for Near-Native Performance," ISCA 2013 (detailed in Chapter 14.4).</p></li>
+<li id="ref-norman-2023"><p>Norman Jouppi et al., "TPU v4: Optically Reconfigurable Supercomputer," ISCA 2023 (discussed in Chapter 11.2).</p></li>
+<li id="ref-xulong-2024"><p>Xulong Tang et al., "GRIT: Scalable TLB Management for Multi-GPU Systems," HPCA 2024 (detailed in Chapter 12.2).</p></li>
 </ol>
 
 </body>

@@ -569,6 +569,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -678,21 +701,41 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </header>
 
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-22.1">22.1 Introduction: One Address Space, Many Translators</a></li>
-<li><a href="#section-22.2">22.2 Copy, Managed, and System-Allocated Models</a></li>
-<li><a href="#section-22.3">22.3 HMM Page-Table Mirroring</a></li>
-<li><a href="#section-22.4">22.4 Device-Private Memory Migration</a></li>
-<li><a href="#section-22.5">22.5 Linux SVA Binding</a></li>
-<li><a href="#section-22.6">22.6 Two End-to-End Fault Traces</a></li>
-<li><a href="#section-22.7">22.7 Invalidation Lifecycle</a></li>
-<li><a href="#section-22.8">22.8 Grace Hopper and MI300A</a></li>
-<li><a href="#section-22.9">22.9 Coherent Fabrics and NPUs</a></li>
-<li><a href="#section-22.10">22.10 Isolation and Failure Modes</a></li>
-<li><a href="#section-22.11">22.11 Production Performance</a></li>
-<li><a href="#section-22.12">22.12 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-22.1">22.1 Introduction: One Address Space, Many Translators</a></summary>
+<ul><li><a href="#section-22.1.1">22.1.1 Reading Map</a></li><li><a href="#section-22.1.2">22.1.2 Non-Goals</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-22.2">22.2 Copy, Managed, and System-Allocated Models</a></li>
+<li><details class="toc-sec"><summary><a href="#section-22.3">22.3 HMM Page-Table Mirroring</a></summary>
+<ul><li><a href="#section-22.3.1">22.3.1 Interval Notifiers and the Sequence Count</a></li><li><a href="#section-22.3.2">22.3.2 Faulting a Range: hmm_range_fault()</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-22.4">22.4 Device-Private Memory Migration</a></summary>
+<ul><li><a href="#section-22.4.1">22.4.1 ZONE_DEVICE and MEMORY_DEVICE_PRIVATE</a></li><li><a href="#section-22.4.2">22.4.2 The Three-Call Migration Protocol</a></li><li><a href="#section-22.4.3">22.4.3 Device-Exclusive Access</a></li><li><a href="#section-22.4.4">22.4.4 Accounting</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-22.5">22.5 Linux SVA Binding</a></summary>
+<ul><li><a href="#section-22.5.1">22.5.1 The Bind Operation</a></li><li><a href="#section-22.5.2">22.5.2 Keeping the IOMMU in Step: the Secondary-TLB Hook</a></li><li><a href="#section-22.5.3">22.5.3 Intel ENQCMD and the IA32_PASID MSR</a></li><li><a href="#section-22.5.4">22.5.4 Four-Vendor Comparison</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-22.6">22.6 Two End-to-End Fault Traces</a></summary>
+<ul><li><a href="#section-22.6.1">22.6.1 HMM Mirror-and-Migrate Trace</a></li><li><a href="#section-22.6.2">22.6.2 SVA Trace: ATS, Page Request, and I/O Page Fault</a></li><li><a href="#section-22.6.3">22.6.3 Ownership Compared</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-22.7">22.7 Invalidation Lifecycle</a></summary>
+<ul><li><a href="#section-22.7.1">22.7.1 Five Translation Domains</a></li><li><a href="#section-22.7.2">22.7.2 The Phase Model</a></li><li><a href="#section-22.7.3">22.7.3 Ordering Between the IOMMU and the ATC</a></li><li><a href="#section-22.7.4">22.7.4 Concurrent Faults and Invalidations</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-22.8">22.8 Grace Hopper and MI300A</a></summary>
+<ul><li><a href="#section-22.8.1">22.8.1 NVIDIA Grace Hopper</a></li><li><a href="#section-22.8.2">22.8.2 AMD MI300A</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-22.9">22.9 Coherent Fabrics and NPUs</a></summary>
+<ul><li><a href="#section-22.9.1">22.9.1 What Coherence Changes</a></li><li><a href="#section-22.9.2">22.9.2 NPUs in the Linux Tree</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-22.10">22.10 Isolation and Failure Modes</a></summary>
+<ul><li><a href="#section-22.10.1">22.10.1 Trusting Translated Requests</a></li><li><a href="#section-22.10.2">22.10.2 PASID Lifetime and Reuse</a></li><li><a href="#section-22.10.3">22.10.3 Invalidations That Do Not Complete</a></li><li><a href="#section-22.10.4">22.10.4 Faults That Cannot Be Resolved</a></li><li><a href="#section-22.10.5">22.10.5 Resource Limits</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-22.11">22.11 Production Performance</a></li>
+<li class="toc-leaf"><a href="#section-22.12">22.12 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 
 <h2 id="section-22.1">22.1 Introduction: One Address Space, Many Translators</h2>
@@ -1101,24 +1144,24 @@ again:
 <h2 id="references">References</h2>
 
 <ol>
-<li><p>T. Allen and R. Ge, “In-depth analyses of unified virtual memory system for GPU accelerated computing,” in <em>Proc. Int. Conf. High Performance Computing, Networking, Storage and Analysis (SC21)</em>, 2021, pp. 1–15. doi:10.1145/3458817.3480855</p></li>
-<li><p>Advanced Micro Devices, <em>AMD I/O Virtualization Technology (IOMMU) Specification</em>, Pub. 48882. [Online]. Available: https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf</p></li>
-<li><p>Arm Limited, <em>Arm System Memory Management Unit Architecture Specification, SMMU architecture version 3</em>, Document IHI 0070. [Online]. Available: https://developer.arm.com/documentation/ihi0070/latest</p></li>
-<li><p>Intel Corporation, <em>Intel Virtualization Technology for Directed I/O Architecture Specification</em>, Rev. 5.2, Doc. 831418, Aug. 2024. [Online]. Available: https://www.intel.com/content/www/us/en/content-details/831418/intel-virtualization-technology-for-directed-i-o-architecture-specification.html</p></li>
-<li><p>Linux kernel developers, “Heterogeneous Memory Management (HMM),” <em>Documentation/mm/hmm.rst</em>, Linux v7.2.9 (stable), Oct. 2026; and v7.3-rc6 for <code>hmm_range_fault_unlocked_timeout()</code>. [Online]. Available: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/mm/hmm.rst?h=v7.2.9</p></li>
-<li><p>Linux kernel developers, “Shared Virtual Addressing (SVA) with ENQCMD,” <em>Documentation/arch/x86/sva.rst</em>, Linux v7.2.9. [Online]. Available: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/arch/x86/sva.rst?h=v7.2.9</p></li>
-<li><p>Linux kernel developers, Linux v7.2.9 source tree: <em>include/linux/mmu_notifier.h</em>, <em>include/linux/hmm.h</em>, <em>include/linux/memremap.h</em>, <em>include/linux/migrate.h</em>, <em>mm/hmm.c</em>, <em>mm/migrate_device.c</em>, <em>drivers/iommu/iommu-sva.c</em>, <em>drivers/iommu/io-pgfault.c</em>, <em>drivers/iommu/intel/</em>, <em>drivers/iommu/amd/</em>, <em>drivers/iommu/arm/arm-smmu-v3/</em>, <em>drivers/iommu/riscv/</em>, <em>arch/x86/mm/tlb.c</em>. [Online]. Available: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/?h=v7.2.9</p></li>
-<li><p>A. T. Markettos, C. Rothwell, B. F. Gutstein, A. Pearce, P. G. Neumann, S. W. Moore, and R. N. M. Watson, “Thunderclap: Exploring vulnerabilities in operating system IOMMU protection via DMA from untrustworthy peripherals,” in <em>Proc. Network and Distributed System Security Symp. (NDSS)</em>, 2019. [Online]. Available: https://www.ndss-symposium.org/ndss-paper/thunderclap-exploring-vulnerabilities-in-operating-system-iommu-protection-via-dma-from-untrustworthy-peripherals/</p></li>
-<li><p>A. Markuze, A. Morrison, and D. Tsafrir, “True IOMMU protection from DMA attacks: When copy is faster than zero copy,” in <em>Proc. 21st Int. Conf. Architectural Support for Programming Languages and Operating Systems (ASPLOS)</em>, 2016. doi:10.1145/2872362.2872379</p></li>
-<li><p>NVIDIA Corporation, “Unified Memory,” <em>CUDA Programming Guide</em>, v13.4.2, Sec. 4.1. [Online]. Available: https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/unified-memory.html</p></li>
-<li><p>PCI-SIG, <em>PCI Express Base Specification</em>, Rev. 6.0, 2022 (Address Translation Services and Page Request Interface).</p></li>
-<li><p>B. Pichai, L. Hsu, and A. Bhattacharjee, “Architectural support for address translation on GPUs: Designing memory management units for CPU/GPUs with unified address spaces,” in <em>Proc. 19th Int. Conf. Architectural Support for Programming Languages and Operating Systems (ASPLOS)</em>, 2014, pp. 743–758. doi:10.1145/2541940.2541942</p></li>
-<li><p>J. Power, M. D. Hill, and D. A. Wood, “Supporting x86-64 address translation for 100s of GPU lanes,” in <em>Proc. IEEE 20th Int. Symp. High Performance Computer Architecture (HPCA)</em>, 2014, pp. 568–578. doi:10.1109/HPCA.2014.6835965</p></li>
-<li><p>RISC-V International, <em>RISC-V IOMMU Architecture Specification</em>, Version 1.0 (ratified), Jun. 2023. [Online]. Available: https://github.com/riscv-non-isa/riscv-iommu</p></li>
-<li><p>G. Schieffer, J. Wahlgren, J. Ren, J. Faj, and I. Peng, “Harnessing integrated CPU-GPU system memory for HPC: A first look into Grace Hopper,” in <em>Proc. 53rd Int. Conf. Parallel Processing (ICPP)</em>, 2024, pp. 199–209. Extended version: arXiv:2407.07850.</p></li>
-<li><p>A. Smith, G. H. Loh, M. J. Schulte, M. Ignatowski, S. Naffziger, M. Mantor, M. Fowler, N. Kalyanasundharam, V. Alla, N. Malaya, J. L. Greathouse, E. Chapman, and R. Swaminathan, “Realizing the AMD exascale heterogeneous processor vision: Industry product,” in <em>Proc. ACM/IEEE 51st Annu. Int. Symp. Computer Architecture (ISCA)</em>, 2024, pp. 876–889. doi:10.1109/ISCA59077.2024.00068</p></li>
-<li><p>J. Vesely, A. Basu, M. Oskin, G. H. Loh, and A. Bhattacharjee, “Observations and opportunities in architecting shared virtual memory for heterogeneous systems,” in <em>Proc. IEEE Int. Symp. Performance Analysis of Systems and Software (ISPASS)</em>, 2016, pp. 161–171. doi:10.1109/ISPASS.2016.7482091</p></li>
-<li><p>J. Wahlgren, G. Schieffer, R. Shi, E. A. León, R. Pearce, M. Gokhale, and I. Peng, “Dissecting CPU-GPU unified physical memory on AMD MI300A APUs,” preprint, arXiv:2508.12743, 2025.</p></li>
+<li id="ref-allen-2021"><p>T. Allen and R. Ge, “In-depth analyses of unified virtual memory system for GPU accelerated computing,” in <em>Proc. Int. Conf. High Performance Computing, Networking, Storage and Analysis (SC21)</em>, 2021, pp. 1–15. <a class="ref-link" href="https://doi.org/10.1145/3458817.3480855">doi:10.1145/3458817.3480855</a></p></li>
+<li id="ref-advancedmicrodevices-nd"><p>Advanced Micro Devices, <em>AMD I/O Virtualization Technology (IOMMU) Specification</em>, Pub. 48882. [Online]. Available: <a class="ref-link" href="https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf">https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf</a></p></li>
+<li id="ref-armlimited-nd"><p>Arm Limited, <em>Arm System Memory Management Unit Architecture Specification, SMMU architecture version 3</em>, Document IHI 0070. [Online]. Available: <a class="ref-link" href="https://developer.arm.com/documentation/ihi0070/latest">https://developer.arm.com/documentation/ihi0070/latest</a></p></li>
+<li id="ref-intelcorporation-2024"><p>Intel Corporation, <em>Intel Virtualization Technology for Directed I/O Architecture Specification</em>, Rev. 5.2, Doc. 831418, Aug. 2024. [Online]. Available: <a class="ref-link" href="https://www.intel.com/content/www/us/en/content-details/831418/intel-virtualization-technology-for-directed-i-o-architecture-specification.html">https://www.intel.com/content/www/us/en/content-details/831418/intel-virtualization-technology-for-directed-i-o-architecture-specification.html</a></p></li>
+<li id="ref-linuxkerneldevelopers-2026"><p>Linux kernel developers, “Heterogeneous Memory Management (HMM),” <em>Documentation/mm/hmm.rst</em>, Linux v7.2.9 (stable), Oct. 2026; and v7.3-rc6 for <code>hmm_range_fault_unlocked_timeout()</code>. [Online]. Available: <a class="ref-link" href="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/mm/hmm.rst?h=v7.2.9">https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/mm/hmm.rst?h=v7.2.9</a></p></li>
+<li id="ref-linuxkerneldevelopers-nda"><p>Linux kernel developers, “Shared Virtual Addressing (SVA) with ENQCMD,” <em>Documentation/arch/x86/sva.rst</em>, Linux v7.2.9. [Online]. Available: <a class="ref-link" href="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/arch/x86/sva.rst?h=v7.2.9">https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/arch/x86/sva.rst?h=v7.2.9</a></p></li>
+<li id="ref-linuxkerneldevelopers-ndb"><p>Linux kernel developers, Linux v7.2.9 source tree: <em>include/linux/mmu_notifier.h</em>, <em>include/linux/hmm.h</em>, <em>include/linux/memremap.h</em>, <em>include/linux/migrate.h</em>, <em>mm/hmm.c</em>, <em>mm/migrate_device.c</em>, <em>drivers/iommu/iommu-sva.c</em>, <em>drivers/iommu/io-pgfault.c</em>, <em>drivers/iommu/intel/</em>, <em>drivers/iommu/amd/</em>, <em>drivers/iommu/arm/arm-smmu-v3/</em>, <em>drivers/iommu/riscv/</em>, <em>arch/x86/mm/tlb.c</em>. [Online]. Available: <a class="ref-link" href="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/?h=v7.2.9">https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/?h=v7.2.9</a></p></li>
+<li id="ref-markettos-2019"><p>A. T. Markettos, C. Rothwell, B. F. Gutstein, A. Pearce, P. G. Neumann, S. W. Moore, and R. N. M. Watson, “Thunderclap: Exploring vulnerabilities in operating system IOMMU protection via DMA from untrustworthy peripherals,” in <em>Proc. Network and Distributed System Security Symp. (NDSS)</em>, 2019. [Online]. Available: <a class="ref-link" href="https://www.ndss-symposium.org/ndss-paper/thunderclap-exploring-vulnerabilities-in-operating-system-iommu-protection-via-dma-from-untrustworthy-peripherals/">https://www.ndss-symposium.org/ndss-paper/thunderclap-exploring-vulnerabilities-in-operating-system-iommu-protection-via-dma-from-untrustworthy-peripherals/</a></p></li>
+<li id="ref-markuze-2016"><p>A. Markuze, A. Morrison, and D. Tsafrir, “True IOMMU protection from DMA attacks: When copy is faster than zero copy,” in <em>Proc. 21st Int. Conf. Architectural Support for Programming Languages and Operating Systems (ASPLOS)</em>, 2016. <a class="ref-link" href="https://doi.org/10.1145/2872362.2872379">doi:10.1145/2872362.2872379</a></p></li>
+<li id="ref-nvidiacorporation-nd"><p>NVIDIA Corporation, “Unified Memory,” <em>CUDA Programming Guide</em>, v13.4.2, Sec. 4.1. [Online]. Available: <a class="ref-link" href="https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/unified-memory.html">https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/unified-memory.html</a></p></li>
+<li id="ref-pcisig-2022"><p>PCI-SIG, <em>PCI Express Base Specification</em>, Rev. 6.0, 2022 (Address Translation Services and Page Request Interface).</p></li>
+<li id="ref-pichai-2014"><p>B. Pichai, L. Hsu, and A. Bhattacharjee, “Architectural support for address translation on GPUs: Designing memory management units for CPU/GPUs with unified address spaces,” in <em>Proc. 19th Int. Conf. Architectural Support for Programming Languages and Operating Systems (ASPLOS)</em>, 2014, pp. 743–758. <a class="ref-link" href="https://doi.org/10.1145/2541940.2541942">doi:10.1145/2541940.2541942</a></p></li>
+<li id="ref-power-2014"><p>J. Power, M. D. Hill, and D. A. Wood, “Supporting x86-64 address translation for 100s of GPU lanes,” in <em>Proc. IEEE 20th Int. Symp. High Performance Computer Architecture (HPCA)</em>, 2014, pp. 568–578. <a class="ref-link" href="https://doi.org/10.1109/HPCA.2014.6835965">doi:10.1109/HPCA.2014.6835965</a></p></li>
+<li id="ref-riscvinternational-2023"><p>RISC-V International, <em>RISC-V IOMMU Architecture Specification</em>, Version 1.0 (ratified), Jun. 2023. [Online]. Available: <a class="ref-link" href="https://github.com/riscv-non-isa/riscv-iommu">https://github.com/riscv-non-isa/riscv-iommu</a></p></li>
+<li id="ref-schieffer-2024"><p>G. Schieffer, J. Wahlgren, J. Ren, J. Faj, and I. Peng, “Harnessing integrated CPU-GPU system memory for HPC: A first look into Grace Hopper,” in <em>Proc. 53rd Int. Conf. Parallel Processing (ICPP)</em>, 2024, pp. 199–209. Extended version: arXiv:2407.07850.</p></li>
+<li id="ref-smith-2024"><p>A. Smith, G. H. Loh, M. J. Schulte, M. Ignatowski, S. Naffziger, M. Mantor, M. Fowler, N. Kalyanasundharam, V. Alla, N. Malaya, J. L. Greathouse, E. Chapman, and R. Swaminathan, “Realizing the AMD exascale heterogeneous processor vision: Industry product,” in <em>Proc. ACM/IEEE 51st Annu. Int. Symp. Computer Architecture (ISCA)</em>, 2024, pp. 876–889. <a class="ref-link" href="https://doi.org/10.1109/ISCA59077.2024.00068">doi:10.1109/ISCA59077.2024.00068</a></p></li>
+<li id="ref-vesely-2016"><p>J. Vesely, A. Basu, M. Oskin, G. H. Loh, and A. Bhattacharjee, “Observations and opportunities in architecting shared virtual memory for heterogeneous systems,” in <em>Proc. IEEE Int. Symp. Performance Analysis of Systems and Software (ISPASS)</em>, 2016, pp. 161–171. <a class="ref-link" href="https://doi.org/10.1109/ISPASS.2016.7482091">doi:10.1109/ISPASS.2016.7482091</a></p></li>
+<li id="ref-wahlgren-2025"><p>J. Wahlgren, G. Schieffer, R. Shi, E. A. León, R. Pearce, M. Gokhale, and I. Peng, “Dissecting CPU-GPU unified physical memory on AMD MI300A APUs,” preprint, arXiv:2508.12743, 2025.</p></li>
 </ol>
 
 <script>

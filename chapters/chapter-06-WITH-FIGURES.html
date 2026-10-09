@@ -567,6 +567,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -676,28 +699,66 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h1 class="title">Chapter 6: Memory Protection and Access Control</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-6.1">6.1 Introduction: Memory Protection Fundamentals</a></li>
-<li><a href="#section-6.2">6.2 Page-Level Protection Bits</a></li>
-<li><a href="#section-6.3">6.3 The No-Execute (NX) Bit</a></li>
-<li><a href="#section-6.4">6.4 Privilege Levels and Protection Rings</a></li>
-<li><a href="#section-6.5">6.5 User vs Supervisor Pages</a></li>
-<li><a href="#section-6.6">6.6 Advanced Protection Features</a></li>
-<li><a href="#section-6.7">6.7 Protection Keys and Domains</a></li>
-<li><a href="#section-6.8">6.8 Trusted Execution Environments (TEE) - Deep Dive</a></li>
-<li><a href="#section-6.9">6.9 Copy-On-Write (COW)</a></li>
-<li><a href="#section-6.10">6.10 Memory Access Ordering and Protection</a></li>
-<li><a href="#section-6.11">6.11 Confidential Computing: Hardware-Based VM Isolation</a></li>
-<li><a href="#section-6.12">6.12 AMD Memory Guard and Memory Encryption</a></li>
-<li><a href="#section-6.13">6.13 RISC-V Security Extensions</a></li>
-<li><a href="#section-6.14">6.14 GPU and Accelerator Security</a></li>
-<li><a href="#section-6.15">6.15 Heterogeneous Computing Security</a></li>
-<li><a href="#section-6.16">6.16 Performance vs Security Trade-offs</a></li>
-<li><a href="#section-6.17">6.17 Best Practices and Guidelines</a></li>
-<li><a href="#section-6.18">6.18 Common Pitfalls and How to Avoid Them</a></li>
-<li><a href="#section-6.19">6.19 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-6.1">6.1 Introduction: Memory Protection Fundamentals</a></summary>
+<ul><li><a href="#why-this-chapter-is-critical">Why This Chapter is Critical</a></li><li><a href="#the-security-problem">The Security Problem</a></li><li><a href="#what-memory-protection-provides">What Memory Protection Provides</a></li><li><a href="#connecting-to-previous-chapters">Connecting to Previous Chapters</a></li><li><a href="#real-world-impact-the-cost-of-getting-it-wrong">Real-World Impact: The Cost of Getting It Wrong</a></li><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#why-this-chapter-matters-more-than-you-think">Why This Chapter Matters More Than You Think</a></li><li><a href="#the-security-problem-1">The Security Problem</a></li><li><a href="#what-memory-protection-provides-1">What Memory Protection Provides</a></li><li><a href="#real-world-attack-examples">Real-World Attack Examples</a></li><li><a href="#security-vs-performance-trade-offs">Security vs Performance Trade-offs</a></li><li><a href="#what-this-chapter-covers-1">What This Chapter Covers</a></li><li><a href="#cross-platform-perspective">Cross-Platform Perspective</a></li><li><a href="#key-questions-well-answer">Key Questions We'll Answer</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.2">6.2 Page-Level Protection Bits</a></summary>
+<ul><li><a href="#basic-permission-bits">Basic Permission Bits</a></li><li><a href="#x86-64-permission-encoding">x86-64 Permission Encoding</a></li><li><a href="#arm64-permission-encoding">ARM64 Permission Encoding</a></li><li><a href="#risc-v-permission-encoding">RISC-V Permission Encoding</a></li><li><a href="#cross-architecture-comparison">Cross-Architecture Comparison</a></li><li><a href="#present-bit-and-page-faults">Present Bit and Page Faults</a></li><li><a href="#accessed-and-dirty-bits">Accessed and Dirty Bits</a></li><li><a href="#usersupervisor-bit">User/Supervisor Bit</a></li><li><a href="#code-examples-setting-permission-bits">Code Examples: Setting Permission Bits</a></li><li><a href="#permission-checking-algorithm">Permission Checking Algorithm</a></li><li><a href="#performance-implications">Performance Implications</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.3">6.3 The No-Execute (NX) Bit</a></summary>
+<ul><li><a href="#the-code-injection-problem">The Code Injection Problem</a></li><li><a href="#nx-bit-implementation">NX Bit Implementation</a></li><li><a href="#real-world-impact-attack-prevention">Real-World Impact: Attack Prevention</a></li><li><a href="#wx-policy-write-xor-execute">W^X Policy (Write XOR Execute)</a></li><li><a href="#evading-nx-return-oriented-programming-rop">Evading NX: Return-Oriented Programming (ROP)</a></li><li><a href="#setting-nx-bit-in-page-tables">Setting NX Bit in Page Tables</a></li><li><a href="#os-level-nx-enforcement">OS-Level NX Enforcement</a></li><li><a href="#performance-impact-of-nx">Performance Impact of NX</a></li><li><a href="#security-benefits-quantified">Security Benefits: Quantified</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.4">6.4 Privilege Levels and Protection Rings</a></summary>
+<ul><li><a href="#x86-64-protection-rings">x86-64 Protection Rings</a></li><li><a href="#arm64-exception-levels">ARM64 Exception Levels</a></li><li><a href="#risc-v-privilege-modes">RISC-V Privilege Modes</a></li><li><a href="#cross-architecture-comparison-1">Cross-Architecture Comparison</a></li><li><a href="#privilege-checking-in-action">Privilege Checking in Action</a></li><li><a href="#performance-privilege-transitions">Performance: Privilege Transitions</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.5">6.5 User vs Supervisor Pages</a></summary>
+<ul><li><a href="#the-us-bit-mechanism">The U/S Bit Mechanism</a></li><li><a href="#page-table-hierarchy-and-us-propagation">Page Table Hierarchy and U/S Propagation</a></li><li><a href="#kernel-vs-user-address-space-separation">Kernel vs User Address Space Separation</a></li><li><a href="#kernel-page-table-isolation-kpti">Kernel Page-Table Isolation (KPTI)</a></li><li><a href="#user-access-to-kernel-memory-when-is-it-allowed">User Access to Kernel Memory: When is it Allowed?</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.6">6.6 Advanced Protection Features</a></summary>
+<ul><li><a href="#x86-64-smep-supervisor-mode-execution-prevention">x86-64: SMEP (Supervisor Mode Execution Prevention)</a></li><li><a href="#x86-64-smap-supervisor-mode-access-prevention">x86-64: SMAP (Supervisor Mode Access Prevention)</a></li><li><a href="#arm64-mte-memory-tagging-extension">ARM64: MTE (Memory Tagging Extension)</a></li><li><a href="#arm64-bti-branch-target-identification">ARM64: BTI (Branch Target Identification)</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-6.7">6.7 Protection Keys and Domains</a></li>
+<li><details class="toc-sec"><summary><a href="#section-6.8">6.8 Trusted Execution Environments (TEE) - Deep Dive</a></summary>
+<ul><li><a href="#what-is-a-trusted-execution-environment">What is a Trusted Execution Environment?</a></li><li><a href="#arm-trustzone-the-dominant-mobile-tee">ARM TrustZone: The Dominant Mobile TEE</a></li><li><a href="#intel-sgx-enclave-based-tee">Intel SGX: Enclave-Based TEE</a></li><li><a href="#comparison-trustzone-vs-sgx">Comparison: TrustZone vs SGX</a></li><li><a href="#gpu-tees-graviton">GPU TEEs: Graviton</a></li><li><a href="#other-tee-implementations">Other TEE Implementations</a></li><li><a href="#tee-security-challenges">TEE Security Challenges</a></li><li><a href="#tee-use-cases-in-production">TEE Use Cases in Production</a></li><li><a href="#future-of-tee-technology">Future of TEE Technology</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.9">6.9 Copy-On-Write (COW)</a></summary>
+<ul><li><a href="#the-cow-concept">The COW Concept</a></li><li><a href="#cow-implementation">COW Implementation</a></li><li><a href="#cow-benefits">COW Benefits</a></li><li><a href="#zero-pages-and-cow">Zero Pages and COW</a></li><li><a href="#cow-and-mmap">COW and mmap()</a></li><li><a href="#performance-analysis">Performance Analysis</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.10">6.10 Memory Access Ordering and Protection</a></summary>
+<ul><li><a href="#memory-ordering-basics">Memory Ordering Basics</a></li><li><a href="#security-implications">Security Implications</a></li><li><a href="#memory-barriers">Memory Barriers</a></li><li><a href="#security-critical-memory-ordering">Security-Critical Memory Ordering</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.11">6.11 Confidential Computing: Hardware-Based VM Isolation</a></summary>
+<ul><li><a href="#amd-sev-snp-secure-encrypted-virtualization-secure-nested-paging">AMD SEV-SNP (Secure Encrypted Virtualization - Secure Nested Paging)</a></li><li><a href="#intel-tdx-trust-domain-extensions">Intel TDX (Trust Domain Extensions)</a></li><li><a href="#arm-cca-confidential-compute-architecture">ARM CCA (Confidential Compute Architecture)</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.12">6.12 AMD Memory Guard and Memory Encryption</a></summary>
+<ul><li><a href="#the-physical-memory-attack-problem">The Physical Memory Attack Problem</a></li><li><a href="#sme-secure-memory-encryption">SME (Secure Memory Encryption)</a></li><li><a href="#sev-secure-encrypted-virtualization">SEV (Secure Encrypted Virtualization)</a></li><li><a href="#tsme-transparent-sme">TSME (Transparent SME)</a></li><li><a href="#performance-analysis-1">Performance Analysis</a></li><li><a href="#security-properties">Security Properties</a></li><li><a href="#practical-deployment">Practical Deployment</a></li><li><a href="#comparison-with-intel-tme">Comparison with Intel TME</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.13">6.13 RISC-V Security Extensions</a></summary>
+<ul><li><a href="#risc-v-security-philosophy">RISC-V Security Philosophy</a></li><li><a href="#pmp-physical-memory-protection">PMP (Physical Memory Protection)</a></li><li><a href="#epmp-enhanced-pmp">ePMP (Enhanced PMP)</a></li><li><a href="#keystone-open-source-risc-v-tee">Keystone: Open-Source RISC-V TEE</a></li><li><a href="#risc-v-cryptography-extensions-zk">RISC-V Cryptography Extensions (Zk*)</a></li><li><a href="#risc-v-vs-x86arm-security-comparison">RISC-V vs x86/ARM Security Comparison</a></li><li><a href="#future-risc-v-security-features">Future RISC-V Security Features</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.14">6.14 GPU and Accelerator Security</a></summary>
+<ul><li><a href="#the-accelerator-security-problem">The Accelerator Security Problem</a></li><li><a href="#gpu-memory-architecture">GPU Memory Architecture</a></li><li><a href="#nvidia-confidential-computing-hopper-h100">NVIDIA Confidential Computing (Hopper H100)</a></li><li><a href="#amd-gpus-and-rocm-security">AMD GPUs and ROCm Security</a></li><li><a href="#apple-silicon-gpu-security">Apple Silicon GPU Security</a></li><li><a href="#performance-vs-security-trade-offs">Performance vs Security Trade-offs</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.15">6.15 Heterogeneous Computing Security</a></summary>
+<ul><li><a href="#the-heterogeneous-challenge">The Heterogeneous Challenge</a></li><li><a href="#cache-coherent-interconnects">Cache-Coherent Interconnects</a></li><li><a href="#amd-mi300a-apu">AMD MI300A APU</a></li><li><a href="#apple-unified-memory-architecture-uma">Apple Unified Memory Architecture (UMA)</a></li><li><a href="#best-practices-for-heterogeneous-security">Best Practices for Heterogeneous Security</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.16">6.16 Performance vs Security Trade-offs</a></summary>
+<ul><li><a href="#security-feature-performance-matrix">Security Feature Performance Matrix</a></li><li><a href="#detailed-cost-analysis">Detailed Cost Analysis</a></li><li><a href="#cumulative-overhead">Cumulative Overhead</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.17">6.17 Best Practices and Guidelines</a></summary>
+<ul><li><a href="#defense-in-depth">Defense in Depth</a></li><li><a href="#minimize-trusted-code">Minimize Trusted Code</a></li><li><a href="#fail-securely">Fail Securely</a></li><li><a href="#verify-security-properties">Verify Security Properties</a></li><li><a href="#keep-security-features-enabled">Keep Security Features Enabled</a></li><li><a href="#monitor-and-audit">Monitor and Audit</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.18">6.18 Common Pitfalls and How to Avoid Them</a></summary>
+<ul><li><a href="#pitfall-1-assuming-page-tables-are-sufficient">Pitfall 1: Assuming Page Tables Are Sufficient</a></li><li><a href="#pitfall-2-forgetting-tlb-flushes">Pitfall 2: Forgetting TLB Flushes</a></li><li><a href="#pitfall-3-mixing-security-domains-without-isolation">Pitfall 3: Mixing Security Domains Without Isolation</a></li><li><a href="#pitfall-4-trusting-user-provided-pointers">Pitfall 4: Trusting User-Provided Pointers</a></li><li><a href="#pitfall-5-ignoring-side-channels">Pitfall 5: Ignoring Side Channels</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-6.19">6.19 Chapter Summary</a></summary>
+<ul><li><a href="#key-takeaways">Key Takeaways</a></li><li><a href="#future-trends">Future Trends</a></li><li><a href="#closing-thoughts">Closing Thoughts</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 <h2 id="section-6.1">6.1 Introduction: Memory Protection Fundamentals</h2>
 <p>In Chapters 3, 4, and 5, we explored the <strong>mechanisms</strong> of virtual memory: how page tables translate addresses (Chapter 3), how TLBs accelerate those translations (Chapter 4), and how IOMMUs extend protection to devices (Chapter 5). We've seen the intricate hardware structures, the multi-level translation hierarchies, and the performance optimizations that make modern virtual memory work. But we've largely treated memory protection as a footnote—a few bits in the page table entries that enable or disable certain accesses.</p>
@@ -6502,125 +6563,125 @@ if (prove_secure(security_monitor)) {
 <h2 id="references">References</h2>
 <h3 id="memory-protection-and-access-control-fundamentals">Memory Protection and Access Control Fundamentals</h3>
 <ol type="1">
-<li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 4: "Paging" and Section 4.6: "Access Rights." 2024.</p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, for ARMv8-A architecture profile</em>. ARM DDI 0487J.a. March 2023. Chapter D5: "The AArch64 Virtual Memory System Architecture."</p></li>
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 20211203. December 2021. Chapter 3: "Machine-Level ISA" and Chapter 4: "Supervisor-Level ISA."</p></li>
-<li><p>Denning, Peter J. "Virtual memory." <em>ACM Computing Surveys (CSUR)</em> 2.3 (1970): 153-189. DOI: 10.1145/356571.356573</p></li>
+<li id="ref-intel-2024a"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 4: "Paging" and Section 4.6: "Access Rights." 2024.</p></li>
+<li id="ref-arm-2023a"><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, for ARMv8-A architecture profile</em>. ARM DDI 0487J.a. March 2023. Chapter D5: "The AArch64 Virtual Memory System Architecture."</p></li>
+<li id="ref-riscv-2021a"><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 20211203. December 2021. Chapter 3: "Machine-Level ISA" and Chapter 4: "Supervisor-Level ISA."</p></li>
+<li id="ref-denning-1970"><p>Denning, Peter J. "Virtual memory." <em>ACM Computing Surveys (CSUR)</em> 2.3 (1970): 153-189. <a class="ref-link" href="https://doi.org/10.1145/356571.356573">DOI: 10.1145/356571.356573</a></p></li>
 </ol>
 <h3 id="no-execute-nx-and-data-execution-prevention">No-Execute (NX) and Data Execution Prevention</h3>
 <ol type="1" start="5">
-<li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual</em>. Section 4.6: "Access Rights" (XD bit). 2024.</p></li>
-<li><p>AMD. <em>AMD64 Architecture Programmer's Manual, Volume 2: System Programming</em>. Publication #24593. Section 5.3.1: "No-Execute Page Protection." 2023.</p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8</em>. Section D5.4.5: "Execute-never controls and instruction fetching." 2023.</p></li>
-<li><p>One, Aleph. "Smashing the Stack for Fun and Profit." <em>Phrack Magazine</em> 7.49 (1996). [Classic buffer overflow exploit paper]</p></li>
-<li><p>Solar Designer. "Getting around non-executable stack (and fix)." Bugtraq mailing list. August 1997. [Return-to-libc attacks]</p></li>
-<li><p>Shacham, Hovav. "The geometry of innocent flesh on the bone: Return-into-libc without function calls (on the x86)." <em>Proceedings of the 14th ACM conference on Computer and communications security (CCS 2007)</em>. ACM, 2007. DOI: 10.1145/1315245.1315313 [ROP attacks]</p></li>
+<li id="ref-intel-2024b"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual</em>. Section 4.6: "Access Rights" (XD bit). 2024.</p></li>
+<li id="ref-amd-2023a"><p>AMD. <em>AMD64 Architecture Programmer's Manual, Volume 2: System Programming</em>. Publication #24593. Section 5.3.1: "No-Execute Page Protection." 2023.</p></li>
+<li id="ref-arm-2023b"><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8</em>. Section D5.4.5: "Execute-never controls and instruction fetching." 2023.</p></li>
+<li id="ref-one-1996"><p>One, Aleph. "Smashing the Stack for Fun and Profit." <em>Phrack Magazine</em> 7.49 (1996). [Classic buffer overflow exploit paper]</p></li>
+<li id="ref-solar-1997"><p>Solar Designer. "Getting around non-executable stack (and fix)." Bugtraq mailing list. August 1997. [Return-to-libc attacks]</p></li>
+<li id="ref-shacham-2007"><p>Shacham, Hovav. "The geometry of innocent flesh on the bone: Return-into-libc without function calls (on the x86)." <em>Proceedings of the 14th ACM conference on Computer and communications security (CCS 2007)</em>. ACM, 2007. <a class="ref-link" href="https://doi.org/10.1145/1315245.1315313">DOI: 10.1145/1315245.1315313</a> [ROP attacks]</p></li>
 </ol>
 <h3 id="privilege-levels-and-protection-rings">Privilege Levels and Protection Rings</h3>
 <ol type="1" start="11">
-<li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual, Volume 3A</em>. Chapter 5: "Protection." 2024.</p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8</em>. Chapter D1: "The AArch64 System Level Programmers' Model." 2023.</p></li>
-<li><p>Goldberg, Robert P. "Survey of virtual machine research." <em>Computer</em> 7.6 (1974): 34-45. DOI: 10.1109/MC.1974.6323581 [Early virtualization and privilege levels]</p></li>
+<li id="ref-intel-2024c"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual, Volume 3A</em>. Chapter 5: "Protection." 2024.</p></li>
+<li id="ref-arm-2023c"><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8</em>. Chapter D1: "The AArch64 System Level Programmers' Model." 2023.</p></li>
+<li id="ref-goldberg-1974"><p>Goldberg, Robert P. "Survey of virtual machine research." <em>Computer</em> 7.6 (1974): 34-45. <a class="ref-link" href="https://doi.org/10.1109/MC.1974.6323581">DOI: 10.1109/MC.1974.6323581</a> [Early virtualization and privilege levels]</p></li>
 </ol>
 <h3 id="smep-smap-and-kernel-hardening">SMEP, SMAP, and Kernel Hardening</h3>
 <ol type="1" start="14">
-<li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual</em>. Section 4.6: "Access Rights" (SMEP/SMAP). 2024.</p></li>
-<li><p>Kemerlis, Vasileios P., et al. "kGuard: Lightweight kernel protection against return-to-user attacks." <em>22nd USENIX Security Symposium</em>. 2013. Pages 459-474.</p></li>
-<li><p>Pomonis, Marios, et al. "kR^ X: Comprehensive kernel protection against just-in-time code reuse." <em>Proceedings of the Twelfth European Conference on Computer Systems (EuroSys 2017)</em>. ACM, 2017. DOI: 10.1145/3064176.3064216</p></li>
+<li id="ref-intel-2024d"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual</em>. Section 4.6: "Access Rights" (SMEP/SMAP). 2024.</p></li>
+<li id="ref-kemerlis-2013"><p>Kemerlis, Vasileios P., et al. "kGuard: Lightweight kernel protection against return-to-user attacks." <em>22nd USENIX Security Symposium</em>. 2013. Pages 459-474.</p></li>
+<li id="ref-pomonis-2017"><p>Pomonis, Marios, et al. "kR^ X: Comprehensive kernel protection against just-in-time code reuse." <em>Proceedings of the Twelfth European Conference on Computer Systems (EuroSys 2017)</em>. ACM, 2017. <a class="ref-link" href="https://doi.org/10.1145/3064176.3064216">DOI: 10.1145/3064176.3064216</a></p></li>
 </ol>
 <h3 id="memory-tagging-extension-mte">Memory Tagging Extension (MTE)</h3>
 <ol type="1" start="17">
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, Supplement: The Armv8.5 Memory Tagging Extension</em>. ARM DDI 0487F.c. 2020.</p></li>
-<li><p>Serebryany, Konstantin. "ARM Memory Tagging Extension and How It Improves C/C++ Memory Safety." <em>2020 Security Symposium</em>. USENIX, 2020.</p></li>
-<li><p>ARM Limited. "Armv8.5-A Memory Tagging Extension White Paper." 2019.</p></li>
+<li id="ref-arm-2020"><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, Supplement: The Armv8.5 Memory Tagging Extension</em>. ARM DDI 0487F.c. 2020.</p></li>
+<li id="ref-serebryany-2020"><p>Serebryany, Konstantin. "ARM Memory Tagging Extension and How It Improves C/C++ Memory Safety." <em>2020 Security Symposium</em>. USENIX, 2020.</p></li>
+<li id="ref-arm-2019"><p>ARM Limited. "Armv8.5-A Memory Tagging Extension White Paper." 2019.</p></li>
 </ol>
 <h3 id="protection-keys-mpk-pku">Protection Keys (MPK/PKU)</h3>
 <ol type="1" start="20">
-<li><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual</em>. Section 4.6.2: "Protection Keys." 2024.</p></li>
-<li><p>Hedayati, Mohammad, et al. "Hodor: Intra-process isolation for high-throughput data plane libraries." <em>2019 USENIX Annual Technical Conference (ATC 19)</em>. 2019. Pages 489-504.</p></li>
-<li><p>Park, Soyeon, et al. "libmpk: Software abstraction for Intel memory protection keys." <em>2019 USENIX Annual Technical Conference (ATC 19)</em>. 2019. Pages 241-254.</p></li>
-<li><p>Vahldiek-Oberwagner, Anjo, et al. "ERIM: Secure, efficient in-process isolation with protection keys (MPK)." <em>28th USENIX Security Symposium</em>. 2019. Pages 1221-1238.</p></li>
+<li id="ref-intel-2024e"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software Developer's Manual</em>. Section 4.6.2: "Protection Keys." 2024.</p></li>
+<li id="ref-hedayati-2019"><p>Hedayati, Mohammad, et al. "Hodor: Intra-process isolation for high-throughput data plane libraries." <em>2019 USENIX Annual Technical Conference (ATC 19)</em>. 2019. Pages 489-504.</p></li>
+<li id="ref-park-2019"><p>Park, Soyeon, et al. "libmpk: Software abstraction for Intel memory protection keys." <em>2019 USENIX Annual Technical Conference (ATC 19)</em>. 2019. Pages 241-254.</p></li>
+<li id="ref-vahldiekoberwagner-2019"><p>Vahldiek-Oberwagner, Anjo, et al. "ERIM: Secure, efficient in-process isolation with protection keys (MPK)." <em>28th USENIX Security Symposium</em>. 2019. Pages 1221-1238.</p></li>
 </ol>
 <h3 id="arm-trustzone">ARM TrustZone</h3>
 <ol type="1" start="24">
-<li><p>ARM Limited. <em>ARM Security Technology: Building a Secure System using TrustZone Technology</em>. ARM PRD29-GENC-009492C. 2009.</p></li>
-<li><p>Ngabonziza, Bernard, et al. "TrustZone explained: Architectural features and use cases." <em>2016 IEEE 2nd International Conference on Collaboration and Internet Computing (CIC)</em>. IEEE, 2016. DOI: 10.1109/CIC.2016.065</p></li>
-<li><p>ARM Limited. <em>ARMv8-A Architecture and Processors: Trusted Base System Architecture for ARMv8-M</em>. 2018.</p></li>
+<li id="ref-arm-2009"><p>ARM Limited. <em>ARM Security Technology: Building a Secure System using TrustZone Technology</em>. ARM PRD29-GENC-009492C. 2009.</p></li>
+<li id="ref-ngabonziza-2016"><p>Ngabonziza, Bernard, et al. "TrustZone explained: Architectural features and use cases." <em>2016 IEEE 2nd International Conference on Collaboration and Internet Computing (CIC)</em>. IEEE, 2016. <a class="ref-link" href="https://doi.org/10.1109/CIC.2016.065">DOI: 10.1109/CIC.2016.065</a></p></li>
+<li id="ref-arm-2018"><p>ARM Limited. <em>ARMv8-A Architecture and Processors: Trusted Base System Architecture for ARMv8-M</em>. 2018.</p></li>
 </ol>
 <h3 id="intel-sgx">Intel SGX</h3>
 <ol type="1" start="27">
-<li><p>Costan, Victor, and Srinivas Devadas. "Intel SGX explained." <em>IACR Cryptology ePrint Archive</em> 2016 (2016): 86.</p></li>
-<li><p>McKeen, Frank, et al. "Innovative instructions and software model for isolated execution." <em>Proceedings of the 2nd International Workshop on Hardware and Architectural Support for Security and Privacy</em>. 2013. DOI: 10.1145/2487726.2488368</p></li>
-<li><p>Intel Corporation. <em>Intel® Software Guard Extensions (Intel® SGX) Developer Reference for Linux OS</em>. 2020.</p></li>
-<li><p>Van Bulck, Jo, et al. "Foreshadow: Extracting the keys to the Intel SGX kingdom with transient out-of-order execution." <em>27th USENIX Security Symposium</em>. 2018. Pages 991-1008. [SGX vulnerability]</p></li>
+<li id="ref-costan-2016"><p>Costan, Victor, and Srinivas Devadas. "Intel SGX explained." <em>IACR Cryptology ePrint Archive</em> 2016 (2016): 86.</p></li>
+<li id="ref-mckeen-2013"><p>McKeen, Frank, et al. "Innovative instructions and software model for isolated execution." <em>Proceedings of the 2nd International Workshop on Hardware and Architectural Support for Security and Privacy</em>. 2013. <a class="ref-link" href="https://doi.org/10.1145/2487726.2488368">DOI: 10.1145/2487726.2488368</a></p></li>
+<li id="ref-intel-2020a"><p>Intel Corporation. <em>Intel® Software Guard Extensions (Intel® SGX) Developer Reference for Linux OS</em>. 2020.</p></li>
+<li id="ref-vanbulck-2018"><p>Van Bulck, Jo, et al. "Foreshadow: Extracting the keys to the Intel SGX kingdom with transient out-of-order execution." <em>27th USENIX Security Symposium</em>. 2018. Pages 991-1008. [SGX vulnerability]</p></li>
 </ol>
 <h3 id="amd-sev-sev-es-and-sev-snp">AMD SEV, SEV-ES, and SEV-SNP</h3>
 <ol type="1" start="31">
-<li><p>AMD. <em>AMD SEV-SNP: Strengthening VM Isolation with Integrity Protection and More</em>. White Paper #55766. January 2020.</p></li>
-<li><p>AMD. <em>AMD Secure Encrypted Virtualization API Version 0.24</em>. Publication #55766. 2020.</p></li>
-<li><p>Kaplan, David, Jeremy Powell, and Tom Woller. "AMD memory encryption." <em>White Paper</em> (2016).</p></li>
-<li><p>Li, Mengyuan, et al. "CIPHERLEAKS: Breaking constant-time cryptography on AMD SEV via the ciphertext side channel." <em>31st USENIX Security Symposium</em>. 2022. Pages 717-732. [SEV vulnerability research]</p></li>
+<li id="ref-amd-2020a"><p>AMD. <em>AMD SEV-SNP: Strengthening VM Isolation with Integrity Protection and More</em>. White Paper #55766. January 2020.</p></li>
+<li id="ref-amd-2020b"><p>AMD. <em>AMD Secure Encrypted Virtualization API Version 0.24</em>. Publication #55766. 2020.</p></li>
+<li id="ref-kaplan-2016"><p>Kaplan, David, Jeremy Powell, and Tom Woller. "AMD memory encryption." <em>White Paper</em> (2016).</p></li>
+<li id="ref-li-2022"><p>Li, Mengyuan, et al. "CIPHERLEAKS: Breaking constant-time cryptography on AMD SEV via the ciphertext side channel." <em>31st USENIX Security Symposium</em>. 2022. Pages 717-732. [SEV vulnerability research]</p></li>
 </ol>
 <h3 id="intel-tdx-trust-domain-extensions-references">Intel TDX (Trust Domain Extensions)</h3>
 <ol type="1" start="35">
-<li><p>Intel Corporation. <em>Intel® Trust Domain Extensions (Intel® TDX) Module v1.5 Architecture Specification</em>. Document Number: 344425-004US. March 2023.</p></li>
-<li><p>Intel Corporation. "Intel Trust Domain Extensions." White Paper. 2020.</p></li>
-<li><p>Intel Corporation. "Intel TDX: Protect Confidential Computing Workloads from Software and Hardware Attacks." 2021.</p></li>
+<li id="ref-intel-2023"><p>Intel Corporation. <em>Intel® Trust Domain Extensions (Intel® TDX) Module v1.5 Architecture Specification</em>. Document Number: 344425-004US. March 2023.</p></li>
+<li id="ref-intel-2020b"><p>Intel Corporation. "Intel Trust Domain Extensions." White Paper. 2020.</p></li>
+<li id="ref-intel-2021"><p>Intel Corporation. "Intel TDX: Protect Confidential Computing Workloads from Software and Hardware Attacks." 2021.</p></li>
 </ol>
 <h3 id="arm-confidential-compute-architecture-cca">ARM Confidential Compute Architecture (CCA)</h3>
 <ol type="1" start="38">
-<li><p>ARM Limited. <em>ARM Confidential Compute Architecture</em>. 2021.</p></li>
-<li><p>ARM Limited. "Introducing Arm Confidential Compute Architecture." White Paper. 2021.</p></li>
-<li><p>ARM Limited. <em>Arm Realm Management Extension (RME) Architecture Specification</em>. ARM DDI 0615A. 2022.</p></li>
+<li id="ref-arm-2021a"><p>ARM Limited. <em>ARM Confidential Compute Architecture</em>. 2021.</p></li>
+<li id="ref-arm-2021b"><p>ARM Limited. "Introducing Arm Confidential Compute Architecture." White Paper. 2021.</p></li>
+<li id="ref-arm-2022"><p>ARM Limited. <em>Arm Realm Management Extension (RME) Architecture Specification</em>. ARM DDI 0615A. 2022.</p></li>
 </ol>
 <h3 id="amd-memory-encryption-sme-tsme">AMD Memory Encryption (SME/TSME)</h3>
 <ol type="1" start="41">
-<li><p>AMD. <em>AMD64 Architecture Programmer's Manual, Volume 2: System Programming</em>. Chapter 7: "Secure Memory Encryption." Publication #24593. 2023.</p></li>
-<li><p>Kaplan, David. "Protecting VM register state with SEV-ES." <em>AMD White Paper</em> (2017).</p></li>
-<li><p>AMD. <em>Secure Encrypted Virtualization API</em>. Publication #55766. Rev 0.24. 2020.</p></li>
+<li id="ref-amd-2023b"><p>AMD. <em>AMD64 Architecture Programmer's Manual, Volume 2: System Programming</em>. Chapter 7: "Secure Memory Encryption." Publication #24593. 2023.</p></li>
+<li id="ref-kaplan-2017"><p>Kaplan, David. "Protecting VM register state with SEV-ES." <em>AMD White Paper</em> (2017).</p></li>
+<li id="ref-amd-2020c"><p>AMD. <em>Secure Encrypted Virtualization API</em>. Publication #55766. Rev 0.24. 2020.</p></li>
 </ol>
 <h3 id="risc-v-security-pmp-epmp">RISC-V Security (PMP/ePMP)</h3>
 <ol type="1" start="44">
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Section 3.6: "Physical Memory Protection." Version 20211203. December 2021.</p></li>
-<li><p>RISC-V International. <em>RISC-V Physical Memory Protection (PMP) Enhancement (ePMP)</em>. Draft Specification. 2021.</p></li>
-<li><p>Lee, Dayeol, et al. "Keystone: An open framework for architecting trusted execution environments." <em>Proceedings of the Fifteenth European Conference on Computer Systems (EuroSys 2020)</em>. 2020. DOI: 10.1145/3342195.3387532</p></li>
-<li><p>Weiser, Samuel, et al. "TIMBER-V: Tag-isolated memory bringing fine-grained enclaves to RISC-V." <em>Network and Distributed Systems Security Symposium (NDSS 2019)</em>. 2019.</p></li>
+<li id="ref-riscv-2021b"><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Section 3.6: "Physical Memory Protection." Version 20211203. December 2021.</p></li>
+<li id="ref-riscv-2021c"><p>RISC-V International. <em>RISC-V Physical Memory Protection (PMP) Enhancement (ePMP)</em>. Draft Specification. 2021.</p></li>
+<li id="ref-lee-2020"><p>Lee, Dayeol, et al. "Keystone: An open framework for architecting trusted execution environments." <em>Proceedings of the Fifteenth European Conference on Computer Systems (EuroSys 2020)</em>. 2020. <a class="ref-link" href="https://doi.org/10.1145/3342195.3387532">DOI: 10.1145/3342195.3387532</a></p></li>
+<li id="ref-weiser-2019"><p>Weiser, Samuel, et al. "TIMBER-V: Tag-isolated memory bringing fine-grained enclaves to RISC-V." <em>Network and Distributed Systems Security Symposium (NDSS 2019)</em>. 2019.</p></li>
 </ol>
 <h3 id="gpu-and-accelerator-security">GPU and Accelerator Security</h3>
 <ol type="1" start="48">
-<li><p>NVIDIA Corporation. <em>NVIDIA H100 Tensor Core GPU Architecture</em>. White Paper WP-10026-001_v01. 2022.</p></li>
-<li><p>NVIDIA Corporation. <em>NVIDIA Confidential Computing</em>. White Paper. 2022.</p></li>
-<li><p>AMD. <em>AMD Instinct MI300 Architecture</em>. White Paper. 2023.</p></li>
-<li><p>Volos, Stavros, et al. "Graviton: Trusted execution environments on GPUs." <em>14th USENIX Symposium on Operating Systems Design and Implementation (OSDI 2020)</em>. 2020. Pages 681-696.</p></li>
-<li><p>Jang, Insu, et al. "Heterogeneous isolated execution for commodity GPUs." <em>Proceedings of the Twenty-Fourth International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2019)</em>. 2019. DOI: 10.1145/3297858.3304021</p></li>
+<li id="ref-nvidia-2022a"><p>NVIDIA Corporation. <em>NVIDIA H100 Tensor Core GPU Architecture</em>. White Paper WP-10026-001_v01. 2022.</p></li>
+<li id="ref-nvidia-2022b"><p>NVIDIA Corporation. <em>NVIDIA Confidential Computing</em>. White Paper. 2022.</p></li>
+<li id="ref-amd-2023c"><p>AMD. <em>AMD Instinct MI300 Architecture</em>. White Paper. 2023.</p></li>
+<li id="ref-volos-2020"><p>Volos, Stavros, et al. "Graviton: Trusted execution environments on GPUs." <em>14th USENIX Symposium on Operating Systems Design and Implementation (OSDI 2020)</em>. 2020. Pages 681-696.</p></li>
+<li id="ref-jang-2019"><p>Jang, Insu, et al. "Heterogeneous isolated execution for commodity GPUs." <em>Proceedings of the Twenty-Fourth International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2019)</em>. 2019. <a class="ref-link" href="https://doi.org/10.1145/3297858.3304021">DOI: 10.1145/3297858.3304021</a></p></li>
 </ol>
 <h3 id="heterogeneous-computing-security">Heterogeneous Computing Security</h3>
 <ol type="1" start="53">
-<li><p>NVIDIA Corporation. <em>NVIDIA Grace Hopper Superchip Architecture</em>. White Paper. 2023.</p></li>
-<li><p>AMD. <em>AMD Instinct MI300A APU Architecture</em>. White Paper. 2023.</p></li>
-<li><p>Apple Inc. <em>Apple M3 Technical Overview</em>. 2023.</p></li>
-<li><p>Pichai, Bharath, et al. "Architectural support for address translation on GPUs: Designing memory management units for CPU/GPUs with unified address spaces." <em>ACM SIGPLAN Notices</em> 49.4 (2014): 743-758. DOI: 10.1145/2644865.2541940</p></li>
+<li id="ref-nvidia-2023"><p>NVIDIA Corporation. <em>NVIDIA Grace Hopper Superchip Architecture</em>. White Paper. 2023.</p></li>
+<li id="ref-amd-2023d"><p>AMD. <em>AMD Instinct MI300A APU Architecture</em>. White Paper. 2023.</p></li>
+<li id="ref-apple-2023"><p>Apple Inc. <em>Apple M3 Technical Overview</em>. 2023.</p></li>
+<li id="ref-pichai-2014"><p>Pichai, Bharath, et al. "Architectural support for address translation on GPUs: Designing memory management units for CPU/GPUs with unified address spaces." <em>ACM SIGPLAN Notices</em> 49.4 (2014): 743-758. <a class="ref-link" href="https://doi.org/10.1145/2644865.2541940">DOI: 10.1145/2644865.2541940</a></p></li>
 </ol>
 <h3 id="spectre-meltdown-and-kpti">Spectre, Meltdown, and KPTI</h3>
 <ol type="1" start="57">
-<li><p>Kocher, Paul, et al. "Spectre attacks: Exploiting speculative execution." <em>2019 IEEE Symposium on Security and Privacy (SP)</em>. IEEE, 2019. DOI: 10.1109/SP.2019.00002</p></li>
-<li><p>Lipp, Moritz, et al. "Meltdown: Reading kernel memory from user space." <em>27th USENIX Security Symposium</em>. 2018. Pages 973-990.</p></li>
-<li><p>Gruss, Daniel, et al. "KASLR is dead: Long live KASLR." <em>International Symposium on Engineering Secure Software and Systems</em>. Springer, 2017. DOI: 10.1007/978-3-319-62105-0_11</p></li>
-<li><p>The Linux Kernel Organization. "Page Table Isolation (PTI)." Documentation/x86/pti.rst. 2018.</p></li>
+<li id="ref-kocher-2019"><p>Kocher, Paul, et al. "Spectre attacks: Exploiting speculative execution." <em>2019 IEEE Symposium on Security and Privacy (SP)</em>. IEEE, 2019. <a class="ref-link" href="https://doi.org/10.1109/SP.2019.00002">DOI: 10.1109/SP.2019.00002</a></p></li>
+<li id="ref-lipp-2018"><p>Lipp, Moritz, et al. "Meltdown: Reading kernel memory from user space." <em>27th USENIX Security Symposium</em>. 2018. Pages 973-990.</p></li>
+<li id="ref-gruss-2017"><p>Gruss, Daniel, et al. "KASLR is dead: Long live KASLR." <em>International Symposium on Engineering Secure Software and Systems</em>. Springer, 2017. <a class="ref-link" href="https://doi.org/10.1007/978-3-319-62105-0_11">DOI: 10.1007/978-3-319-62105-0_11</a></p></li>
+<li id="ref-the-2018"><p>The Linux Kernel Organization. "Page Table Isolation (PTI)." Documentation/x86/pti.rst. 2018.</p></li>
 </ol>
 <h3 id="security-best-practices-and-performance-trade-offs">Security Best Practices and Performance Trade-offs</h3>
 <ol type="1" start="61">
-<li><p>Saltzer, Jerome H., and Michael D. Schroeder. "The protection of information in computer systems." <em>Proceedings of the IEEE</em> 63.9 (1975): 1278-1308. DOI: 10.1109/PROC.1975.9939 [Classic security principles]</p></li>
-<li><p>Anderson, Ross J. <em>Security engineering: a guide to building dependable distributed systems</em>. John Wiley & Sons, 2020. Third edition.</p></li>
-<li><p>Klein, Gerwin, et al. "seL4: Formal verification of an OS kernel." <em>Proceedings of the ACM SIGOPS 22nd symposium on Operating systems principles (SOSP 2009)</em>. ACM, 2009. DOI: 10.1145/1629575.1629596 [Formally verified microkernel]</p></li>
-<li><p>Ge, Xinyang, et al. "Griffin: Guarding control flows using intel processor trace." <em>Proceedings of the Twenty-Second International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2017)</em>. 2017. DOI: 10.1145/3037697.3037716</p></li>
+<li id="ref-saltzer-1975"><p>Saltzer, Jerome H., and Michael D. Schroeder. "The protection of information in computer systems." <em>Proceedings of the IEEE</em> 63.9 (1975): 1278-1308. <a class="ref-link" href="https://doi.org/10.1109/PROC.1975.9939">DOI: 10.1109/PROC.1975.9939</a> [Classic security principles]</p></li>
+<li id="ref-anderson-2020"><p>Anderson, Ross J. <em>Security engineering: a guide to building dependable distributed systems</em>. John Wiley & Sons, 2020. Third edition.</p></li>
+<li id="ref-klein-2009"><p>Klein, Gerwin, et al. "seL4: Formal verification of an OS kernel." <em>Proceedings of the ACM SIGOPS 22nd symposium on Operating systems principles (SOSP 2009)</em>. ACM, 2009. <a class="ref-link" href="https://doi.org/10.1145/1629575.1629596">DOI: 10.1145/1629575.1629596</a> [Formally verified microkernel]</p></li>
+<li id="ref-ge-2017"><p>Ge, Xinyang, et al. "Griffin: Guarding control flows using intel processor trace." <em>Proceedings of the Twenty-Second International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2017)</em>. 2017. <a class="ref-link" href="https://doi.org/10.1145/3037697.3037716">DOI: 10.1145/3037697.3037716</a></p></li>
 </ol>
 <h3 id="additional-general-resources">Additional General Resources</h3>
 <ol type="1" start="65">
-<li><p>Silberschatz, Abraham, Peter Baer Galvin, and Greg Gagne. <em>Operating System Concepts</em>. 10th edition. Wiley, 2018. Chapter 9: "Virtual Memory."</p></li>
-<li><p>Tanenbaum, Andrew S., and Herbert Bos. <em>Modern Operating Systems</em>. 4th edition. Pearson, 2015. Chapter 3: "Memory Management."</p></li>
-<li><p>Bryant, Randal E., and David R. O'Hallaron. <em>Computer Systems: A Programmer's Perspective</em>. 3rd edition. Pearson, 2015. Chapter 9: "Virtual Memory."</p></li>
-<li><p>Hennessy, John L., and David A. Patterson. <em>Computer Architecture: A Quantitative Approach</em>. 6th edition. Morgan Kaufmann, 2017. Appendix B: "Review of Memory Hierarchy."</p></li>
+<li id="ref-silberschatz-2018"><p>Silberschatz, Abraham, Peter Baer Galvin, and Greg Gagne. <em>Operating System Concepts</em>. 10th edition. Wiley, 2018. Chapter 9: "Virtual Memory."</p></li>
+<li id="ref-tanenbaum-2015"><p>Tanenbaum, Andrew S., and Herbert Bos. <em>Modern Operating Systems</em>. 4th edition. Pearson, 2015. Chapter 3: "Memory Management."</p></li>
+<li id="ref-bryant-2015"><p>Bryant, Randal E., and David R. O'Hallaron. <em>Computer Systems: A Programmer's Perspective</em>. 3rd edition. Pearson, 2015. Chapter 9: "Virtual Memory."</p></li>
+<li id="ref-hennessy-2017"><p>Hennessy, John L., and David A. Patterson. <em>Computer Architecture: A Quantitative Approach</em>. 6th edition. Morgan Kaufmann, 2017. Appendix B: "Review of Memory Hierarchy."</p></li>
 </ol>
 
 <script>

@@ -567,6 +567,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -792,20 +815,44 @@ border-radius: 4px;
 <h1 class="title">Chapter 5: IOMMU and DMA Remapping - Deep Dive</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-5.1">5.1 Introduction: The I/O Device Memory Access Problem</a></li>
-<li><a href="#section-5.2">5.2 IOMMU Architecture Fundamentals</a></li>
-<li><a href="#section-5.3">5.3 Intel VT-d (Virtualization Technology for Directed I/O)</a></li>
-<li><a href="#section-5.4">5.4 AMD IOMMU (AMD-Vi)</a></li>
-<li><a href="#section-5.5">5.5 ARM SMMU (System Memory Management Unit)</a></li>
-<li><a href="#section-5.6">5.6 IOMMU Page Tables: Cross-Platform Analysis</a></li>
-<li><a href="#section-5.7">5.7 IOTLB Performance and Optimization</a></li>
-<li><a href="#section-5.8">5.8 Device Assignment and SR-IOV</a></li>
-<li><a href="#section-5.9">5.9 IOMMU in Operating Systems</a></li>
-<li><a href="#section-5.10">5.10 Performance Optimization and Best Practices</a></li>
-<li><a href="#section-5.11">5.11 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-5.1">5.1 Introduction: The I/O Device Memory Access Problem</a></summary>
+<ul><li><a href="#direct-memory-access-dma-basics">5.1.1 Direct Memory Access (DMA) Basics</a></li><li><a href="#problems-with-traditional-dma">5.1.2 Problems with Traditional DMA</a></li><li><a href="#the-iommu-solution">5.1.3 The IOMMU Solution</a></li><li><a href="#iommu-benefits-realized">5.1.4 IOMMU Benefits Realized</a></li><li><a href="#iommu-vs-cpu-mmu-similarities-and-differences">5.1.5 IOMMU vs CPU MMU: Similarities and Differences</a></li><li><a href="#iommu-platforms-intel-amd-arm">5.1.6 IOMMU Platforms: Intel, AMD, ARM</a></li><li><a href="#chapter-roadmap">5.1.7 Chapter Roadmap</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.2">5.2 IOMMU Architecture Fundamentals</a></summary>
+<ul><li><a href="#core-components">5.2.1 Core Components</a></li><li><a href="#device-identification">5.2.2 Device Identification</a></li><li><a href="#complete-translation-flow">5.2.3 Complete Translation Flow</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.3">5.3 Intel VT-d (Virtualization Technology for Directed I/O)</a></summary>
+<ul><li><a href="#vt-d-overview-and-evolution">5.3.1 VT-d Overview and Evolution</a></li><li><a href="#root-table-and-context-entries">5.3.2 Root Table and Context Entries</a></li><li><a href="#scalable-mode-vs-legacy-mode">5.3.3 Scalable Mode vs Legacy Mode</a></li><li><a href="#pasid-process-address-space-id">5.3.4 PASID (Process Address Space ID)</a></li><li><a href="#intel-vt-d-page-tables">5.3.5 Intel VT-d Page Tables</a></li><li><a href="#intel-iotlb-structure">5.3.6 Intel IOTLB Structure</a></li><li><a href="#interrupt-remapping">5.3.7 Interrupt Remapping</a></li><li><a href="#posted-interrupts">5.3.8 Posted Interrupts</a></li><li><a href="#real-hardware-intel-sapphire-rapids-vt-d">5.3.9 Real Hardware: Intel Sapphire Rapids VT-d</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.4">5.4 AMD IOMMU (AMD-Vi)</a></summary>
+<ul><li><a href="#amd-vi-overview">5.4.1 AMD-Vi Overview</a></li><li><a href="#device-table-structure">5.4.2 Device Table Structure</a></li><li><a href="#amd-io-page-tables">5.4.3 AMD I/O Page Tables</a></li><li><a href="#amd-iotlb">5.4.4 AMD IOTLB</a></li><li><a href="#amd-interrupt-remapping">5.4.5 AMD Interrupt Remapping</a></li><li><a href="#guestnested-paging">5.4.6 Guest/Nested Paging</a></li><li><a href="#amd-iommu-vs-intel-vt-d-comparison">5.4.7 AMD IOMMU vs Intel VT-d Comparison</a></li><li><a href="#amd-epyc-iommu-performance">5.4.8 AMD EPYC IOMMU Performance</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.5">5.5 ARM SMMU (System Memory Management Unit)</a></summary>
+<ul><li><a href="#arm-smmu-overview-and-evolution">5.5.1 ARM SMMU Overview and Evolution</a></li><li><a href="#stream-ids-and-stream-table">5.5.2 Stream IDs and Stream Table</a></li><li><a href="#two-stage-translation">5.5.3 Two-Stage Translation</a></li><li><a href="#smmu-tlb-structure">5.5.4 SMMU TLB Structure</a></li><li><a href="#command-queue-and-event-queue">5.5.5 Command Queue and Event Queue</a></li><li><a href="#page-request-interface-pri">5.5.6 Page Request Interface (PRI)</a></li><li><a href="#smmuv3-enhancements">5.5.7 SMMUv3 Enhancements</a></li><li><a href="#arm-neoverse-smmu-example">5.5.8 ARM Neoverse SMMU Example</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.6">5.6 IOMMU Page Tables: Cross-Platform Analysis</a></summary>
+<ul><li><a href="#page-table-format-comparison">5.6.1 Page Table Format Comparison</a></li><li><a href="#translation-walk-algorithms">5.6.2 Translation Walk Algorithms</a></li><li><a href="#large-page-support-comparison">5.6.3 Large Page Support Comparison</a></li><li><a href="#shared-vs-separate-page-tables">5.6.4 Shared vs Separate Page Tables</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.7">5.7 IOTLB Performance and Optimization</a></summary>
+<ul><li><a href="#iotlb-architecture-deep-dive">5.7.1 IOTLB Architecture Deep Dive</a></li><li><a href="#iotlb-miss-penalties">5.7.2 IOTLB Miss Penalties</a></li><li><a href="#measuring-iotlb-performance">5.7.3 Measuring IOTLB Performance</a></li><li><a href="#optimization-techniques">5.7.4 Optimization Techniques</a></li><li><a href="#real-world-performance-analysis">5.7.5 Real-World Performance Analysis</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.8">5.8 Device Assignment and SR-IOV</a></summary>
+<ul><li><a href="#device-passthrough-basics">5.8.1 Device Passthrough Basics</a></li><li><a href="#device-assignment-workflow">5.8.2 Device Assignment Workflow</a></li><li><a href="#vfio-virtual-function-io-framework">5.8.3 VFIO (Virtual Function I/O) Framework</a></li><li><a href="#sr-iov-single-root-io-virtualization">5.8.4 SR-IOV (Single Root I/O Virtualization)</a></li><li><a href="#sr-iov-with-iommu">5.8.5 SR-IOV with IOMMU</a></li><li><a href="#nested-translation-for-sr-iov">5.8.6 Nested Translation for SR-IOV</a></li><li><a href="#device-assignment-security-considerations">5.8.7 Device Assignment Security Considerations</a></li><li><a href="#performance-measurements">5.8.8 Performance Measurements</a></li><li><a href="#tlb-tagging-vmid-asid">5.8.9 TLB Tagging for Virtual Contexts: VMID, ASID, and PCID</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.9">5.9 IOMMU in Operating Systems</a></summary>
+<ul><li><a href="#linux-iommu-subsystem">5.10.1 Linux IOMMU Subsystem</a></li><li><a href="#linux-iommu-api">5.10.2 Linux IOMMU API</a></li><li><a href="#linux-dma-api-with-iommu">5.10.3 Linux DMA API with IOMMU</a></li><li><a href="#linux-vfio-framework">5.10.4 Linux VFIO Framework</a></li><li><a href="#windows-iommu-support">5.10.5 Windows IOMMU Support</a></li><li><a href="#debugging-iommu-issues">5.10.6 Debugging IOMMU Issues</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.10">5.10 Performance Optimization and Best Practices</a></summary>
+<ul><li><a href="#optimization-decision-tree">5.11.1 Optimization Decision Tree</a></li><li><a href="#comprehensive-best-practices">5.11.2 Comprehensive Best Practices</a></li><li><a href="#performance-tuning-checklist">5.11.3 Performance Tuning Checklist</a></li><li><a href="#common-pitfalls-and-solutions">5.11.4 Common Pitfalls and Solutions</a></li><li><a href="#troubleshooting-guide">5.11.5 Troubleshooting Guide</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-5.11">5.11 Chapter Summary</a></summary>
+<ul><li><a href="#core-concepts-recap">5.9.1 Core Concepts Recap</a></li><li><a href="#platform-comparison-summary">5.9.2 Platform Comparison Summary</a></li><li><a href="#performance-guidelines">5.9.3 Performance Guidelines</a></li><li><a href="#security-considerations">5.9.4 Security Considerations</a></li><li><a href="#use-case-decision-matrix">5.9.5 Use Case Decision Matrix</a></li><li><a href="#future-directions">5.9.6 Future Directions</a></li><li><a href="#cxl-compute-express-link-with-iommu">5.12.1 CXL (Compute Express Link) with IOMMU</a></li><li><a href="#confidential-computing">5.12.2 Confidential Computing</a></li><li><a href="#aiml-accelerator-challenges">5.12.3 AI/ML Accelerator Challenges</a></li><li><a href="#scalable-iov-intel">5.12.4 Scalable IOV (Intel)</a></li><li><a href="#research-directions">5.12.5 Research Directions</a></li><li><a href="#industry-trends">5.12.6 Industry Trends</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 <p><strong>Note:</strong> This chapter builds on concepts from Chapters
 3 (Page Tables) and 4 (TLB). Familiarity with virtual memory, page table
@@ -5276,180 +5323,180 @@ computing needs.</strong></p>
 <h2 id="references">References</h2>
 <h3 id="architecture-specifications">Architecture Specifications</h3>
 <ol type="1">
-<li><p>Intel Corporation. "Intel Virtualization Technology for Directed
+<li id="ref-intel-2022"><p>Intel Corporation. "Intel Virtualization Technology for Directed
 I/O Architecture Specification, Revision 4.0." 2022.
-https://www.intel.com/content/www/us/en/develop/download/intel-virtualization-technology-for-directed-io-architecture-specification.html</p></li>
-<li><p>AMD. "AMD I/O Virtualization Technology (IOMMU) Specification."
+<a class="ref-link" href="https://www.intel.com/content/www/us/en/develop/download/intel-virtualization-technology-for-directed-io-architecture-specification.html">https://www.intel.com/content/www/us/en/develop/download/intel-virtualization-technology-for-directed-io-architecture-specification.html</a></p></li>
+<li id="ref-amd-2022"><p>AMD. "AMD I/O Virtualization Technology (IOMMU) Specification."
 Revision 3.07, 2022.
-https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf</p></li>
-<li><p>ARM Ltd. "ARM System Memory Management Unit Architecture
+<a class="ref-link" href="https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf">https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf</a></p></li>
+<li id="ref-arm-2021"><p>ARM Ltd. "ARM System Memory Management Unit Architecture
 Specification, SMMUv3." Version 3.3, 2021.
-https://developer.arm.com/documentation/ihi0070/latest/</p></li>
-<li><p>PCI-SIG. "PCI Express Base Specification, Revision 6.0." 2022.
-https://pcisig.com/specifications</p></li>
-<li><p>PCI-SIG. "Single Root I/O Virtualization and Sharing
+<a class="ref-link" href="https://developer.arm.com/documentation/ihi0070/latest/">https://developer.arm.com/documentation/ihi0070/latest/</a></p></li>
+<li id="ref-pcisig-2022"><p>PCI-SIG. "PCI Express Base Specification, Revision 6.0." 2022.
+<a class="ref-link" href="https://pcisig.com/specifications">https://pcisig.com/specifications</a></p></li>
+<li id="ref-pcisig-2010"><p>PCI-SIG. "Single Root I/O Virtualization and Sharing
 Specification, Revision 1.1." 2010.
-https://pcisig.com/specifications</p></li>
+<a class="ref-link" href="https://pcisig.com/specifications">https://pcisig.com/specifications</a></p></li>
 </ol>
 <h3 id="foundational-papers">Foundational Papers</h3>
 <ol type="1" start="6">
-<li><p>Ben-Yehuda, M., et al. "The Turtles Project: Design and
+<li id="ref-benyehuda-2010"><p>Ben-Yehuda, M., et al. "The Turtles Project: Design and
 Implementation of Nested Virtualization." <em>USENIX OSDI</em>, 2010.
-DOI: 10.5555/1924943.1924973</p></li>
-<li><p>Liu, Y., et al. "Comprehensive Analysis of IOMMU Performance."
+<a class="ref-link" href="https://doi.org/10.5555/1924943.1924973">DOI: 10.5555/1924943.1924973</a></p></li>
+<li id="ref-liu-2019"><p>Liu, Y., et al. "Comprehensive Analysis of IOMMU Performance."
 <em>ACM Transactions on Architecture and Code Optimization</em>, 2019.
-DOI: 10.1145/3316655</p></li>
-<li><p>Willmann, P., et al. "Concurrent Direct Network Access for
-Virtual Machine Monitors." <em>IEEE HPCA</em>, 2007. DOI:
-10.1109/HPCA.2007.346203</p></li>
-<li><p>Raj, H., and Schwan, K. "High Performance and Scalable I/O
+<a class="ref-link" href="https://doi.org/10.1145/3316655">DOI: 10.1145/3316655</a></p></li>
+<li id="ref-willmann-2007"><p>Willmann, P., et al. "Concurrent Direct Network Access for
+Virtual Machine Monitors." <em>IEEE HPCA</em>, 2007. <a class="ref-link" href="https://doi.org/10.1109/HPCA.2007.346203">DOI:
+10.1109/HPCA.2007.346203</a></p></li>
+<li id="ref-raj-2007"><p>Raj, H., and Schwan, K. "High Performance and Scalable I/O
 Virtualization via Self-Virtualized Devices." <em>ACM HPDC</em>, 2007.
-DOI: 10.1145/1272366.1272385</p></li>
-<li><p>Dong, Y., et al. "High Performance Network Virtualization with
+<a class="ref-link" href="https://doi.org/10.1145/1272366.1272385">DOI: 10.1145/1272366.1272385</a></p></li>
+<li id="ref-dong-2012"><p>Dong, Y., et al. "High Performance Network Virtualization with
 SR-IOV." <em>Journal of Parallel and Distributed Computing</em>, 2012.
-DOI: 10.1016/j.jpdc.2011.08.003</p></li>
+<a class="ref-link" href="https://doi.org/10.1016/j.jpdc.2011.08.003">DOI: 10.1016/j.jpdc.2011.08.003</a></p></li>
 </ol>
 <h3 id="performance-analysis">Performance Analysis</h3>
 <ol type="1" start="11">
-<li><p>Ahn, J., et al. "Improving I/O Throughput and Reducing CPU
+<li id="ref-ahn-2012"><p>Ahn, J., et al. "Improving I/O Throughput and Reducing CPU
 Overhead of Virtual Machines via IO-Aware Memory Allocation." <em>IEEE
-CAL</em>, 2012. DOI: 10.1109/LCA.2012.25</p></li>
-<li><p>Gordon, A., et al. "ELI: Bare-Metal Performance for I/O
-Virtualization." <em>ACM ASPLOS</em>, 2012. DOI:
-10.1145/2150976.2151004</p></li>
-<li><p>Tanenbaum, A., et al. "IOMMU and DMA Remapping: Performance
+CAL</em>, 2012. <a class="ref-link" href="https://doi.org/10.1109/LCA.2012.25">DOI: 10.1109/LCA.2012.25</a></p></li>
+<li id="ref-gordon-2012"><p>Gordon, A., et al. "ELI: Bare-Metal Performance for I/O
+Virtualization." <em>ACM ASPLOS</em>, 2012. <a class="ref-link" href="https://doi.org/10.1145/2150976.2151004">DOI:
+10.1145/2150976.2151004</a></p></li>
+<li id="ref-tanenbaum-2020"><p>Tanenbaum, A., et al. "IOMMU and DMA Remapping: Performance
 Implications for Modern Systems." <em>ACM Computing Surveys</em>, 2020.
-DOI: 10.1145/3385636</p></li>
-<li><p>Zhang, Y., et al. "Performance Analysis of IOMMU with Large
-Pages." <em>IEEE TPDS</em>, 2021. DOI: 10.1109/TPDS.2021.3089456</p></li>
-<li><p>Kumar, R., et al. "Understanding IOTLB Behavior in Virtualized
+<a class="ref-link" href="https://doi.org/10.1145/3385636">DOI: 10.1145/3385636</a></p></li>
+<li id="ref-zhang-2021"><p>Zhang, Y., et al. "Performance Analysis of IOMMU with Large
+Pages." <em>IEEE TPDS</em>, 2021. <a class="ref-link" href="https://doi.org/10.1109/TPDS.2021.3089456">DOI: 10.1109/TPDS.2021.3089456</a></p></li>
+<li id="ref-kumar-2019"><p>Kumar, R., et al. "Understanding IOTLB Behavior in Virtualized
 Environments." <em>USENIX ATC</em>, 2019.
-https://www.usenix.org/conference/atc19/presentation/kumar</p></li>
+<a class="ref-link" href="https://www.usenix.org/conference/atc19/presentation/kumar">https://www.usenix.org/conference/atc19/presentation/kumar</a></p></li>
 </ol>
 <h3 id="large-pages-and-tlb">Large Pages and TLB</h3>
 <ol type="1" start="16">
-<li><p>Pham, B., et al. "Increasing TLB Reach by Exploiting Clustering
-in Page Translations." <em>IEEE HPCA</em>, 2014. DOI:
-10.1109/HPCA.2014.6835946</p></li>
-<li><p>Papadopoulou, M., et al. "Prediction-Based Superpage-Friendly
-TLB Designs." <em>IEEE HPCA</em>, 2015. DOI:
-10.1109/HPCA.2015.7056063</p></li>
-<li><p>Bhattacharjee, A., and Martonosi, M. "Inter-Core Cooperative TLB
-for Chip Multiprocessors." <em>ACM ASPLOS</em>, 2010. DOI:
-10.1145/1736020.1736060</p></li>
+<li id="ref-pham-2014"><p>Pham, B., et al. "Increasing TLB Reach by Exploiting Clustering
+in Page Translations." <em>IEEE HPCA</em>, 2014. <a class="ref-link" href="https://doi.org/10.1109/HPCA.2014.6835946">DOI:
+10.1109/HPCA.2014.6835946</a></p></li>
+<li id="ref-papadopoulou-2015"><p>Papadopoulou, M., et al. "Prediction-Based Superpage-Friendly
+TLB Designs." <em>IEEE HPCA</em>, 2015. <a class="ref-link" href="https://doi.org/10.1109/HPCA.2015.7056063">DOI:
+10.1109/HPCA.2015.7056063</a></p></li>
+<li id="ref-bhattacharjee-2010"><p>Bhattacharjee, A., and Martonosi, M. "Inter-Core Cooperative TLB
+for Chip Multiprocessors." <em>ACM ASPLOS</em>, 2010. <a class="ref-link" href="https://doi.org/10.1145/1736020.1736060">DOI:
+10.1145/1736020.1736060</a></p></li>
 </ol>
 <h3 id="security-and-dma-attacks">Security and DMA Attacks</h3>
 <ol type="1" start="19">
-<li><p>Markettos, A.T., et al. "Thunderclap: Exploring Vulnerabilities
+<li id="ref-markettos-2019"><p>Markettos, A.T., et al. "Thunderclap: Exploring Vulnerabilities
 in Operating System IOMMU Protection via DMA from Untrustworthy
-Peripherals." <em>NDSS</em>, 2019. DOI: 10.14722/ndss.2019.23194</p></li>
-<li><p>Stewin, P., and Bystrov, I. "Understanding DMA Malware."
-<em>DIMVA</em>, 2012. DOI: 10.1007/978-3-642-31680-7_4</p></li>
-<li><p>Wojtczuk, R., and Rutkowska, J. "Following the White Rabbit:
+Peripherals." <em>NDSS</em>, 2019. <a class="ref-link" href="https://doi.org/10.14722/ndss.2019.23194">DOI: 10.14722/ndss.2019.23194</a></p></li>
+<li id="ref-stewin-2012"><p>Stewin, P., and Bystrov, I. "Understanding DMA Malware."
+<em>DIMVA</em>, 2012. <a class="ref-link" href="https://doi.org/10.1007/978-3-642-31680-7_4">DOI: 10.1007/978-3-642-31680-7_4</a></p></li>
+<li id="ref-wojtczuk-2011"><p>Wojtczuk, R., and Rutkowska, J. "Following the White Rabbit:
 Software attacks against Intel VT-d technology." <em>ITL</em>, 2011.
-http://invisiblethingslab.com/resources/2011/Software%20Attacks%20on%20Intel%20VT-d.pdf</p></li>
-<li><p>Sang, F.L., et al. "Defeating All DMA-based Attacks via IOMMU."
+<a class="ref-link" href="http://invisiblethingslab.com/resources/2011/Software%20Attacks%20on%20Intel%20VT-d.pdf">http://invisiblethingslab.com/resources/2011/Software%20Attacks%20on%20Intel%20VT-d.pdf</a></p></li>
+<li id="ref-sang-2014"><p>Sang, F.L., et al. "Defeating All DMA-based Attacks via IOMMU."
 <em>Black Hat USA</em>, 2014.
-https://www.blackhat.com/docs/us-14/materials/us-14-Sang-Defeating-All-DMA-Based-Attacks.pdf</p></li>
-<li><p>Bienia, S., et al. "IOMMU Protection Against I/O Attacks: A
+<a class="ref-link" href="https://www.blackhat.com/docs/us-14/materials/us-14-Sang-Defeating-All-DMA-Based-Attacks.pdf">https://www.blackhat.com/docs/us-14/materials/us-14-Sang-Defeating-All-DMA-Based-Attacks.pdf</a></p></li>
+<li id="ref-bienia-2018"><p>Bienia, S., et al. "IOMMU Protection Against I/O Attacks: A
 Vulnerability and Performance Study." <em>IEEE S&amp;P Workshops</em>,
-2018. DOI: 10.1109/SPW.2018.00026</p></li>
+2018. <a class="ref-link" href="https://doi.org/10.1109/SPW.2018.00026">DOI: 10.1109/SPW.2018.00026</a></p></li>
 </ol>
 <h3 id="device-assignment-and-sr-iov">Device Assignment and SR-IOV</h3>
 <ol type="1" start="24">
-<li><p>Liu, J., et al. "Evaluating Standard-Based Self-Virtualizing
+<li id="ref-liu-2010"><p>Liu, J., et al. "Evaluating Standard-Based Self-Virtualizing
 Devices: A Performance Study on 10 GbE NICs with SR-IOV Support."
-<em>IEEE IPDPS</em>, 2010. DOI: 10.1109/IPDPS.2010.5470463</p></li>
-<li><p>Pöhlmann, N., et al. "VFIO: A Modern Approach to Device
+<em>IEEE IPDPS</em>, 2010. <a class="ref-link" href="https://doi.org/10.1109/IPDPS.2010.5470463">DOI: 10.1109/IPDPS.2010.5470463</a></p></li>
+<li id="ref-pohlmann-2012"><p>Pöhlmann, N., et al. "VFIO: A Modern Approach to Device
 Assignment." <em>Linux Plumbers Conference</em>, 2012.
-https://www.linuxplumbersconf.org/2012/wp-content/uploads/2012/09/2012-lpc-vfio.pdf</p></li>
-<li><p>Santos, J.R., et al. "Bridging the Gap between Software and
+<a class="ref-link" href="https://www.linuxplumbersconf.org/2012/wp-content/uploads/2012/09/2012-lpc-vfio.pdf">https://www.linuxplumbersconf.org/2012/wp-content/uploads/2012/09/2012-lpc-vfio.pdf</a></p></li>
+<li id="ref-santos-2008"><p>Santos, J.R., et al. "Bridging the Gap between Software and
 Hardware Techniques for I/O Virtualization." <em>USENIX ATC</em>, 2008.
-https://www.usenix.org/legacy/event/usenix08/tech/full_papers/santos/santos.pdf</p></li>
-<li><p>Yassour, B.A., et al. "Direct Device Assignment for Untrusted
+<a class="ref-link" href="https://www.usenix.org/legacy/event/usenix08/tech/full_papers/santos/santos.pdf">https://www.usenix.org/legacy/event/usenix08/tech/full_papers/santos/santos.pdf</a></p></li>
+<li id="ref-yassour-2008"><p>Yassour, B.A., et al. "Direct Device Assignment for Untrusted
 Fully-Virtualized Virtual Machines." <em>VMware Technical Report</em>,
-2008. https://www.vmware.com/pdf/vfio_whitepaper.pdf</p></li>
+2008. <a class="ref-link" href="https://www.vmware.com/pdf/vfio_whitepaper.pdf">https://www.vmware.com/pdf/vfio_whitepaper.pdf</a></p></li>
 </ol>
 <h3 id="gpu-and-accelerator-iommus">GPU and Accelerator IOMMUs</h3>
 <ol type="1" start="28">
-<li><p>Vesely, J., et al. "Observations and Opportunities in
+<li id="ref-vesely-2016"><p>Vesely, J., et al. "Observations and Opportunities in
 Architecting Shared Virtual Memory for Heterogeneous Systems." <em>IEEE
-ISPASS</em>, 2016. DOI: 10.1109/ISPASS.2016.7482080</p></li>
-<li><p>Power, J., et al. "Supporting x86-64 Address Translation for
-100s of GPU Lanes." <em>IEEE HPCA</em>, 2014. DOI:
-10.1109/HPCA.2014.6835964</p></li>
-<li><p>NVIDIA Corporation. "CUDA C Programming Guide." Version 12.0,
-2023. https://docs.nvidia.com/cuda/cuda-c-programming-guide/</p></li>
-<li><p>Ausavarungnirun, R., et al. "Mosaic: A GPU Memory Manager with
+ISPASS</em>, 2016. <a class="ref-link" href="https://doi.org/10.1109/ISPASS.2016.7482080">DOI: 10.1109/ISPASS.2016.7482080</a></p></li>
+<li id="ref-power-2014"><p>Power, J., et al. "Supporting x86-64 Address Translation for
+100s of GPU Lanes." <em>IEEE HPCA</em>, 2014. <a class="ref-link" href="https://doi.org/10.1109/HPCA.2014.6835964">DOI:
+10.1109/HPCA.2014.6835964</a></p></li>
+<li id="ref-nvidia-2023"><p>NVIDIA Corporation. "CUDA C Programming Guide." Version 12.0,
+2023. <a class="ref-link" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">https://docs.nvidia.com/cuda/cuda-c-programming-guide/</a></p></li>
+<li id="ref-ausavarungnirun-2017"><p>Ausavarungnirun, R., et al. "Mosaic: A GPU Memory Manager with
 Application-Transparent Support for Multiple Page Sizes." <em>IEEE/ACM
-MICRO</em>, 2017. DOI: 10.1145/3123939.3123975</p></li>
-<li><p>Pichai, B., et al. "Architectural Support for Address
-Translation on GPUs." <em>ACM ASPLOS</em>, 2014. DOI:
-10.1145/2541940.2541942</p></li>
+MICRO</em>, 2017. <a class="ref-link" href="https://doi.org/10.1145/3123939.3123975">DOI: 10.1145/3123939.3123975</a></p></li>
+<li id="ref-pichai-2014"><p>Pichai, B., et al. "Architectural Support for Address
+Translation on GPUs." <em>ACM ASPLOS</em>, 2014. <a class="ref-link" href="https://doi.org/10.1145/2541940.2541942">DOI:
+10.1145/2541940.2541942</a></p></li>
 </ol>
 <h3 id="arm-smmu">ARM SMMU</h3>
 <ol type="1" start="33">
-<li><p>Robin, J.S., and Irvine, C.E. "Analysis of the ARM SMMUv3 MMU
-Virtualization." <em>MILCOM</em>, 2019. DOI:
-10.1109/MILCOM47813.2019.9020757</p></li>
-<li><p>ARM Ltd. "ARM CoreLink MMU-600 System Memory Management Unit
+<li id="ref-robin-2019"><p>Robin, J.S., and Irvine, C.E. "Analysis of the ARM SMMUv3 MMU
+Virtualization." <em>MILCOM</em>, 2019. <a class="ref-link" href="https://doi.org/10.1109/MILCOM47813.2019.9020757">DOI:
+10.1109/MILCOM47813.2019.9020757</a></p></li>
+<li id="ref-arm-2020"><p>ARM Ltd. "ARM CoreLink MMU-600 System Memory Management Unit
 Technical Reference Manual." 2020.
-https://developer.arm.com/documentation/</p></li>
-<li><p>Dall, C., and Nieh, J. "KVM/ARM: The Design and Implementation
-of the Linux ARM Hypervisor." <em>ACM ASPLOS</em>, 2014. DOI:
-10.1145/2541940.2541946</p></li>
+<a class="ref-link" href="https://developer.arm.com/documentation/">https://developer.arm.com/documentation/</a></p></li>
+<li id="ref-dall-2014"><p>Dall, C., and Nieh, J. "KVM/ARM: The Design and Implementation
+of the Linux ARM Hypervisor." <em>ACM ASPLOS</em>, 2014. <a class="ref-link" href="https://doi.org/10.1145/2541940.2541946">DOI:
+10.1145/2541940.2541946</a></p></li>
 </ol>
 <h3 id="operating-system-support">Operating System Support</h3>
 <ol type="1" start="36">
-<li><p>Corbet, J. "The VFIO Driver API." <em>LWN.net</em>, 2012.
-https://lwn.net/Articles/474088/</p></li>
-<li><p>Williamson, A. "An Introduction to PCI Device Assignment with
+<li id="ref-corbet-2012"><p>Corbet, J. "The VFIO Driver API." <em>LWN.net</em>, 2012.
+<a class="ref-link" href="https://lwn.net/Articles/474088/">https://lwn.net/Articles/474088/</a></p></li>
+<li id="ref-williamson-2015"><p>Williamson, A. "An Introduction to PCI Device Assignment with
 VFIO." <em>Red Hat Developer</em>, 2015.
-https://www.redhat.com/en/blog/introduction-vfio</p></li>
-<li><p>Microsoft. "Discrete Device Assignment." <em>Windows Server
+<a class="ref-link" href="https://www.redhat.com/en/blog/introduction-vfio">https://www.redhat.com/en/blog/introduction-vfio</a></p></li>
+<li id="ref-microsoft-2022"><p>Microsoft. "Discrete Device Assignment." <em>Windows Server
 Documentation</em>, 2022.
-https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/deploying-graphics-devices-using-dda</p></li>
-<li><p>Linux Kernel Documentation. "IOMMU and DMA APIs." 2023.
-https://www.kernel.org/doc/html/latest/core-api/dma-api.html</p></li>
+<a class="ref-link" href="https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/deploying-graphics-devices-using-dda">https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/deploy/deploying-graphics-devices-using-dda</a></p></li>
+<li id="ref-linux-2023"><p>Linux Kernel Documentation. "IOMMU and DMA APIs." 2023.
+<a class="ref-link" href="https://www.kernel.org/doc/html/latest/core-api/dma-api.html">https://www.kernel.org/doc/html/latest/core-api/dma-api.html</a></p></li>
 </ol>
 <h3 id="interrupt-remapping-references">Interrupt Remapping</h3>
 <ol type="1" start="40">
-<li><p>Abramson, D., et al. "Intel Virtualization Technology for
+<li id="ref-abramson-2006"><p>Abramson, D., et al. "Intel Virtualization Technology for
 Directed I/O." <em>Intel Technology Journal</em>, 2006.
-https://www.intel.com/content/www/us/en/developer/articles/technical/intel-virtualization-technology-for-directed-io.html</p></li>
-<li><p>Liu, J., and Abali, B. "Virtualization Polling Engine (VPE):
+<a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-virtualization-technology-for-directed-io.html">https://www.intel.com/content/www/us/en/developer/articles/technical/intel-virtualization-technology-for-directed-io.html</a></p></li>
+<li id="ref-liu-2009"><p>Liu, J., and Abali, B. "Virtualization Polling Engine (VPE):
 Using Dedicated CPU Cores to Accelerate I/O Virtualization." <em>ACM
-ICS</em>, 2009. DOI: 10.1145/1542275.1542304</p></li>
-<li><p>Dong, Y., et al. "Optimizing Interrupt Delivery in Virtual
-Machines with Posted Interrupts." <em>IEEE TPDS</em>, 2014. DOI:
-10.1109/TPDS.2013.222</p></li>
+ICS</em>, 2009. <a class="ref-link" href="https://doi.org/10.1145/1542275.1542304">DOI: 10.1145/1542275.1542304</a></p></li>
+<li id="ref-dong-2014"><p>Dong, Y., et al. "Optimizing Interrupt Delivery in Virtual
+Machines with Posted Interrupts." <em>IEEE TPDS</em>, 2014. <a class="ref-link" href="https://doi.org/10.1109/TPDS.2013.222">DOI:
+10.1109/TPDS.2013.222</a></p></li>
 </ol>
 <h3 id="emerging-technologies">Emerging Technologies</h3>
 <ol type="1" start="43">
-<li><p>CXL Consortium. "Compute Express Link Specification 3.0." 2022.
-https://www.computeexpresslink.org/</p></li>
-<li><p>AMD. "AMD Secure Encrypted Virtualization API Specification."
-2023. https://www.amd.com/en/developer/sev.html</p></li>
-<li><p>Intel. "Intel Trust Domain Extensions (TDX)." <em>White
+<li id="ref-cxl-2022"><p>CXL Consortium. "Compute Express Link Specification 3.0." 2022.
+<a class="ref-link" href="https://www.computeexpresslink.org/">https://www.computeexpresslink.org/</a></p></li>
+<li id="ref-amd-2023"><p>AMD. "AMD Secure Encrypted Virtualization API Specification."
+2023. <a class="ref-link" href="https://www.amd.com/en/developer/sev.html">https://www.amd.com/en/developer/sev.html</a></p></li>
+<li id="ref-intel-2023"><p>Intel. "Intel Trust Domain Extensions (TDX)." <em>White
 Paper</em>, 2023.
-https://www.intel.com/content/www/us/en/developer/tools/trust-domain-extensions/overview.html</p></li>
-<li><p>Gouk, D., et al. "Direct Access, High-Performance Memory
+<a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/tools/trust-domain-extensions/overview.html">https://www.intel.com/content/www/us/en/developer/tools/trust-domain-extensions/overview.html</a></p></li>
+<li id="ref-gouk-2022"><p>Gouk, D., et al. "Direct Access, High-Performance Memory
 Disaggregation with DirectCXL." <em>USENIX ATC</em>, 2022.
-https://www.usenix.org/conference/atc22/presentation/gouk</p></li>
+<a class="ref-link" href="https://www.usenix.org/conference/atc22/presentation/gouk">https://www.usenix.org/conference/atc22/presentation/gouk</a></p></li>
 </ol>
 <h3 id="additional-resources">Additional Resources</h3>
 <ol type="1" start="47">
-<li><p>Ben-Yehuda, M., et al. "Utilizing IOMMUs for Virtualization in
+<li id="ref-benyehuda-2006"><p>Ben-Yehuda, M., et al. "Utilizing IOMMUs for Virtualization in
 Linux and Xen." <em>OLS</em>, 2006.
-https://www.kernel.org/doc/ols/2006/ols2006v1-pages-141-152.pdf</p></li>
-<li><p>Russell, R. "virtio: Towards a De-Facto Standard For Virtual I/O
-Devices." <em>ACM Operating Systems Review</em>, 2008. DOI:
-10.1145/1400097.1400108</p></li>
-<li><p>Zha, X., et al. "IOMMU and DMA: A Survey." <em>ACM Computing
+<a class="ref-link" href="https://www.kernel.org/doc/ols/2006/ols2006v1-pages-141-152.pdf">https://www.kernel.org/doc/ols/2006/ols2006v1-pages-141-152.pdf</a></p></li>
+<li id="ref-russell-2008"><p>Russell, R. "virtio: Towards a De-Facto Standard For Virtual I/O
+Devices." <em>ACM Operating Systems Review</em>, 2008. <a class="ref-link" href="https://doi.org/10.1145/1400097.1400108">DOI:
+10.1145/1400097.1400108</a></p></li>
+<li id="ref-zha-2023"><p>Zha, X., et al. "IOMMU and DMA: A Survey." <em>ACM Computing
 Surveys</em>, 2023. (Forthcoming)</p></li>
-<li><p>Kumar, N., et al. "Performance Isolation in Multi-Tenant Data
-Centers Using IOMMU." <em>ACM EuroSys</em>, 2020. DOI:
-10.1145/3342195.3387524</p></li>
+<li id="ref-kumar-2020"><p>Kumar, N., et al. "Performance Isolation in Multi-Tenant Data
+Centers Using IOMMU." <em>ACM EuroSys</em>, 2020. <a class="ref-link" href="https://doi.org/10.1145/3342195.3387524">DOI:
+10.1145/3342195.3387524</a></p></li>
 </ol>
 
 <script>

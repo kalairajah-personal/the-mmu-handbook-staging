@@ -568,6 +568,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
   <style>
 
@@ -678,19 +701,21 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h1 class="title">Chapter 18: MMU-Level Vulnerabilities: Spectre, Meltdown, and Paging Exploits</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-18.1">18.1 Introduction: When the Memory Map Becomes a Weapon</a></li>
-<li><a href="#section-18.2">18.2 The Paging Model&#x27;s Trust Assumptions</a></li>
-<li><a href="#section-18.3">18.3 Meltdown: Speculative PTE Permission Checks</a></li>
-<li><a href="#section-18.4">18.4 Spectre v1: Bounds Bypass via Virtual Address Speculation</a></li>
-<li><a href="#section-18.5">18.5 Spectre v2: Branch Target Injection and the PTW Control Path</a></li>
-<li><a href="#section-18.6">18.6 L1TF and Foreshadow: P=0 PTEs as Physical Address Leaks</a></li>
-<li><a href="#section-18.7">18.7 Microarchitectural Data Sampling: Buffers the PTW Shares</a></li>
-<li><a href="#section-18.8">18.8 KPTI: Splitting the Page Table as an Architectural Fix</a></li>
-<li><a href="#section-18.9">18.9 Mitigation Costs and Production Deployment Trade-offs</a></li>
-<li><a href="#section-18.10">18.10 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li class="toc-leaf"><a href="#section-18.1">18.1 Introduction: When the Memory Map Becomes a Weapon</a></li>
+<li class="toc-leaf"><a href="#section-18.2">18.2 The Paging Model's Trust Assumptions</a></li>
+<li class="toc-leaf"><a href="#section-18.3">18.3 Meltdown: Speculative PTE Permission Checks</a></li>
+<li class="toc-leaf"><a href="#section-18.4">18.4 Spectre v1: Bounds Bypass via Virtual Address Speculation</a></li>
+<li class="toc-leaf"><a href="#section-18.5">18.5 Spectre v2: Branch Target Injection and the PTW Control Path</a></li>
+<li class="toc-leaf"><a href="#section-18.6">18.6 L1TF and Foreshadow: P=0 PTEs as Physical Address Leaks</a></li>
+<li class="toc-leaf"><a href="#section-18.7">18.7 Microarchitectural Data Sampling: Buffers the PTW Shares</a></li>
+<li class="toc-leaf"><a href="#section-18.8">18.8 KPTI: Splitting the Page Table as an Architectural Fix</a></li>
+<li class="toc-leaf"><a href="#section-18.9">18.9 Mitigation Costs and Production Deployment Trade-offs</a></li>
+<li class="toc-leaf"><a href="#section-18.10">18.10 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 
 <h2 id="section-18.1">18.1 Introduction: When the Memory Map Becomes a Weapon</h2>
@@ -912,7 +937,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>These controls share a critical property: they are enforced at instruction retirement. In the sequential execution model that the architecture specification describes, a load instruction addressing a supervisor page immediately causes a fault — the load never executes. In the out-of-order execution model implemented by every modern high-performance processor, the situation is more complex. An OOO processor issues instructions before they retire, executing them in an order determined by data availability rather than program order. A speculative load may be issued dozens to hundreds of cycles before it reaches the retirement queue. During those cycles, dependent instructions — including instructions that access memory and bring cache lines into L1D or populate microarchitectural buffers — may have executed.</p>
 
-<p>The architectural guarantee is preserved: the load will be squashed and a fault delivered when the instruction retires. But the microarchitectural side-effects — which cache lines were brought in, which fill buffer entries were populated, which store buffer entries were touched — are not rolled back. They persist, and they are observable via timing differences in subsequent memory accesses. The Flush+Reload technique (Yarom and Falkner, 2014) provides the measurement primitive: flush a set of locations from cache, allow the victim to execute, then measure access time to each location. Sub-threshold time indicates the victim brought in that line — revealing which one was accessed and therefore what address was computed speculatively.</p>
+<p>The architectural guarantee is preserved: the load will be squashed and a fault delivered when the instruction retires. But the microarchitectural side-effects — which cache lines were brought in, which fill buffer entries were populated, which store buffer entries were touched — are not rolled back. They persist, and they are observable via timing differences in subsequent memory accesses. The Flush+Reload technique [<a class="cite" href="#ref-yarom-2014">Yarom and Falkner, 2014</a>] provides the measurement primitive: flush a set of locations from cache, allow the victim to execute, then measure access time to each location. Sub-threshold time indicates the victim brought in that line — revealing which one was accessed and therefore what address was computed speculatively.</p>
 
 <p>This gap between architectural enforcement and microarchitectural observability is not a bug in any individual processor implementation. It is a fundamental consequence of speculative execution — the optimisation that makes modern processors fast. The architecture specification explicitly does not constrain microarchitectural side-effects of speculative execution; it specifies only what state is committed at retirement. Every processor optimised for throughput exploits this freedom. The vulnerability class is therefore architectural in scope even when its manifestation is microarchitectural.</p>
 
@@ -1260,7 +1285,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 18.6:</strong> L1 Terminal Fault (L1TF/Foreshadow). Pre-2018 Intel hardware reads the PA field of a P=0 PTE speculatively before faulting. Three CVE variants exploit this across SGX, OS/SMM, and VMM isolation boundaries.</figcaption>
 </figure>
 
-<p>L1 Terminal Fault — disclosed simultaneously as Foreshadow (Van Bulck et al., 2018) and Foreshadow-NG (Weisse et al., 2018) — exposed three attack surfaces distinguished by who controls the P=0 PTE and who is the victim. In each case the attacker exploits the fact that operating system software legitimately uses not-present PTE bits for purposes other than translation: swap entries recording where a page was written to disk, migration entries recording a page in flight to a new NUMA node (documented in Chapter 9), and SGX enclave page cache entries indicating a page swapped out of the EPC. Each of these uses places a non-translation value in bits [51:12] of a P=0 PTE — and on pre-L1TF silicon, the PTW treats that value as a physical address.</p>
+<p>L1 Terminal Fault — disclosed simultaneously as Foreshadow [<a class="cite" href="#ref-vanbulck-2018">Van Bulck et al., 2018</a>] and Foreshadow-NG [<a class="cite" href="#ref-weisse-2018">Weisse et al., 2018</a>] — exposed three attack surfaces distinguished by who controls the P=0 PTE and who is the victim. In each case the attacker exploits the fact that operating system software legitimately uses not-present PTE bits for purposes other than translation: swap entries recording where a page was written to disk, migration entries recording a page in flight to a new NUMA node (documented in Chapter 9), and SGX enclave page cache entries indicating a page swapped out of the EPC. Each of these uses places a non-translation value in bits [51:12] of a P=0 PTE — and on pre-L1TF silicon, the PTW treats that value as a physical address.</p>
 
 <p>CVE-2018-3615 targets Intel SGX enclaves. SGX's isolation model relies on the Enclave Page Cache (EPC) — physical frames decrypted by the Memory Encryption Engine as they enter the processor. When an enclave page is demand-loaded or swapped, it is momentarily mapped P=0. If the PA field of that P=0 PTE points to an EPC frame holding decrypted secrets, a speculative PTW walk loads the MEE-decrypted contents into L1D. A co-resident attacker recovers them via Flush+Reload. This breaks the primary SGX guarantee: that enclave contents are inaccessible to the host OS and co-tenants.</p>
 
@@ -1429,7 +1454,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <p>From the page table management perspective, the most important operational implication of MDS is that the <em>frequency</em> of PTW operations directly affects the rate at which sensitive data populates the fill buffer. A workload with a high TLB miss rate — as characterised in detail in Chapter 17 for large-working-set AI inference and database workloads — generates PTW operations at correspondingly high frequency, populating the fill buffer with PTE values, PA translations, and intermediate PxE lookups more rapidly than a workload with a warm TLB. Under MDS conditions, a high TLB miss rate is not merely a performance problem (the PTW throughput bottleneck documented in Chapter 17 §17.6) but also a security amplifier: it creates a faster-refreshing fill buffer that provides more frequent sampling opportunities for a co-resident attacker. This creates an unusual interaction between the memory management optimisations discussed throughout this book and the security mitigations discussed in this chapter: the same recommendation to increase huge page coverage that reduces TLB miss rate for performance also reduces fill buffer population rate for MDS risk reduction. The VERW mitigation already addresses the MDS channel on privilege transitions, but reducing the total information flow through the shared buffers via reduced TLB miss frequency is a complementary defence-in-depth measure.</p>
 <h2 id="section-18.8">18.8 KPTI: Splitting the Page Table as an Architectural Fix</h2>
 
-<p>The architectural response to Meltdown was Kernel Page-Table Isolation (KPTI). First proposed as KAISER by Gruss et al. (2017), merged into the Linux kernel in December 2017 under the name KPTI, and deployed within weeks of the January 2018 public disclosure, KPTI removes kernel mappings from the user-mode page table entirely. This severs the speculative access path that Meltdown requires and eliminates the L1TF vector for kernel physical frame leakage via user-mode P=0 PTEs.</p>
+<p>The architectural response to Meltdown was Kernel Page-Table Isolation (KPTI). First proposed as KAISER by Gruss et al. [<a class="cite" href="#ref-gruss-2017">2017</a>], merged into the Linux kernel in December 2017 under the name KPTI, and deployed within weeks of the January 2018 public disclosure, KPTI removes kernel mappings from the user-mode page table entirely. This severs the speculative access path that Meltdown requires and eliminates the L1TF vector for kernel physical frame leakage via user-mode P=0 PTEs.</p>
 
 <figure id="fig-18-8" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
 <div style="display:inline-block;max-width:100%;overflow-x:auto;border:1px solid #e0e0e0;border-radius:6px;padding:12px;background:#fafafa;">
@@ -1492,7 +1517,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>The interaction between KPTI and Intel's Total Memory Encryption (TME) and AMD's Secure Memory Encryption (SME) adds another layer of complexity. Both TME and SME encrypt all physical memory, ensuring that DRAM contents are unintelligible without the encryption key. However, encryption is applied per-physical-address: a physical page that is mapped in both the user CR3 and the kernel CR3 uses the same physical address and therefore the same encryption key. KPTI's security benefit — removing kernel mappings from the user page table — is not affected by memory encryption, because the attack path involves speculative L1D fills of decrypted data within the processor, not reads from encrypted DRAM. Memory encryption is a complementary control addressing physical DRAM access; KPTI addresses speculative execution within the CPU's unencrypted execution pipeline.</p>
 
-<p>The security benefit of KPTI extends beyond Meltdown to any attack that requires kernel virtual addresses to be TLB-resident during user execution. Kernel address space layout randomisation (KASLR) randomises the virtual address at which the kernel is loaded, preventing attackers from knowing the address of target kernel data or code without a prior information leak. Meltdown would have provided precisely such an information leak — by reading the page table directly, an attacker could recover the base address of the kernel mapping and defeat KASLR. With KPTI, the kernel's virtual address range is not visible in the user page table at all; not only does Meltdown not work, but any speculative side-channel that requires TLB-warm kernel addresses is also blocked. Gruss et al. (2017) coined the term KAISER specifically to note that it addressed a broader class of kernel address layout disclosure than Meltdown alone.</p>
+<p>The security benefit of KPTI extends beyond Meltdown to any attack that requires kernel virtual addresses to be TLB-resident during user execution. Kernel address space layout randomisation (KASLR) randomises the virtual address at which the kernel is loaded, preventing attackers from knowing the address of target kernel data or code without a prior information leak. Meltdown would have provided precisely such an information leak — by reading the page table directly, an attacker could recover the base address of the kernel mapping and defeat KASLR. With KPTI, the kernel's virtual address range is not visible in the user page table at all; not only does Meltdown not work, but any speculative side-channel that requires TLB-warm kernel addresses is also blocked. Gruss et al. [<a class="cite" href="#ref-gruss-2017">2017</a>] coined the term KAISER specifically to note that it addressed a broader class of kernel address layout disclosure than Meltdown alone.</p>
 
 <h2 id="section-18.9">18.9 Mitigation Costs and Production Deployment Trade-offs</h2>
 
@@ -1574,21 +1599,21 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <h2 id="references">References</h2>
 <ol>
-<li><p>Lipp, M., Schwarz, M., Gruss, D., Prescher, T., Haas, W., Fogh, A., Horn, J., Mangard, S., Kocher, P., Genkin, D., Yarom, Y., and Hamburg, M. (2018). Meltdown: Reading Kernel Memory from User Space. <em>27th USENIX Security Symposium</em>, 973–990.</p></li>
-<li><p>Kocher, P., Horn, J., Fogh, A., Genkin, D., Gruss, D., Haas, W., Hamburg, M., Lipp, M., Mangard, S., Prescher, T., Schwarz, M., and Yarom, Y. (2019). Spectre Attacks: Exploiting Speculative Execution. <em>2019 IEEE Symposium on Security and Privacy</em>, 1–19. https://doi.org/10.1109/SP.2019.00002</p></li>
-<li><p>Van Bulck, J., Minkin, M., Weisse, O., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow: Extracting the Keys to the Intel SGX Kingdom with Transient Out-of-Order Execution. <em>27th USENIX Security Symposium</em>, 991–1008.</p></li>
-<li><p>Weisse, O., Van Bulck, J., Minkin, M., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow-NG: Breaking the Virtual Memory Abstraction with Transient Out-of-Order Execution. Technical Report. https://foreshadowattack.eu/foreshadow-NG.pdf</p></li>
-<li><p>Van Schaik, S., Milburn, A., Österlund, S., Frigo, P., Maisuradze, G., Razavi, K., Bos, H., and Giuffrida, C. (2019). RIDL: Rogue In-Flight Data Load. <em>2019 IEEE Symposium on Security and Privacy</em>, 88–105. https://doi.org/10.1109/SP.2019.00087</p></li>
-<li><p>Canella, C., Van Bulck, J., Schwarz, M., Lipp, M., von Berg, B., Ortner, P., Piessens, F., Evtyushkin, D., and Gruss, D. (2019). A Systematic Evaluation of Transient Execution Attacks and Defenses. <em>28th USENIX Security Symposium</em>, 249–266.</p></li>
-<li><p>Schwarz, M., Lipp, M., Moghimi, D., Van Bulck, J., Stecklina, J., Prescher, T., and Gruss, D. (2019). ZombieLoad: Cross-Privilege-Boundary Data Sampling. <em>ACM CCS 2019</em>, 753–768. https://doi.org/10.1145/3319535.3354252</p></li>
-<li><p>Gruss, D., Lipp, M., Schwarz, M., Fellner, R., Maurice, C., and Mangard, S. (2017). KASLR is Dead: Long Live KASLR. <em>Engineering Secure Software and Systems (ESSoS)</em>, LNCS 10379, 161–176.</p></li>
-<li><p>Intel Corporation. (2018). L1 Terminal Fault / CVE-2018-3615, CVE-2018-3620, CVE-2018-3646 Deep Dive. Technical White Paper. https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/technical-documentation/intel-analysis-l1tf.html</p></li>
-<li><p>Yarom, Y., and Falkner, K. (2014). FLUSH+RELOAD: A High Resolution, Low Noise, L3 Cache Side-Channel Attack. <em>23rd USENIX Security Symposium</em>, 719–732.</p></li>
-<li><p>Intel Corporation. (2019). Microarchitectural Data Sampling Advisory / CVE-2019-11091, CVE-2018-12126, CVE-2018-12127, CVE-2018-12130. Technical White Paper. https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/advisory-guidance/microarchitectural-data-sampling.html</p></li>
-<li><p>Arm Limited. (2018). Cache Speculation Side-channels. Whitepaper v2.5. https://developer.arm.com/documentation/102816/0100</p></li>
-<li><p>Horn, J. (2022). Branch History Injection: On the Effectiveness of Hardware Mitigations Against Cross-Privilege Spectre-v2 Attacks. <em>31st USENIX Security Symposium</em>, 971–988.</p></li>
-<li><p>Linux Kernel Documentation. (2023). Spectre Side Channel Mitigation for x86 Processors. https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/spectre.html</p></li>
-<li><p>Linux Kernel Documentation. (2023). MDS — Microarchitectural Data Sampling. https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html</p></li>
+<li id="ref-lipp-2018"><p>Lipp, M., Schwarz, M., Gruss, D., Prescher, T., Haas, W., Fogh, A., Horn, J., Mangard, S., Kocher, P., Genkin, D., Yarom, Y., and Hamburg, M. (2018). Meltdown: Reading Kernel Memory from User Space. <em>27th USENIX Security Symposium</em>, 973–990.</p></li>
+<li id="ref-kocher-2019"><p>Kocher, P., Horn, J., Fogh, A., Genkin, D., Gruss, D., Haas, W., Hamburg, M., Lipp, M., Mangard, S., Prescher, T., Schwarz, M., and Yarom, Y. (2019). Spectre Attacks: Exploiting Speculative Execution. <em>2019 IEEE Symposium on Security and Privacy</em>, 1–19. <a class="ref-link" href="https://doi.org/10.1109/SP.2019.00002">https://doi.org/10.1109/SP.2019.00002</a></p></li>
+<li id="ref-vanbulck-2018"><p>Van Bulck, J., Minkin, M., Weisse, O., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow: Extracting the Keys to the Intel SGX Kingdom with Transient Out-of-Order Execution. <em>27th USENIX Security Symposium</em>, 991–1008.</p></li>
+<li id="ref-weisse-2018"><p>Weisse, O., Van Bulck, J., Minkin, M., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow-NG: Breaking the Virtual Memory Abstraction with Transient Out-of-Order Execution. Technical Report. <a class="ref-link" href="https://foreshadowattack.eu/foreshadow-NG.pdf">https://foreshadowattack.eu/foreshadow-NG.pdf</a></p></li>
+<li id="ref-vanschaik-2019"><p>Van Schaik, S., Milburn, A., Österlund, S., Frigo, P., Maisuradze, G., Razavi, K., Bos, H., and Giuffrida, C. (2019). RIDL: Rogue In-Flight Data Load. <em>2019 IEEE Symposium on Security and Privacy</em>, 88–105. <a class="ref-link" href="https://doi.org/10.1109/SP.2019.00087">https://doi.org/10.1109/SP.2019.00087</a></p></li>
+<li id="ref-canella-2019"><p>Canella, C., Van Bulck, J., Schwarz, M., Lipp, M., von Berg, B., Ortner, P., Piessens, F., Evtyushkin, D., and Gruss, D. (2019). A Systematic Evaluation of Transient Execution Attacks and Defenses. <em>28th USENIX Security Symposium</em>, 249–266.</p></li>
+<li id="ref-schwarz-2019"><p>Schwarz, M., Lipp, M., Moghimi, D., Van Bulck, J., Stecklina, J., Prescher, T., and Gruss, D. (2019). ZombieLoad: Cross-Privilege-Boundary Data Sampling. <em>ACM CCS 2019</em>, 753–768. <a class="ref-link" href="https://doi.org/10.1145/3319535.3354252">https://doi.org/10.1145/3319535.3354252</a></p></li>
+<li id="ref-gruss-2017"><p>Gruss, D., Lipp, M., Schwarz, M., Fellner, R., Maurice, C., and Mangard, S. (2017). KASLR is Dead: Long Live KASLR. <em>Engineering Secure Software and Systems (ESSoS)</em>, LNCS 10379, 161–176.</p></li>
+<li id="ref-intel-2018"><p>Intel Corporation. (2018). L1 Terminal Fault / CVE-2018-3615, CVE-2018-3620, CVE-2018-3646 Deep Dive. Technical White Paper. <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/technical-documentation/intel-analysis-l1tf.html">https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/technical-documentation/intel-analysis-l1tf.html</a></p></li>
+<li id="ref-yarom-2014"><p>Yarom, Y., and Falkner, K. (2014). FLUSH+RELOAD: A High Resolution, Low Noise, L3 Cache Side-Channel Attack. <em>23rd USENIX Security Symposium</em>, 719–732.</p></li>
+<li id="ref-intel-2019"><p>Intel Corporation. (2019). Microarchitectural Data Sampling Advisory / CVE-2019-11091, CVE-2018-12126, CVE-2018-12127, CVE-2018-12130. Technical White Paper. <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/advisory-guidance/microarchitectural-data-sampling.html">https://www.intel.com/content/www/us/en/developer/articles/technical/software-security-guidance/advisory-guidance/microarchitectural-data-sampling.html</a></p></li>
+<li id="ref-arm-2018"><p>Arm Limited. (2018). Cache Speculation Side-channels. Whitepaper v2.5. <a class="ref-link" href="https://developer.arm.com/documentation/102816/0100">https://developer.arm.com/documentation/102816/0100</a></p></li>
+<li id="ref-horn-2022"><p>Horn, J. (2022). Branch History Injection: On the Effectiveness of Hardware Mitigations Against Cross-Privilege Spectre-v2 Attacks. <em>31st USENIX Security Symposium</em>, 971–988.</p></li>
+<li id="ref-linux-2023a"><p>Linux Kernel Documentation. (2023). Spectre Side Channel Mitigation for x86 Processors. <a class="ref-link" href="https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/spectre.html">https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/spectre.html</a></p></li>
+<li id="ref-linux-2023b"><p>Linux Kernel Documentation. (2023). MDS — Microarchitectural Data Sampling. <a class="ref-link" href="https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html">https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html</a></p></li>
 </ol>
 
 <script>

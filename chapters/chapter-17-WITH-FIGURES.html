@@ -567,6 +567,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
   <style>
 
@@ -677,19 +700,37 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </header>
 
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-17.1">17.1 Introduction: The Hidden Machine Inside the MMU</a></li>
-<li><a href="#section-17.2">17.2 PTW Pipeline Stages and Latency</a></li>
-<li><a href="#section-17.3">17.3 Page Walk Caches</a></li>
-<li><a href="#section-17.4">17.4 Miss-Status Holding Registers and Concurrent Walks</a></li>
-<li><a href="#section-17.5">17.5 Speculative Page Table Walks</a></li>
-<li><a href="#section-17.6">17.6 PTW Parallelism and Throughput</a></li>
-<li><a href="#section-17.7">17.7 x86-64 PTW Microarchitecture</a></li>
-<li><a href="#section-17.8">17.8 ARM64 Translation Table Walk</a></li>
-<li><a href="#section-17.9">17.9 RISC-V Software-Managed PTW</a></li>
-<li><a href="#section-17.10">17.10 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li class="toc-leaf"><a href="#section-17.1">17.1 Introduction: The Hidden Machine Inside the MMU</a></li>
+<li><details class="toc-sec"><summary><a href="#section-17.2">17.2 PTW Pipeline Stages and Latency</a></summary>
+<ul><li><a href="#stage-0-tlb-miss-detection">Stage 0 — TLB miss detection</a></li><li><a href="#stage-1-cr3-load">Stage 1 — CR3 load</a></li><li><a href="#stages-2-5-pml4e-pdpte-pde-pte-fetches">Stages 2–5 — PML4E, PDPTE, PDE, PTE fetches</a></li><li><a href="#stage-6-tlb-fill">Stage 6 — TLB fill</a></li><li><a href="#latency-model-and-huge-page-impact">Latency model and huge page impact</a></li><li><a href="#measuring-walk-latency-in-practice">Measuring walk latency in practice</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-17.3">17.3 Page Walk Caches</a></summary>
+<ul><li><a href="#pwc-structure-and-tagging">PWC structure and tagging</a></li><li><a href="#pwc-invalidation">PWC invalidation</a></li><li><a href="#pwc-hit-rates-in-practice">PWC hit rates in practice</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-17.4">17.4 Miss-Status Holding Registers and Concurrent Walks</a></summary>
+<ul><li><a href="#mshr-allocation-and-coalescing">MSHR allocation and coalescing</a></li><li><a href="#concurrent-walker-capacity-by-microarchitecture">Concurrent walker capacity by microarchitecture</a></li><li><a href="#coalescing-window-and-temporal-locality">Coalescing window and temporal locality</a></li><li><a href="#mshr-starvation-and-the-ptw-bottleneck">MSHR starvation and the PTW bottleneck</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-17.5">17.5 Speculative Page Table Walks</a></summary>
+<ul><li><a href="#the-security-critical-case-speculative-walks-on-p-0-ptes">The security-critical case: speculative walks on P=0 PTEs</a></li><li><a href="#l1-terminal-fault-foreshadow-cve-2018-3615-3620-3646">L1 Terminal Fault (Foreshadow) — CVE-2018-3615/3620/3646</a></li><li><a href="#mitigations-and-residual-risk">Mitigations and residual risk</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-17.6">17.6 PTW Parallelism and Throughput</a></summary>
+<ul><li><a href="#throughput-ceiling-analysis">Throughput ceiling analysis</a></li><li><a href="#pipelining-between-walks">Pipelining between walks</a></li><li><a href="#interaction-with-huge-pages">Interaction with huge pages</a></li><li><a href="#workload-characterisation-and-the-tlb-to-ptw-handoff">Workload characterisation and the TLB-to-PTW handoff</a></li><li><a href="#practical-throughput-optimisation-strategies">Practical throughput optimisation strategies</a></li><li><a href="#numa-effects-on-ptw-latency">NUMA effects on PTW latency</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-17.7">17.7 x86-64 PTW Microarchitecture</a></summary>
+<ul><li><a href="#fsm-structure-and-microcode-handoff">FSM structure and microcode handoff</a></li><li><a href="#pcid-interaction-and-context-switch-optimisation">PCID interaction and context-switch optimisation</a></li><li><a href="#microcode-update-mechanics-for-ptw-behaviour">Microcode update mechanics for PTW behaviour</a></li><li><a href="#sec-5-level-paging-la57">5-level paging (LA57)</a></li><li><a href="#accessed-and-dirty-bit-maintenance">Accessed and Dirty bit maintenance</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-17.8">17.8 ARM64 Translation Table Walk</a></summary>
+<ul><li><a href="#ttw-structure-and-ttbr-organisation">TTW structure and TTBR organisation</a></li><li><a href="#stage-2-translation-and-nested-walks">Stage-2 translation and nested walks</a></li><li><a href="#tlbi-instruction-granularity">TLBI instruction granularity</a></li><li><a href="#hardware-dirty-state-management-hdbm">Hardware Dirty State Management (HDBM)</a></li><li><a href="#implementation-survey-apple-m-series-and-aws-graviton">Implementation survey: Apple M-series and AWS Graviton</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-17.9">17.9 RISC-V Software-Managed PTW</a></summary>
+<ul><li><a href="#base-risc-v-tlb-miss-handling">Base RISC-V TLB miss handling</a></li><li><a href="#sv39-sv48-sv57-and-sv64-modes">Sv39, Sv48, Sv57, and Sv64 modes</a></li><li><a href="#hardware-walker-extensions">Hardware walker extensions</a></li><li><a href="#cost-model-and-software-hardware-tradeoff">Cost model and software-hardware tradeoff</a></li><li><a href="#impact-on-os-design">Impact on OS design</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-17.10">17.10 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 
 <h2 id="section-17.1">17.1 Introduction: The Hidden Machine Inside the MMU</h2>
@@ -710,18 +751,18 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>A hardware page table walk for a 4-level x86-64 virtual address proceeds through a fixed sequence of stages. Each stage issues a memory read to fetch one level of the page table tree, checks the resulting entry for validity and permission bits, and computes the physical base address for the next level. The full pipeline, shown in Figure 17.1, has six distinct stages.</p>
 
-<h3>Stage 0 — TLB miss detection</h3>
+<h3 id="stage-0-tlb-miss-detection">Stage 0 — TLB miss detection</h3>
 <p>The load or instruction fetch unit detects that the virtual address has no matching entry in the TLB. In an out-of-order processor the TLB is accessed speculatively during the issue stage, so the miss may be detected before the load reaches the head of the retirement queue. The pipeline marks dependent instructions as blocked and raises an internal miss signal to the page table walker logic. Detection consumes one to four cycles depending on pipeline depth and whether the miss is in the instruction TLB (ITLB) or data TLB (DTLB).</p>
 
-<h3>Stage 1 — CR3 load</h3>
+<h3 id="stage-1-cr3-load">Stage 1 — CR3 load</h3>
 <p>The walker reads CR3 (Control Register 3), which holds the physical base address of the PML4 table for the current address space. On x86-64, CR3 also carries the PCID (Process-Context Identifier) in bits 11:0 when CR4.PCIDE is set. The PML4 base address is computed as <code>CR3[51:12] &lt;&lt; 12</code>. Because CR3 changes only on context switches, processors maintain a microarchitectural buffer that caches the current CR3 value and the current PML4 base, eliminating the latency of a register read in the common case.</p>
 
-<h3>Stages 2–5 — PML4E, PDPTE, PDE, PTE fetches</h3>
+<h3 id="stages-2-5-pml4e-pdpte-pde-pte-fetches">Stages 2–5 — PML4E, PDPTE, PDE, PTE fetches</h3>
 <p>Each of the four page table levels requires exactly one 8-byte aligned load from physical memory. The physical address of each entry is computed by combining the base address from the previous level with the appropriate 9-bit index extracted from the virtual address. The four index fields are VA[47:39] for PML4, VA[38:30] for PDPT, VA[29:21] for PD, and VA[20:12] for PT. Each fetch is a cache-coherent read that traverses the full L1D/L2/LLC/DRAM hierarchy. Stages proceed sequentially within a single walk — the walker cannot issue the PDPTE fetch until it has the physical address from the PML4E fetch.</p>
 
 <p>After each fetch, the walker checks the Present bit (bit 0). If P=0, the walk terminates with a page fault. If the Reserved bits are non-zero, the walker generates a #PF with error code bit 3 set. The Accessed bit (bit 5) in non-leaf entries must be set by the walker if it is clear — this requires a locked read-modify-write cycle that introduces additional latency on the first access to a new mapping.</p>
 
-<h3>Stage 6 — TLB fill</h3>
+<h3 id="stage-6-tlb-fill">Stage 6 — TLB fill</h3>
 <p>Once the leaf PTE is validated, the walker installs the physical frame number and combined permission bits (U/S, R/W, NX, global) into the TLB. On Intel processors, the TLB fill takes one to two cycles. On AMD, the fill is similarly fast but may interlock with concurrent SFENCE.VMA instructions from other threads sharing the same physical core.</p>
 
 <figure id="fig-17-1" style="margin:2.5em 0;text-align:center;page-break-inside:avoid;">
@@ -773,14 +814,14 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.1:</strong> x86-64 hardware PTW pipeline stages and per-stage latency table. Dashed red arrow shows the PWC shortcut path that skips upper-level fetches when page walk cache entries are present. All cycle counts at 4 GHz with DDR5 memory.</figcaption>
 </figure>
 
-<h3>Latency model and huge page impact</h3>
+<h3 id="latency-model-and-huge-page-impact">Latency model and huge page impact</h3>
 <p>The dominant cost of a TLB miss is the sum of cache hierarchy latencies across all four PxE fetches. Table 1 in Figure 17.1 shows representative cycle counts. The best case — all four PxEs resident in L1D — takes approximately 20 cycles. The worst case — all four PxEs missing the LLC — takes 720 to 1,000 cycles, entirely determined by DRAM access latency. The typical production case falls between: L2/LLC-hot page tables yielding 150 to 200 cycles.</p>
 
 <p>Huge pages (2 MB pages in x86-64 terminology) reduce the walk to three stages by terminating at the PDE level. This eliminates the PTE fetch, saving one cache access. Under DRAM-miss conditions this saves 180 to 250 cycles per walk — a 25% reduction in worst-case latency. The PWC interaction with huge pages is analysed in Section 17.3.</p>
 
 <p>The five-level paging extension (PML5, enabling 57-bit virtual addresses) adds a fifth fetch stage for the PML5E lookup. This increases worst-case cold walk latency by a further 180 to 250 cycles, making the decision to enable LA57 a non-trivial performance trade-off for applications with large virtual address spaces but modest working sets. Intel documents LA57 support from Ice Lake (10th generation Core) onwards; AMD supports LA57 from Zen 4.</p>
 
-<h3>Measuring walk latency in practice</h3>
+<h3 id="measuring-walk-latency-in-practice">Measuring walk latency in practice</h3>
 <p>PTW latency can be measured directly on x86-64 using hardware performance counters. Intel's <code>DTLB_LOAD_MISSES.WALK_DURATION</code> counter accumulates the total number of cycles spent in active page table walks for the DTLB, and <code>DTLB_LOAD_MISSES.MISS_CAUSES_A_WALK</code> counts the number of completed walks. Dividing the former by the latter gives the average walk latency in cycles, which can be compared against the model in Figure 17.1 to estimate the proportion of walks that are LLC-resident versus DRAM-resident. AMD provides equivalent counters in its Processor Programming Reference. Linux <code>perf stat</code> exposes these through the <code>dTLB-load-misses</code> and <code>iTLB-load-misses</code> events; more detailed walk-stage counters are available as raw PMU events. This empirical measurement is the starting point for any systematic PTW performance investigation and should precede any application-level optimisation attempt.</p>
 
 <h2 id="section-17.3">17.3 Page Walk Caches</h2>
@@ -833,17 +874,17 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.2:</strong> Three-level Page Walk Cache (PWC) structure mapped to the VA bit fields it indexes. Hit rates and walk-reduction factors are representative of server-class workloads; ML training shows lower hit rates due to PDPT-level pressure from large tensor allocations.</figcaption>
 </figure>
 
-<h3>PWC structure and tagging</h3>
+<h3 id="pwc-structure-and-tagging">PWC structure and tagging</h3>
 <p>The PWC is typically organised as three independently-addressed arrays, one per non-leaf page table level. The L1 PWC caches PML4E lookups, tagged by CR3 concatenated with VA[47:39]. A hit delivers the PDPT base address, eliminating the PML4E fetch. The L2 PWC caches PDPTE lookups, tagged by CR3 and VA[47:30]. A hit delivers the PD base address, eliminating both the PML4E and PDPTE fetches. The L3 PWC caches PDE lookups, tagged by CR3 and VA[47:21]. A hit delivers the PT base address, leaving only the PTE fetch remaining.</p>
 
 <p>The tag widths reflect a design trade-off between coverage and array size. Including the full CR3 value (52 bits of page table base plus 12 bits of PCID) allows the PWC to hold entries for multiple address spaces simultaneously without invalidation on every context switch. When PCID is in use, context switches that change CR3 but preserve entries in the PWC (the PCID non-flushing path, activated by setting bit 63 of CR3 in the MOV-to-CR3 encoding) avoid invalidating any PWC entries — a significant benefit for short-lived system calls and kernel threads that share large portions of the kernel virtual address space mapping.</p>
 
-<h3>PWC invalidation</h3>
+<h3 id="pwc-invalidation">PWC invalidation</h3>
 <p>PWC entries are invalidated by the same operations that flush TLB entries: INVLPG flushes all PWC entries associated with the target virtual address. MOV to CR3 with bit 63 clear (the traditional flush) invalidates all entries in all three PWC levels. MOV to CR3 with bit 63 set (the PCID-preserving path) flushes only the entries tagged with the new CR3's PCID. On ARM64, TLBI VA/ASIDE instructions invalidate the corresponding TTW cache entries; the TTW cache equivalent to the PWC is non-architecturally specified but widely implemented.</p>
 
 <p>INVLPG (and the ARM equivalent TLBI) must invalidate not just the leaf TLB entry for the target VA, but also any PWC entries that contributed to walks for that VA. Processors that fail to do this correctly produce page table walk results that do not reflect the current state of the page table tree — a correctness bug rather than merely a performance issue. Intel and AMD document that their implementations correctly invalidate all three PWC levels on INVLPG.</p>
 
-<h3>PWC hit rates in practice</h3>
+<h3 id="pwc-hit-rates-in-practice">PWC hit rates in practice</h3>
 <p>PWC effectiveness varies sharply across workload classes. For database workloads with hot kernel mappings and a moderate working set, L1 PWC hit rates of 85 to 95 percent are typical, reducing the average walk to approximately 1.2 PxE fetches rather than 4.0 — a 3.3× reduction in walk cost. Web servers and network-intensive workloads with moderate context-switch rates show L2 hit rates of 50 to 70 percent.</p>
 
 <p>Machine learning training workloads present a stress case for the PWC. Large tensor allocations backed by huge pages populate the PDE level of the page table; each 1 GB of tensor address space occupies one PDPTE and 512 PDEs. With a 6 to 16 entry L2 PWC, a training loop accessing dozens of distinct tensor objects rapidly thrashes the PDPT cache, driving hit rates below 20 percent and forcing near-full four-level walks for the majority of TLB misses. This is one of the microarchitectural mechanisms behind the higher-than-expected TLB miss penalties observed in large-model training discussed in Chapter 11.</p>
@@ -913,22 +954,22 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.3:</strong> PTW MSHR coalescing and parallel walker operation. Two loads to the same 4 KB page share MSHR[0] (one walk, one TLB fill). Walker 0 and Walker 1 progress independently on different pages simultaneously. A third miss stalls until a walker slot is freed.</figcaption>
 </figure>
 
-<h3>MSHR allocation and coalescing</h3>
+<h3 id="mshr-allocation-and-coalescing">MSHR allocation and coalescing</h3>
 <p>When a TLB miss occurs, the processor checks whether an MSHR entry already exists for the same 4 KB page (identified by the virtual page number, CR3, and PCID/ASID). If a matching entry exists, the new miss is <em>coalesced</em> onto that entry: it joins the waiter list without triggering a second walk. When the walk completes and the TLB entry is installed, all waiters are woken simultaneously. Coalescing is the reason that a scatter access pattern across N distinct cache lines within a single 4 KB page incurs exactly one TLB miss, not N misses — a fact that has significant implications for data structure layout decisions in systems programming.</p>
 
 <p>If no matching MSHR entry exists, the processor allocates a new PTW-MSHR entry, assigns a hardware walker to begin the walk, and adds the triggering load to the waiter list. If all MSHR entries are occupied, the load and all subsequent loads that miss in the TLB are stalled until one walk completes and its MSHR is freed. This stall is the PTW bottleneck under large working set conditions.</p>
 
-<h3>Concurrent walker capacity by microarchitecture</h3>
+<h3 id="concurrent-walker-capacity-by-microarchitecture">Concurrent walker capacity by microarchitecture</h3>
 <p>Intel x86-64 processors from Haswell (2013) through current Raptor Lake implement two concurrent PTW-MSHR entries. Intel SapphireRapids (Xeon 4th Gen, 2023) maintains two walkers but improves internal walker pipeline depth, reducing average walk latency by approximately 10 to 15 percent under LLC-hot conditions. AMD Zen 4 (EPYC Genoa, 2022) increases the concurrent walker count to four, providing a 2× improvement in PTW throughput under MSHR-bound workloads compared to Intel's two-walker design. This is a deliberate server-market differentiation: data centre workloads with large memory footprints — in-memory databases, virtualised environments, large-model inference — are far more likely to be PTW-bound than client workloads.</p>
 
 <p>ARM Cortex-A710 (ARMv9, 2021) implements two hardware TTWs per core. AWS Graviton3 (Neoverse V1 core, 2021) implements two TTWs per core; Graviton4 (Neoverse V2, 2023) documents improved TTW throughput without specifying the walker count, consistent with either a deeper pipeline or additional coalescing logic. The ARM Architecture Reference Manual deliberately does not mandate a minimum TTW count, leaving the implementation choice to silicon designers.</p>
 
-<h3>Coalescing window and temporal locality</h3>
+<h3 id="coalescing-window-and-temporal-locality">Coalescing window and temporal locality</h3>
 <p>The effectiveness of MSHR coalescing depends on the temporal locality of TLB misses to the same page. Two loads to the same page are coalesced only if the second miss arrives while the first walk's MSHR entry is still active — that is, before the walk completes and the MSHR is freed. In practice, the coalescing window is determined by walk latency: a 200-cycle walk provides a 200-cycle window during which any subsequent miss to the same virtual page is coalesced for free. This temporal requirement has an important implication for data structure layout: sequential access patterns within a page (e.g., iterating a 4 KB array) naturally fall within the coalescing window even at high IPC, while non-sequential scatter-gather patterns that revisit the same page after visiting many other pages may miss the coalescing window and incur multiple walks to the same physical page in succession.</p>
 
 <p>Software prefetch instructions (<code>PREFETCHT0</code>, <code>PREFETCHT1</code>) can trigger TLB lookups that warm the TLB for subsequent accesses. On processors where prefetch instructions cause TLB fills (x86-64 Skylake and later, ARM64 Cortex-A710 and later), a prefetch that TLB-misses will initiate a walk and install the TLB entry before the demand load arrives, converting a TLB-miss penalty into a background operation overlapped with useful computation. This "TLB prefetching" effect is exploited explicitly by some HPC libraries and is a latent benefit of software prefetch intrinsics that is rarely discussed in prefetch tuning guides.</p>
 
-<h3>MSHR starvation and the PTW bottleneck</h3>
+<h3 id="mshr-starvation-and-the-ptw-bottleneck">MSHR starvation and the PTW bottleneck</h3>
 <p>The theoretical analysis of MSHR starvation was formalised by Barr et al. (ISCA 2010). With two walker slots and a cold walk latency of 200 ns (800 cycles at 4 GHz), maximum sustained PTW throughput is 2 ÷ 800 cycles = 0.0025 walks per cycle. At a TLB miss rate of 0.01 misses per instruction and an IPC of 3, the processor needs 0.03 walks per cycle — twelve times more than two concurrent walkers can supply. In this regime, IPC collapses to a fraction of peak: nearly every load that touches a page not in the TLB stalls immediately after issue.</p>
 
 <p>Basu et al. (ISCA 2013) measured this effect empirically using graph analytics workloads on a real system: PTW-bound execution reduced effective IPC from 2.8 to 0.4 — a 7× degradation attributable entirely to TLB miss stalls with no cache miss involvement. Their proposed mitigation, direct segments (large flat virtual-to-physical mappings that bypass the page table tree entirely), is discussed in Chapter 16. A complementary hardware approach — increasing walker count and MSHR depth — is the path taken by AMD Zen 4.</p>
@@ -976,17 +1017,17 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.4:</strong> Speculative page table walk paths for P=1 vs P=0 PTEs, and the L1 Terminal Fault (L1TF/Foreshadow) exploit mechanism. Pre-2018 Intel CPUs speculatively fill L1D from the physical address in a not-present PTE, enabling cache side-channel exfiltration.</figcaption>
 </figure>
 
-<h3>The security-critical case: speculative walks on P=0 PTEs</h3>
+<h3 id="the-security-critical-case-speculative-walks-on-p-0-ptes">The security-critical case: speculative walks on P=0 PTEs</h3>
 <p>The question that becomes security-critical is what happens when a speculative TLB access misses, and the processor speculatively initiates a page table walk for a virtual address that the retiring instruction will never be permitted to access. For a PTE with the Present bit (P) set to 1 and permissions that allow the access, a speculative walk installs a TLB entry that the eventual permission check at retirement may or may not reject. If the check fails, the TLB entry is not used and the #PF is delivered. This is architecturally correct behaviour and has no persistent side-effects beyond the transient TLB entry.</p>
 
 <p>For a PTE with P=0 — a not-present page — the architectural expectation is that the walk terminates immediately with a page-fault exception. The processor is expected to generate the fault and deliver it when the load retires; the physical address field of the PTE (bits 51:12) has no architectural meaning for a not-present entry and should not be acted upon. Pre-2018 Intel processors violated this expectation in a security-critical way: on encountering a P=0 PTE during a speculative walk, the hardware read the physical address from bits 51:12 of the not-present PTE and issued a speculative L1D cache fill for that physical address before the permission check fired.</p>
 
-<h3>L1 Terminal Fault (Foreshadow) — CVE-2018-3615/3620/3646</h3>
-<p>This behaviour is the root cause of the Foreshadow vulnerability family (Van Bulck et al., 2018), also referred to by Intel as L1 Terminal Fault (L1TF). An attacker who can control the physical address field of a not-present PTE — a capability available to the host hypervisor, a co-resident VM, or in the SGX variant (Foreshadow-SGX, CVE-2018-3615), an untrusted enclave — can cause the speculative walk to fill L1D with data from an arbitrary physical frame. The L1D contents can then be exfiltrated using a Flush+Reload or Prime+Probe side-channel without the speculative load ever retiring.</p>
+<h3 id="l1-terminal-fault-foreshadow-cve-2018-3615-3620-3646">L1 Terminal Fault (Foreshadow) — CVE-2018-3615/3620/3646</h3>
+<p>This behaviour is the root cause of the Foreshadow vulnerability family [<a class="cite" href="#ref-vanbulck-2018">Van Bulck et al., 2018</a>], also referred to by Intel as L1 Terminal Fault (L1TF). An attacker who can control the physical address field of a not-present PTE — a capability available to the host hypervisor, a co-resident VM, or in the SGX variant (Foreshadow-SGX, CVE-2018-3615), an untrusted enclave — can cause the speculative walk to fill L1D with data from an arbitrary physical frame. The L1D contents can then be exfiltrated using a Flush+Reload or Prime+Probe side-channel without the speculative load ever retiring.</p>
 
 <p>Three distinct attack surfaces were disclosed simultaneously. CVE-2018-3615 (Foreshadow-SGX) targets Intel SGX enclaves: the hypervisor maps the enclave's memory with P=0, places the target physical address in the PTE, and triggers speculative walks from a co-resident untrusted enclave. CVE-2018-3620 targets OS and System Management Mode (SMM) memory: kernel-mode attackers construct not-present PTEs pointing at protected physical frames. CVE-2018-3646 targets virtual machine memory: a guest VM can cause speculative L1D fills from host physical memory by crafting not-present PTEs in guest page tables, then exfiltrate data through a shared L1D on SMT (Hyper-Threading) cores.</p>
 
-<h3>Mitigations and residual risk</h3>
+<h3 id="mitigations-and-residual-risk">Mitigations and residual risk</h3>
 <p>Intel's primary mitigation is a microcode update that causes the processor to suppress speculative L1D fills when the PTE.P bit is zero. This is implemented in microcode because the fill-suppression logic requires modifying the PTW's behaviour after the PTE has been fetched but before the speculative memory access is issued — a stage accessible only to microcode on Intel's FSM-plus-microcode architecture. The microcode patch was distributed through operating system firmware updates beginning in August 2018 and is now universally deployed on affected Intel platforms.</p>
 
 <p>For SGX deployments, Intel additionally introduced a hardware-enforced mitigation in newer silicon: the SGX L1D flush on enclave exit ensures that L1D does not contain enclave data when context switches to untrusted code. Hypervisors deploy L1D flush on VM exit as a software mitigation on patched but not hardware-hardened systems.</p>
@@ -1172,22 +1213,22 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </figure>
 
 
-<h3>Throughput ceiling analysis</h3>
+<h3 id="throughput-ceiling-analysis">Throughput ceiling analysis</h3>
 <p>Given W concurrent walkers and an average walk latency of L cycles, the maximum PTW throughput is W/L walks per cycle. For Intel's two-walker design with a worst-case cold walk of 800 cycles, the ceiling is 0.0025 walks per cycle. For AMD Zen 4's four-walker design with the same latency, the ceiling is 0.005 walks per cycle. LLC-hot walks (150 cycles) raise both ceilings by 5.3× to 0.013 and 0.027 walks per cycle respectively.</p>
 
 <p>These ceilings must be compared to the walk demand generated by the workload. Walk demand equals the TLB miss rate (misses per instruction) multiplied by the instruction issue rate (IPC). A workload with a miss rate of 0.01 misses per instruction and an IPC of 3 generates 0.03 walks per cycle — exceeding Intel's LLC-hot ceiling and far exceeding the DRAM-miss ceiling. AMD's four-walker design meets the LLC-hot demand at this miss rate, but both architectures remain bottlenecked under DRAM-miss conditions.</p>
 
-<h3>Pipelining between walks</h3>
+<h3 id="pipelining-between-walks">Pipelining between walks</h3>
 <p>Within a single walk, stages are strictly sequential — the walker cannot issue the PDPTE fetch until the PML4E fetch has returned a physical address. However, two independent walkers (for two different virtual pages) can interleave their stage fetches through the cache hierarchy. Walker 0 at the PTE stage (waiting for an L2 cache response) and Walker 1 at the PDE stage (waiting for an LLC response) simultaneously occupy different cache banks and generate independent cache requests. This is the microarchitectural parallelism that makes concurrent walkers effective even when each individual walk is serialised across stages.</p>
 
-<h3>Interaction with huge pages</h3>
+<h3 id="interaction-with-huge-pages">Interaction with huge pages</h3>
 <p>Huge pages (2 MB) improve PTW throughput through two independent mechanisms. The direct mechanism is the 25% reduction in walk stages (three levels vs four), which reduces average walk latency. The indirect mechanism is the reduction in MSHR occupancy time: a shorter walk frees the MSHR sooner, allowing it to be reallocated to a new miss more quickly. Under MSHR-bound conditions where all walker slots are perpetually occupied, the indirect mechanism can contribute as much throughput improvement as the direct mechanism.</p>
 
 <p>1 GB huge pages (1 GB pages using PDPTE with the PageSize bit set) reduce the walk to two levels — CR3 load and a single PDPTE fetch — providing a further 33% reduction in walk stages relative to 2 MB pages. However, 1 GB page mappings are rarely used for data in practice due to fragmentation pressure: a single 1 GB allocation requires a physically contiguous gigabyte of DRAM, which is increasingly difficult to satisfy in a long-running system with fragmented physical memory.</p>
 
-<h3>Workload characterisation and the TLB-to-PTW handoff</h3>
-<h3>Practical throughput optimisation strategies</h3>
-<h3>NUMA effects on PTW latency</h3>
+<h3 id="workload-characterisation-and-the-tlb-to-ptw-handoff">Workload characterisation and the TLB-to-PTW handoff</h3>
+<h3 id="practical-throughput-optimisation-strategies">Practical throughput optimisation strategies</h3>
+<h3 id="numa-effects-on-ptw-latency">NUMA effects on PTW latency</h3>
 <p>On multi-socket NUMA systems, the physical location of page table entries relative to the executing core significantly affects PTW latency. When a process is migrated from socket 0 to socket 1 after its page tables were allocated on socket 0's local DRAM, all four PxE fetches during a cold walk must cross the inter-socket interconnect (UPI on Intel, Infinity Fabric on AMD), incurring a NUMA latency penalty of 1.5× to 2.5× relative to local access. For a cold four-level walk that would take 720 cycles with local page tables, cross-socket PTW can require 1,100 to 1,800 cycles — placing it firmly in the regime where PTW stalls dominate execution. The mitigation is NUMA-local page table allocation: the Linux kernel's <code>MADV_DONTFORK</code> and <code>move_pages</code> system calls can be used to migrate page table physical pages to the socket where a thread is pinned, and the <code>numactl --localalloc</code> policy ensures future page table allocations are NUMA-local. Production HPC and ML training frameworks that pin threads to sockets and use process migration consistently show 15 to 40 percent PTW latency reductions from NUMA-local page table allocation, a benefit that dwarfs the effect of many application-level memory access pattern optimisations.</p>
 
 <p>Given the throughput ceiling analysis, the available levers for PTW-bound workloads are limited but impactful. First, increasing huge page coverage reduces both walk depth and MSHR occupancy time. Linux's <code>transparent_hugepages=always</code> setting enables automatic 2 MB promotion for anonymous memory; explicitly using <code>madvise(MADV_HUGEPAGE)</code> on large allocations provides finer control for latency-critical code paths. Second, NUMA-local allocation policies reduce DRAM latency for page table fetches — a page table allocated on a remote NUMA node incurs NUMA latency multiplier (typically 1.5–2×) on every DRAM-miss PTW stage, compounding the cold walk penalty. Third, pre-faulting large memory regions with <code>mmap(MAP_POPULATE)</code> or <code>mlock()</code> eliminates first-access PTW overhead at the cost of upfront kernel time. Fourth, on AMD Zen 4 systems, the four-walker design means that workloads which saturate Intel's two-walker ceiling may achieve significantly better performance without any software changes.</p>
@@ -1277,21 +1318,21 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   <figcaption style="margin-top:0.7em;font-size:0.88em;color:#444;text-align:left;max-width:920px;margin-left:auto;margin-right:auto;"><strong>Figure 17.6:</strong> PTW design comparison across x86-64, ARM64, and RISC-V across six properties. RISC-V base is structurally immune to speculative-walk attacks; Intel's microcode patch path allows L1TF mitigations without silicon re-spin.</figcaption>
 </figure>
 
-<h3>FSM structure and microcode handoff</h3>
+<h3 id="fsm-structure-and-microcode-handoff">FSM structure and microcode handoff</h3>
 <p>Intel's hardware PTW FSM handles the walk stages described in Section 17.2. The FSM reads PxE entries from the cache hierarchy, validates the P bit and permission fields, maintains the A bit (and D bit in the leaf PTE), and computes the next stage's physical address. When the walk encounters a condition that requires exception delivery — P=0 PTE, reserved bit set, privilege violation, NX violation — the FSM transfers control to a microcode sequence. The microcode sequence constructs the page fault error code (indicating the type of violation), sets CR2 to the faulting virtual address, and initiates #PF delivery through the normal exception mechanism.</p>
 
 <p>The microcode-assisted design provides a critical operational advantage: security mitigations that require changes to PTW behaviour can be deployed through microcode updates without silicon re-spin. Intel's response to Spectre, Meltdown, L1TF, and subsequent vulnerabilities has relied extensively on microcode updates that modify the FSM's speculative behaviour. This capability is unavailable to ARM and RISC-V implementors with pure-hardware TTW designs.</p>
 
-<h3>PCID interaction and context-switch optimisation</h3>
+<h3 id="pcid-interaction-and-context-switch-optimisation">PCID interaction and context-switch optimisation</h3>
 <p>Process-Context Identifiers (PCID), introduced in Intel Westmere and ARM64's equivalent ASID (Address Space Identifiers), allow the TLB and PWC to hold entries for multiple address spaces simultaneously. In the x86-64 PTW, the 12-bit PCID is included in the PWC tag, so PWC entries are not invalidated on a PCID-preserving context switch (MOV to CR3 with bit 63 set). This avoids the costly full PWC flush on every context switch, which was a significant source of overhead before PCID support was added to Linux (KPTI patch, 2018).</p>
 
 <p>The KPTI (Kernel Page-Table Isolation) mitigation for Meltdown doubles the cost of the user-to-kernel transition by switching to a separate page table that contains only the minimal kernel mappings needed for the interrupt/syscall entry path. KPTI uses PCID to maintain separate PCID values for the user and kernel page tables of each process, allowing the PTW and TLB to hold both mapping sets simultaneously and avoid cold-start penalties on the common system call path. The PTW overhead of this approach is approximately 5 to 10% on system-call-intensive workloads and negligible on compute-bound workloads.</p>
 
-<h3>Microcode update mechanics for PTW behaviour</h3>
+<h3 id="microcode-update-mechanics-for-ptw-behaviour">Microcode update mechanics for PTW behaviour</h3>
 <p>Intel's microcode ROM update mechanism is worth understanding in depth because it is the primary delivery vehicle for PTW-related security mitigations. Intel processors contain a microcode ROM that is loaded during manufacturing and a smaller RAM-based microcode patch area that is written by BIOS or the operating system during boot. The OS delivers microcode updates via the <code>WRMSR</code> instruction on MSR 0x79 (IA32_BIOS_UPDT_TRIG) after the BIOS loads the primary update; subsequent late microcode loads can be applied per-core via the same mechanism. The PTW's finite-state machine can be redirected to execute different microcode sequences for specific PTE conditions — including the L1TF mitigation, which inserts a check on PTE.P before initiating the speculative L1D fill, and the Accessed bit atomicity improvements in SGX-capable processors. Because the PTW microcode patch area is per-core and persistent across reboots (loaded at each boot by the kernel's <code>intel-microcode</code> module), the effective PTW behaviour on a patched system differs from factory silicon in measurable ways: the L1TF-mitigated PTW adds 1 to 3 cycles per walk for the additional PTE.P validation step, an overhead visible in <code>DTLB_LOAD_MISSES.WALK_DURATION</code> counter comparisons between pre- and post-patch measurements.</p>
 
-<h3>5-level paging (LA57)</h3>
-<h3>Accessed and Dirty bit maintenance</h3>
+<h3 id="sec-5-level-paging-la57">5-level paging (LA57)</h3>
+<h3 id="accessed-and-dirty-bit-maintenance">Accessed and Dirty bit maintenance</h3>
 <p>The Accessed (A) and Dirty (D) bits in page table entries must be maintained by the hardware walker on x86-64. If the A bit in any non-leaf PTE is clear when a walk traverses it, the walker must set it atomically (using a locked CMPXCHG or equivalent microcode sequence) before proceeding to the next level. If the Dirty bit in the leaf PTE is clear on a write access, the walker must set it. These atomic RMW operations introduce additional latency when page table entries are cold: a first access to a freshly-mapped page incurs not just four sequential cache reads but also up to four atomic read-modify-write operations if the A bits are clear throughout the tree. On NUMA systems, this can cause cross-socket bus traffic for page table entries allocated on a different NUMA domain — an effect that is particularly pronounced in first-touch allocation policies where the page table itself may live far from the core executing the first access.</p>
 
 <p>Intel Ice Lake (2019) and AMD Zen 4 (2022) introduced 5-level paging support through the LA57 CPU feature flag. When enabled via CR4.LA57=1, the PTW inserts an additional PML5E fetch stage before the PML4E stage, extending virtual addresses to 57 bits (128 PiB user address space). The PTW FSM is extended with a fifth stage; the PWC acquires a fourth level caching PML5E lookups. The performance impact of LA57 is approximately one additional memory access per TLB miss on a cold walk (15 to 25 percent latency increase), and requires a larger PWC to maintain equivalent hit rates under the wider virtual address space.</p>
@@ -1467,21 +1508,21 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </figure>
 
 
-<h3>TTW structure and TTBR organisation</h3>
+<h3 id="ttw-structure-and-ttbr-organisation">TTW structure and TTBR organisation</h3>
 <p>ARM64 maintains two translation table base registers per exception level: TTBR0_EL1 for user-space mappings (VA[63]=0) and TTBR1_EL1 for kernel mappings (VA[63]=1). This split eliminates the need for separate page table trees at context switch — only TTBR0_EL1 must be updated when switching between user processes, while TTBR1_EL1 (the kernel mapping) remains constant. Each TTBR holds the base physical address of the L0 table and the ASID (Address Space Identifier), a 16-bit tag that identifies the address space for TLB and TTW cache entries.</p>
 
 <p>The ARM64 page table walk depth depends on the configured translation granule (4 KB, 16 KB, or 64 KB) and the VA width. With the common 4 KB granule and 48-bit VAs (TCR_EL1.T0SZ=16), the walk proceeds through four levels: L0 (VA[47:39]), L1 (VA[38:30]), L2 (VA[29:21]), and L3 (VA[20:12]). With 52-bit VAs (LPA2 extension) and 4 KB granule, a five-level walk is used. With 64 KB granule and 48-bit VAs, a three-level walk suffices because each table entry covers a larger VA range.</p>
 
-<h3>Stage-2 translation and nested walks</h3>
+<h3 id="stage-2-translation-and-nested-walks">Stage-2 translation and nested walks</h3>
 <p>ARM64's hardware virtualisation extension (ARMv8-A VHE, implemented in Cortex-A55 and later) supports two-stage address translation: Stage 1 translates the guest virtual address to the guest physical address (IPA), and Stage 2 translates the IPA to the host physical address (HPA). The TTW performs both stages in sequence, meaning that each of the N Stage-1 PxE fetches must itself be translated through Stage 2 before it can be used. For a four-level Stage-1 walk with a four-level Stage-2 walk, the total number of memory accesses reaches (4+1) × 4 + 1 = 21 in the cold case — a catastrophic latency of several thousand cycles if all accesses miss the LLC.</p>
 
 <p>This nested walk penalty is mitigated in practice by the Stage-2 TLB (IPA-to-HPA cache), which caches the most recently used IPA-to-HPA translations and eliminates the Stage-2 re-walk for hot mappings. ARM processors also maintain a combined Stage-1/Stage-2 TLB that caches the fully-resolved guest-VA-to-HPA translation, bypassing both stages on a hit. The nested walk cost is therefore primarily visible during working set expansion or after VMID-tagged TLB flushes, not on steady-state access patterns.</p>
 
-<h3>TLBI instruction granularity</h3>
-<h3>Hardware Dirty State Management (HDBM)</h3>
+<h3 id="tlbi-instruction-granularity">TLBI instruction granularity</h3>
+<h3 id="hardware-dirty-state-management-hdbm">Hardware Dirty State Management (HDBM)</h3>
 <p>ARM64's optional Hardware Dirty Bit Management (HDBM) extension, introduced in ARMv8.1-A, allows the hardware TTW to set the Dirty Bit Modifier (DBM) in page table entries rather than requiring a software page-fault handler for write-fault-on-clean-page flows. Without HDBM, a write to a read-only mapped page causes a permission fault; the OS handler sets the page's dirty bit and retries. With HDBM enabled, the TTW detects the dirty-bit-modifier flag in the PTE and atomically upgrades the mapping to writable without invoking software, eliminating one round-trip through the fault handler per initially-clean writable page. This is architecturally equivalent to x86-64's hardware A/D bit maintenance but is optional in ARM64 (the Cortex-A710 and Apple M-series both implement HDBM). Operating systems that exploit HDBM (Linux since 4.14 on ARMv8.1+ systems) see measurable reductions in page-fault overhead for copy-on-write workloads.</p>
 
-<h3>Implementation survey: Apple M-series and AWS Graviton</h3>
+<h3 id="implementation-survey-apple-m-series-and-aws-graviton">Implementation survey: Apple M-series and AWS Graviton</h3>
 <p>The ARM64 TTW specification's implementation freedom has produced meaningfully different designs across major licensees. Apple's M-series processors (M1 through M4) are notable for their extremely high L1 DTLB capacity — 192 entries in the M1 Firestorm cores versus 64 in contemporary ARM Cortex-A cores — combined with a large STLB (second-level TLB) shared between cores in each cluster. The practical effect is that M-series chips reach TLB saturation at far larger working sets than Cortex-A equivalents, deferring the PTW bottleneck to workloads that would be firmly PTW-bound on server-class ARM designs. Apple does not publish the M-series TTW walker count, but microbenchmarks by Dougall Johnson and others suggest a single hardware walker per performance core, compensated by the large TLB arrays that reduce miss frequency dramatically. The M-series also implements the HDBM extension (Hardware Dirty Bit Management), which Apple exploits in macOS's copy-on-write page fault path to reduce fault-handler overhead.</p>
 
 <p>AWS Graviton3 (Neoverse V1) and Graviton4 (Neoverse V2) are designed specifically for cloud workloads where memory footprint and TLB pressure are primary concerns. Graviton3 increased the Neoverse N1's 48-entry L1 DTLB to 64 entries and expanded the STLB, consistent with AWS's observation that many cloud workloads are TLB-miss-intensive at scale. Graviton4 is documented as having "improved" address translation throughput without specific public disclosure of walker count or STLB capacity. Both designs implement 16-bit ASIDs (as permitted by ARMv8.1-A), allowing simultaneous TLB residency for up to 65,535 distinct address spaces — a significant advantage for container-dense cloud workloads that would otherwise cause ASID exhaustion and forced TLB flushes.</p>
@@ -1632,23 +1673,23 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </figure>
 
 
-<h3>Base RISC-V TLB miss handling</h3>
+<h3 id="base-risc-v-tlb-miss-handling">Base RISC-V TLB miss handling</h3>
 <p>When a TLB miss occurs in a RISC-V processor with satp.MODE set to Sv39, Sv48, or Sv57, the hardware raises a page-fault exception and transfers control to the supervisor exception handler at the address in stvec. The faulting virtual address is recorded in stval. The handler is responsible for walking the page table tree in software: loading satp to obtain the root PPN, computing the physical address of each page table entry using ordinary load instructions, validating the chain of entries, and installing the result into the TLB using a privileged instruction sequence followed by SFENCE.VMA.</p>
 
 <p>The software handler must be extremely fast — any instruction that faults during the handler's execution while executing at supervisor privilege may recursively invoke the same handler (a double fault scenario). For this reason, RISC-V operating systems pin the TLB miss handler and the page table structures it accesses in the TLB, typically using a dedicated wired TLB entry for the handler code and a locked physical region for the root page table. Linux's RISC-V port uses a global kernel direct mapping that is pre-populated in the TLB to avoid this recursion.</p>
 
-<h3>Sv39, Sv48, Sv57, and Sv64 modes</h3>
+<h3 id="sv39-sv48-sv57-and-sv64-modes">Sv39, Sv48, Sv57, and Sv64 modes</h3>
 <p>RISC-V supports four virtual address widths controlled by satp.MODE: Sv39 (39-bit VA, three levels), Sv48 (48-bit VA, four levels), Sv57 (57-bit VA, five levels), and the draft Sv64 (64-bit VA, six levels). The walk depth determines the number of load instructions the handler must execute and the number of TLB entries that must be wired. Sv48 is the most commonly implemented mode in current RISC-V server processors (SiFive P670, SpacemiT X60). Sv57 is available on the XuanTie C910 and has been announced for several upcoming server designs. Sv64 remains in draft status as of 2024.</p>
 
 <p>Each page table level for Sv39 and Sv48 uses a 512-entry array of 8-byte PTEs, identical in structure to the x86-64 format but with different bit assignments. The page table base address is computed from satp[43:0] (the PPN field) shifted left by 12 bits. The per-level index is extracted from the VA at the same 9-bit boundaries as x86-64, enabling direct comparisons of walk depth and latency.</p>
 
-<h3>Hardware walker extensions</h3>
+<h3 id="hardware-walker-extensions">Hardware walker extensions</h3>
 <p>Multiple RISC-V processor vendors have implemented optional hardware page table walkers. SiFive's U74 core (used in the HiFive Unmatched development board and RISC-V Linux reference platforms) implements a hardware walker for Sv39 and Sv48 with a two-level PWC. The walker reduces TLB miss latency from 100–500 cycles (software handler round-trip) to 20–200 cycles (hardware walk), bringing performance within a factor of two of equivalent ARM64 implementations. T-Head's XuanTie C910 (used in the Alibaba Xuantie series) implements hardware Sv39/Sv48/Sv57 walking with a similar two-level PWC structure.</p>
 
 <p>The RISC-V H extension (hypervisor extension, ratified in version 1.0) adds support for two-stage address translation (VS-stage and G-stage) equivalent to ARM64's Stage-1/Stage-2 mechanism. Hardware walker implementations that support the H extension must perform nested walks using the same combinatorial approach as ARM64, incurring equivalent nested walk penalties for guest VA-to-HPA translation. The Sv57×4 mode (57-bit guest VA with 4-level G-stage) is the most demanding supported configuration, requiring up to 25 memory accesses in the fully cold case.</p>
 
-<h3>Cost model and software-hardware tradeoff</h3>
-<h3>Impact on OS design</h3>
+<h3 id="cost-model-and-software-hardware-tradeoff">Cost model and software-hardware tradeoff</h3>
+<h3 id="impact-on-os-design">Impact on OS design</h3>
 <p>The software-managed TLB has a profound influence on RISC-V OS design. Because the TLB miss handler executes as ordinary supervisor code, it is fully observable and modifiable: OS developers can instrument miss handlers, add custom caching layers, or implement hardware-accelerated walks in firmware without any silicon involvement. The Linux RISC-V port leverages this flexibility in its hugetlb implementation: the supervisor-mode miss handler explicitly checks for 2 MB and 1 GB huge page PTEs during the walk, enabling huge page support without any hardware changes to the TLB fill mechanism. This contrasts with x86-64 and ARM64, where huge page handling is implemented in hardware FSMs that cannot be altered without a silicon revision.</p>
 
 <p>The tradéoff is portability of timing assumptions. Software miss handlers introduce variability that hardware FSM implementations eliminate: a cache miss in the miss handler code path (e.g., a cold branch prediction) can increase handler latency by 50 to 200 cycles, a variance that is invisible to the hardware-walker model and must be accounted for in real-time system design on RISC-V platforms. SiFive's hardware walker extensions address this by providing deterministic, firmware-transparent walk latency for time-critical embedded applications while preserving the software handler as a fallback for exceptional cases.</p>
@@ -1677,19 +1718,19 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <h2 id="references">References</h2>
 <ol>
-<li><p>Barr, T. W., Cox, A. L., and Rixner, S. (2010). Translation caching: Skip, don't walk (the page table). <em>Proceedings of the 37th Annual International Symposium on Computer Architecture (ISCA)</em>, 48–59. https://doi.org/10.1145/1815961.1815970</p></li>
-<li><p>Basu, A., Gandhi, J., Chang, J., Hill, M. D., and Swift, M. M. (2013). Efficient virtual memory for big memory servers. <em>Proceedings of the 40th Annual International Symposium on Computer Architecture (ISCA)</em>, 237–248. https://doi.org/10.1145/2485922.2485949</p></li>
-<li><p>Van Bulck, J., Minkin, M., Weisse, O., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow: Extracting the keys to the Intel SGX kingdom with transient out-of-order execution. <em>Proceedings of the 27th USENIX Security Symposium</em>, 991–1008.</p></li>
-<li><p>Intel Corporation. (2022). <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 4: Paging. https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html</p></li>
-<li><p>Arm Limited. (2023). <em>ARM Architecture Reference Manual for A-profile Architecture</em> (DDI 0487J.a). Chapter D8: The AArch64 Virtual Memory System Architecture. https://developer.arm.com/documentation/ddi0487/</p></li>
-<li><p>RISC-V International. (2021). <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>, Version 1.12. Chapter 4: Supervisor-Level ISA. https://github.com/riscv/riscv-isa-manual</p></li>
-<li><p>Bhatt, D., Chang, J., Hill, M. D., and Swift, M. M. (2013). Agile paging: Exceeding the best of nested and shadow paging. <em>Proceedings of the 40th Annual International Symposium on Computer Architecture (ISCA)</em>, 196–208. https://doi.org/10.1145/2485922.2485946</p></li>
-<li><p>Gandhi, J., Basu, A., Hill, M. D., and Swift, M. M. (2014). Efficient memory virtualization: Reducing dimensionality of nested page walks. <em>Proceedings of the 47th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO)</em>, 442–453. https://doi.org/10.1109/MICRO.2014.37</p></li>
-<li><p>Karakostas, V., Gandhi, J., Ayar, F., Cristal, A., Hill, M. D., McKinley, K. S., Nemirovsky, M., Swift, M. M., and Ünsal, O. (2015). Redundant memory mappings for fast access to large memories. <em>Proceedings of the 42nd Annual International Symposium on Computer Architecture (ISCA)</em>, 66–78. https://doi.org/10.1145/2749469.2750471</p></li>
-<li><p>Bhatt, D., Rajwar, R., Ganesan, N., and Marathe, A. (2020). TLB-Shootdown overhead reduction using hardware-assisted invalidation. <em>IEEE Transactions on Computers</em>, 69(3), 374–387. https://doi.org/10.1109/TC.2019.2951282</p></li>
-<li><p>Weisse, O., Van Bulck, J., Minkin, M., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow-NG: Breaking the virtual memory abstraction with transient out-of-order execution. Technical Report. https://foreshadowattack.eu/foreshadow-NG.pdf</p></li>
-<li><p>SiFive Inc. (2021). <em>SiFive U74 Core Complex Manual</em>. Chapter 7: Memory Management Unit. https://www.sifive.com/documentation</p></li>
-<li><p>Yaniv, I., and Tsafrir, D. (2016). Hash, don't cache (the page table). <em>Proceedings of the 2016 ACM SIGMETRICS International Conference on Measurement and Modeling of Computer Science</em>, 337–350. https://doi.org/10.1145/2901318.2901333</p></li>
+<li id="ref-barr-2010"><p>Barr, T. W., Cox, A. L., and Rixner, S. (2010). Translation caching: Skip, don't walk (the page table). <em>Proceedings of the 37th Annual International Symposium on Computer Architecture (ISCA)</em>, 48–59. <a class="ref-link" href="https://doi.org/10.1145/1815961.1815970">https://doi.org/10.1145/1815961.1815970</a></p></li>
+<li id="ref-basu-2013"><p>Basu, A., Gandhi, J., Chang, J., Hill, M. D., and Swift, M. M. (2013). Efficient virtual memory for big memory servers. <em>Proceedings of the 40th Annual International Symposium on Computer Architecture (ISCA)</em>, 237–248. <a class="ref-link" href="https://doi.org/10.1145/2485922.2485949">https://doi.org/10.1145/2485922.2485949</a></p></li>
+<li id="ref-vanbulck-2018"><p>Van Bulck, J., Minkin, M., Weisse, O., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow: Extracting the keys to the Intel SGX kingdom with transient out-of-order execution. <em>Proceedings of the 27th USENIX Security Symposium</em>, 991–1008.</p></li>
+<li id="ref-intel-2022"><p>Intel Corporation. (2022). <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 4: Paging. <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html">https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html</a></p></li>
+<li id="ref-arm-2023"><p>Arm Limited. (2023). <em>ARM Architecture Reference Manual for A-profile Architecture</em> (DDI 0487J.a). Chapter D8: The AArch64 Virtual Memory System Architecture. <a class="ref-link" href="https://developer.arm.com/documentation/ddi0487/">https://developer.arm.com/documentation/ddi0487/</a></p></li>
+<li id="ref-riscv-2021"><p>RISC-V International. (2021). <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>, Version 1.12. Chapter 4: Supervisor-Level ISA. <a class="ref-link" href="https://github.com/riscv/riscv-isa-manual">https://github.com/riscv/riscv-isa-manual</a></p></li>
+<li id="ref-bhatt-2013"><p>Bhatt, D., Chang, J., Hill, M. D., and Swift, M. M. (2013). Agile paging: Exceeding the best of nested and shadow paging. <em>Proceedings of the 40th Annual International Symposium on Computer Architecture (ISCA)</em>, 196–208. <a class="ref-link" href="https://doi.org/10.1145/2485922.2485946">https://doi.org/10.1145/2485922.2485946</a></p></li>
+<li id="ref-gandhi-2014"><p>Gandhi, J., Basu, A., Hill, M. D., and Swift, M. M. (2014). Efficient memory virtualization: Reducing dimensionality of nested page walks. <em>Proceedings of the 47th Annual IEEE/ACM International Symposium on Microarchitecture (MICRO)</em>, 442–453. <a class="ref-link" href="https://doi.org/10.1109/MICRO.2014.37">https://doi.org/10.1109/MICRO.2014.37</a></p></li>
+<li id="ref-karakostas-2015"><p>Karakostas, V., Gandhi, J., Ayar, F., Cristal, A., Hill, M. D., McKinley, K. S., Nemirovsky, M., Swift, M. M., and Ünsal, O. (2015). Redundant memory mappings for fast access to large memories. <em>Proceedings of the 42nd Annual International Symposium on Computer Architecture (ISCA)</em>, 66–78. <a class="ref-link" href="https://doi.org/10.1145/2749469.2750471">https://doi.org/10.1145/2749469.2750471</a></p></li>
+<li id="ref-bhatt-2020"><p>Bhatt, D., Rajwar, R., Ganesan, N., and Marathe, A. (2020). TLB-Shootdown overhead reduction using hardware-assisted invalidation. <em>IEEE Transactions on Computers</em>, 69(3), 374–387. <a class="ref-link" href="https://doi.org/10.1109/TC.2019.2951282">https://doi.org/10.1109/TC.2019.2951282</a></p></li>
+<li id="ref-weisse-2018"><p>Weisse, O., Van Bulck, J., Minkin, M., Genkin, D., Kasikci, B., Piessens, F., Silberstein, M., Sherr, T. F., Yarom, Y., and Strackx, R. (2018). Foreshadow-NG: Breaking the virtual memory abstraction with transient out-of-order execution. Technical Report. <a class="ref-link" href="https://foreshadowattack.eu/foreshadow-NG.pdf">https://foreshadowattack.eu/foreshadow-NG.pdf</a></p></li>
+<li id="ref-sifive-2021"><p>SiFive Inc. (2021). <em>SiFive U74 Core Complex Manual</em>. Chapter 7: Memory Management Unit. <a class="ref-link" href="https://www.sifive.com/documentation">https://www.sifive.com/documentation</a></p></li>
+<li id="ref-yaniv-2016"><p>Yaniv, I., and Tsafrir, D. (2016). Hash, don't cache (the page table). <em>Proceedings of the 2016 ACM SIGMETRICS International Conference on Measurement and Modeling of Computer Science</em>, 337–350. <a class="ref-link" href="https://doi.org/10.1145/2901318.2901333">https://doi.org/10.1145/2901318.2901333</a></p></li>
 </ol>
 
 <script>

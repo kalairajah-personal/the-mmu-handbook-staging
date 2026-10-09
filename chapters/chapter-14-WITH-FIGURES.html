@@ -567,6 +567,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
   <style>
 
@@ -676,16 +699,30 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h1 class="title">Chapter 14: Software-Managed Memory for AI Workloads</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-14.1">14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving</a></li>
-<li><a href="#section-14.2">14.2 Memory Management Failure Modes</a></li>
-<li><a href="#section-14.3">14.3 Software-Managed Memory: The vLLM System</a></li>
-<li><a href="#section-14.4">14.4 Translation-Bypass Mechanisms: Direct Segment Addressing</a></li>
-<li><a href="#section-14.5">14.5 Comparative Analysis and Design Trade-offs</a></li>
-<li><a href="#section-14.6">14.6 Future Research Directions</a></li>
-<li><a href="#section-14.7">14.7 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-14.1">14.1 Introduction: Hardware MMU Limitations for Large-Scale LLM Serving</a></summary>
+<ul><li><a href="#section-14.1.1">14.1.1 The Design Assumptions of Virtual Memory</a></li><li><a href="#section-14.1.2">14.1.2 LLM Memory Requirements: A Fundamental Mismatch</a></li><li><a href="#section-14.1.3">14.1.3 The TLB Reach Crisis</a></li><li><a href="#section-14.1.4">14.1.4 Memory Fragmentation in LLM Serving</a></li><li><a href="#section-14.1.5">14.1.5 Why Traditional Solutions Fall Short</a></li><li><a href="#section-14.1.6">14.1.6 The Software-Managed Memory Hypothesis</a></li><li><a href="#section-14.1.7">14.1.7 Translation-Bypass Mechanisms</a></li><li><a href="#section-14.1.8">14.1.8 Chapter Organization and Scope</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-14.2">14.2 Memory Management Failure Modes</a></summary>
+<ul><li><a href="#section-14.2.1">14.2.1 Fragmentation in Pre-Allocation Systems</a></li><li><a href="#section-14.2.2">14.2.2 Page Granularity Mismatch</a></li><li><a href="#section-14.2.3">14.2.3 Traditional Workloads vs. LLM Access Patterns</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-14.3">14.3 Software-Managed Memory: The vLLM System</a></summary>
+<ul><li><a href="#section-14.3.1">14.3.1 The PagedAttention Algorithm</a></li><li><a href="#section-14.3.2">14.3.2 Memory Management Architecture</a></li><li><a href="#section-14.3.3">14.3.3 Copy-on-Write and Memory Sharing</a></li><li><a href="#section-14.3.4">14.3.4 Experimental Evaluation</a></li><li><a href="#section-14.3.5">14.3.5 Implementation Details and Overhead Analysis</a></li><li><a href="#section-14.3.6">14.3.6 Proactive Memory Scheduling (MSched)</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-14.4">14.4 Translation-Bypass Mechanisms: Direct Segment Addressing</a></summary>
+<ul><li><a href="#section-14.4.1">14.4.1 Motivation and Design Principles</a></li><li><a href="#section-14.4.2">14.4.2 Integration with Existing Virtual Memory</a></li><li><a href="#section-14.4.3">14.4.3 Experimental Evaluation on Graph Analytics</a></li><li><a href="#section-14.4.4">14.4.4 Potential Application to LLM Workloads</a></li><li><a href="#section-14.4.5">14.4.5 Comparison with vLLM and Complementary Approaches</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-14.5">14.5 Comparative Analysis and Design Trade-offs</a></summary>
+<ul><li><a href="#section-14.5.1">14.5.1 Design Space Taxonomy</a></li><li><a href="#section-14.5.2">14.5.2 Performance Characteristics from Published Results</a></li><li><a href="#section-14.5.3">14.5.3 Trade-off Analysis</a></li><li><a href="#section-14.5.4">14.5.4 When to Use Each Approach</a></li><li><a href="#section-14.5.5">14.5.5 Limitations and Unresolved Challenges</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-14.6">14.6 Future Research Directions</a></summary>
+<ul><li><a href="#section-14.6.1">14.6.1 Open Problems from vLLM (Kwon et al., 2023)</a></li><li><a href="#section-14.6.2">14.6.2 Open Problems from Direct Segments (Basu et al., 2013)</a></li><li><a href="#section-14.6.3">14.6.3 Research Gaps Not Addressed by Existing Work</a></li><li><a href="#section-14.6.4">14.6.4 Methodological Gaps</a></li><li><a href="#section-14.6.5">14.6.5 Long-Term Research Questions</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-14.7">14.7 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 
 <p><em>This chapter examines software-managed memory approaches for large language model workloads, demonstrating how application-controlled memory allocation can achieve 2-4× throughput improvements over traditional OS-managed virtual memory. We analyze two peer-reviewed systems—vLLM's PagedAttention (SOSP 2023) and Direct Segments (ISCA 2013)—presenting comprehensive technical evaluations, comparative analysis, and future research directions.</em></p>
@@ -704,7 +741,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Virtual memory systems were designed with specific assumptions about program behavior and hardware capabilities. Understanding these assumptions is essential to recognizing why they no longer hold for LLM workloads.</p>
 
-<p><strong>Process Size Assumptions:</strong> Early virtual memory systems assumed process working sets would be modest relative to physical memory. The Atlas Computer, for instance, worked with 16K words of core memory. Even as systems scaled, the assumption remained that <em>most</em> process working sets would fit comfortably in physical RAM after some initial page faults. The Multics system designers assumed that after a warmup period, programs would exhibit good locality and experience few page faults during normal operation (Denning, 1970).</p>
+<p><strong>Process Size Assumptions:</strong> Early virtual memory systems assumed process working sets would be modest relative to physical memory. The Atlas Computer, for instance, worked with 16K words of core memory. Even as systems scaled, the assumption remained that <em>most</em> process working sets would fit comfortably in physical RAM after some initial page faults. The Multics system designers assumed that after a warmup period, programs would exhibit good locality and experience few page faults during normal operation [<a class="cite" href="#ref-denning-1970">Denning, 1970</a>].</p>
 
 <p><strong>Page Granularity Assumptions:</strong> The choice of page size reflects a balance between internal fragmentation and page table size. The 4KB page—dating to the VAX-11 architecture and formalized in x86—was chosen when typical program sizes measured in hundreds of kilobytes to a few megabytes. This granularity worked well for traditional applications: a 10MB process required only 2,560 page table entries, easily manageable even without sophisticated page table structures.</p>
 
@@ -714,7 +751,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <h3 id="section-14.1.2">14.1.2 LLM Memory Requirements: A Fundamental Mismatch</h3>
 
-<p>Large language models violate these assumptions systematically. Consider the memory requirements for serving a modern LLM like GPT-3 (Brown et al., 2020) or LLaMA-70B. The <strong>model weights</strong> alone require hundreds of gigabytes: GPT-3's 175 billion parameters stored in FP16 format consume approximately 350GB. These weights must be resident in GPU memory for inference and are accessed sequentially layer-by-layer during each forward pass.</p>
+<p>Large language models violate these assumptions systematically. Consider the memory requirements for serving a modern LLM like GPT-3 [<a class="cite" href="#ref-brown-2020">Brown et al., 2020</a>] or LLaMA-70B. The <strong>model weights</strong> alone require hundreds of gigabytes: GPT-3's 175 billion parameters stored in FP16 format consume approximately 350GB. These weights must be resident in GPU memory for inference and are accessed sequentially layer-by-layer during each forward pass.</p>
 
 <p>More critically, LLM inference requires maintaining a <strong>key-value (KV) cache</strong> for the attention mechanism. For each token in a sequence, the model computes and stores key and value vectors across all attention heads in all layers. For a transformer with <em>L</em> layers, <em>H</em> attention heads, and hidden dimension <em>d</em>, each token position requires storing 2 × <em>L</em> × <em>H</em> × (<em>d</em>/<em>H</em>) values—two vectors (key and value) per head per layer.</p>
 
@@ -741,7 +778,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Now consider the memory access pattern during LLM inference. A single forward pass through GPT-3's 96 layers, with each layer's weights occupying approximately 3.6GB, accesses roughly 350GB of model weights sequentially. With 4KB pages, this represents 87,500 unique page translations. Even if the L2 TLB were sized to hold only model weight translations (ignoring KV cache and activations), it would need to be 57× larger than current designs.</p>
 
-<p>The measured impact, as reported by Kwon et al. (2023) in their characterization of LLM serving workloads, is severe. With 4KB pages, TLB miss rates exceed 99.9% for large model serving. Even with 2MB huge pages, the KV cache—which grows dynamically and unpredictably—causes frequent TLB misses as new memory regions are allocated.</p>
+<p>The measured impact, as reported by Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>] in their characterization of LLM serving workloads, is severe. With 4KB pages, TLB miss rates exceed 99.9% for large model serving. Even with 2MB huge pages, the KV cache—which grows dynamically and unpredictably—causes frequent TLB misses as new memory regions are allocated.</p>
 
 <p>Each TLB miss triggers a hardware page table walk. On modern x86-64 systems with four-level page tables, a page walk requires four sequential memory accesses: to the PML4, PDPT, PD, and PT entries. With typical DRAM latencies of 50-100ns per access, and assuming perfect page table entry caching in L2/L3 cache (an optimistic assumption), each page walk costs approximately 200ns. For a workload experiencing 99.9% TLB miss rate across 87,500 page accesses, the aggregate translation overhead is: Chapter 17 provides a complete microarchitectural treatment of this walk — including the per-stage latency model, MSHR concurrent walk limits, and the throughput ceiling analysis that explains PTW-bound behaviour under large LLM working sets.</p>
 
@@ -759,11 +796,11 @@ Translation overhead = 87,500 × 0.999 × 200ns ≈ 17.5ms per forward pass
 
 <p>Beyond translation overhead, LLM serving faces a severe memory fragmentation problem. Traditional approaches to memory allocation for inference systems pre-allocate contiguous memory buffers sized for the maximum possible sequence length. For a system designed to handle sequences up to 4096 tokens, each request reserves memory for 4096 token positions regardless of actual use.</p>
 
-<p>The problem is that actual sequence lengths vary dramatically. In production LLM serving workloads characterized by Kwon et al. (2023), typical requests use only 20-40% of their pre-allocated capacity. A request that generates 800 tokens but has memory reserved for 4096 tokens wastes 80% of its allocation. With memory being the primary bottleneck in LLM serving—not compute—this waste directly limits system throughput by reducing the number of requests that can be batched together.</p>
+<p>The problem is that actual sequence lengths vary dramatically. In production LLM serving workloads characterized by Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>], typical requests use only 20-40% of their pre-allocated capacity. A request that generates 800 tokens but has memory reserved for 4096 tokens wastes 80% of its allocation. With memory being the primary bottleneck in LLM serving—not compute—this waste directly limits system throughput by reducing the number of requests that can be batched together.</p>
 
 <p>The fragmentation problem compounds when requests complete at different times. As some requests finish and free their pre-allocated blocks, the memory becomes fragmented into non-contiguous regions. New requests require contiguous allocations, so even if sufficient memory exists in aggregate, it may not be possible to allocate a new request if no single contiguous block is large enough. This external fragmentation can cause request rejections even when 30-40% of GPU memory sits unused in scattered fragments.</p>
 
-<p>Kwon et al. (2023) measured that in existing LLM serving systems prior to their work, memory fragmentation resulted in only 20-38% of allocated KV cache memory being actively used. The remaining 62-80% was wasted to a combination of internal fragmentation (within pre-allocated blocks) and external fragmentation (between non-contiguous free regions). This waste is particularly costly for LLM serving because memory—not computation—is typically the limiting factor for throughput.</p>
+<p>Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>] measured that in existing LLM serving systems prior to their work, memory fragmentation resulted in only 20-38% of allocated KV cache memory being actively used. The remaining 62-80% was wasted to a combination of internal fragmentation (within pre-allocated blocks) and external fragmentation (between non-contiguous free regions). This waste is particularly costly for LLM serving because memory—not computation—is typically the limiting factor for throughput.</p>
 
 <h3 id="section-14.1.5">14.1.5 Why Traditional Solutions Fall Short</h3>
 
@@ -791,7 +828,7 @@ Translation overhead = 87,500 × 0.999 × 200ns ≈ 17.5ms per forward pass
 
 <p>A complementary approach entirely bypasses address translation for large memory regions. Rather than optimizing translation—making it faster or more efficient—translation-bypass mechanisms eliminate translation overhead for predictable, contiguous allocations.</p>
 
-<p>The concept dates to the Direct Segments work by Basu et al. (2013), which introduced BASE/LIMIT/OFFSET register pairs to provide translation-free access to large memory regions. The key insight is that many large allocations (scientific computing arrays, database buffers) are accessed sequentially and could benefit from eliminating translation entirely. For such regions, checking whether a virtual address falls within [BASE, LIMIT) and computing a physical address as VIRTUAL + OFFSET requires only a few cycles and no memory accesses—far faster than a TLB lookup or page walk.</p>
+<p>The concept dates to the Direct Segments work by Basu et al. [<a class="cite" href="#ref-basu-2013">2013</a>], which introduced BASE/LIMIT/OFFSET register pairs to provide translation-free access to large memory regions. The key insight is that many large allocations (scientific computing arrays, database buffers) are accessed sequentially and could benefit from eliminating translation entirely. For such regions, checking whether a virtual address falls within [BASE, LIMIT) and computing a physical address as VIRTUAL + OFFSET requires only a few cycles and no memory accesses—far faster than a TLB lookup or page walk.</p>
 
 <p>For LLM workloads, model weights—350GB for GPT-3—represent an ideal use case for translation bypass. These weights are loaded once, accessed sequentially during each forward pass, and never modified. There is no need for fine-grained page-level protection or translation for this memory. Similarly, large contiguous allocations for KV cache could benefit from segment-based addressing if the allocator can guarantee physical contiguity.</p>
 
@@ -799,7 +836,7 @@ Translation overhead = 87,500 × 0.999 × 200ns ≈ 17.5ms per forward pass
 
 <p>This chapter examines two software-based approaches to memory management for LLM workloads, both grounded in peer-reviewed research:</p>
 
-<p><strong>Section 14.2</strong> analyzes memory management failure modes in detail, establishing quantitatively why traditional approaches fail for LLM serving. This section synthesizes findings from Kwon et al. (2023) on fragmentation and from studies of demand paging overhead under memory pressure.</p>
+<p><strong>Section 14.2</strong> analyzes memory management failure modes in detail, establishing quantitatively why traditional approaches fail for LLM serving. This section synthesizes findings from Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>] on fragmentation and from studies of demand paging overhead under memory pressure.</p>
 
 <p><strong>Section 14.3</strong> presents a comprehensive technical analysis of vLLM's PagedAttention system (Kwon et al., SOSP 2023). This software-managed memory system treats GPU VRAM like a 1960s-era virtual memory system, implementing block tables, dynamic allocation, and copy-on-write semantics entirely in application code. The section examines the algorithm, architecture, experimental results, and implementation details.</p>
 
@@ -923,7 +960,7 @@ Memory_per_token = 2 × L × H × d_h × bytes_per_element
 
 <p>For OPT-13B (40 layers, 40 heads, dimension 128 per head, FP16), this equals 2 × 40 × 40 × 128 × 2 = 819,200 bytes ≈ 800KB per token position. A request using only 1024 tokens but allocated for 4096 positions wastes 3072 × 800KB ≈ 2.4GB of GPU memory.</p>
 
-<p>Kwon et al. (2023) characterized real-world LLM serving workloads and found that actual sequence lengths follow a heavily skewed distribution. In their analysis of production serving traces, they observed:</p>
+<p>Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>] characterized real-world LLM serving workloads and found that actual sequence lengths follow a heavily skewed distribution. In their analysis of production serving traces, they observed:</p>
 
 <ul>
 <li>Median sequence length: 512 tokens</li>
@@ -945,9 +982,9 @@ Memory_per_token = 2 × L × H × d_h × bytes_per_element
 <li>Even though 20GB is free (50% of capacity), it can only reuse one of the 5 free 4GB blocks</li>
 </ol>
 
-<p>In the worst case, if request lengths vary significantly, the allocator may be unable to find a contiguous block large enough for a new request even when sufficient memory exists in aggregate. Kwon et al. (2023) measured that external fragmentation resulted in premature "out of memory" failures when GPU memory utilization was only 60-70% in pre-allocation systems.</p>
+<p>In the worst case, if request lengths vary significantly, the allocator may be unable to find a contiguous block large enough for a new request even when sufficient memory exists in aggregate. Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>] measured that external fragmentation resulted in premature "out of memory" failures when GPU memory utilization was only 60-70% in pre-allocation systems.</p>
 
-<p><strong>Measured Impact:</strong> The vLLM paper (Kwon et al., 2023) quantified total memory waste in existing systems by analyzing serving workloads across several models:</p>
+<p><strong>Measured Impact:</strong> The vLLM paper [<a class="cite" href="#ref-kwon-2023">Kwon et al., 2023</a>] quantified total memory waste in existing systems by analyzing serving workloads across several models:</p>
 
 <table>
 <tr>
@@ -1015,7 +1052,7 @@ Memory_per_token = 2 × L × H × d_h × bytes_per_element
 
 <p>With 4KB pages, if each layer's KV cache for a token spans multiple pages (likely, given 800KB per token), each access may incur a TLB miss. For a 2048-token context, computing attention requires 2048 × 80 = 163,840 memory accesses. Even a 1% TLB miss rate results in 1,638 page walks, each costing ~200ns, totaling 327µs just for address translation—significant overhead when the entire attention computation may take only a few milliseconds.</p>
 
-<p>Kwon et al. (2023) analyzed this overhead by comparing memory access patterns in traditional pre-allocation systems versus their proposed block-based approach. They found that with 4KB pages, memory accesses to the KV cache experienced TLB miss rates of 15-25% due to the large working set and non-contiguous allocation patterns. With 2MB huge pages, miss rates dropped to 2-5%, but the waste from internal fragmentation increased significantly.</p>
+<p>Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>] analyzed this overhead by comparing memory access patterns in traditional pre-allocation systems versus their proposed block-based approach. They found that with 4KB pages, memory accesses to the KV cache experienced TLB miss rates of 15-25% due to the large working set and non-contiguous allocation patterns. With 2MB huge pages, miss rates dropped to 2-5%, but the waste from internal fragmentation increased significantly.</p>
 
 <h3 id="section-14.2.3">14.2.3 Traditional Workloads vs. LLM Access Patterns</h3>
 
@@ -1043,7 +1080,7 @@ Memory_per_token = 2 × L × H × d_h × bytes_per_element
 
 <p>The critical differences: (1) working sets <em>never</em> fit in GPU memory—memory oversubscription is mandatory, (2) memory accesses are streaming (single-pass through data) with minimal temporal reuse, and (3) allocations are dynamic and request-dependent, making traditional prefetching ineffective.</p>
 
-<p><strong>Quantitative Comparison:</strong> Table 14.1 summarizes these differences quantitatively, drawing from published characterizations of database workloads (TPC-C, TPC-H benchmarks) and LLM serving workloads (Kwon et al., 2023).</p>
+<p><strong>Quantitative Comparison:</strong> Table 14.1 summarizes these differences quantitatively, drawing from published characterizations of database workloads (TPC-C, TPC-H benchmarks) and LLM serving workloads [<a class="cite" href="#ref-kwon-2023">Kwon et al., 2023</a>].</p>
 
 <table>
 <caption><strong>Table 14.1:</strong> Access Pattern Comparison - Database vs. LLM Workloads</caption>
@@ -1438,7 +1475,7 @@ function free_request(request_id):
 
 <p>In the worst case (request length is one more than a multiple of <em>B</em>), nearly an entire block is wasted. On average, assuming uniformly distributed sequence lengths, half a block per request is wasted. For block size 16 and 128 concurrent requests, this represents 128 × 8 = 1024 token slots wasted, or 1024 × 800KB = 819MB for OPT-13B—less than 4% of the 20+ GB typically used for KV cache in a batch.</p>
 
-<p>Kwon et al. (2023) measured actual memory waste across workloads with varying sequence length distributions (Section 6, Figure 7). They found:</p>
+<p>Kwon et al. [<a class="cite" href="#ref-kwon-2023">2023</a>] measured actual memory waste across workloads with varying sequence length distributions (Section 6, Figure 7). They found:</p>
 
 <ul>
 <li><strong>Block size 16:</strong> 3.5% average waste, 7.2% worst case</li>
@@ -1528,7 +1565,7 @@ function append_token_to_request(request_id, token):
 
 <ul>
 <li><strong>FasterTransformer:</strong> NVIDIA's optimized inference library with static pre-allocation</li>
-<li><strong>Orca:</strong> Academic system with continuous batching (Yu et al., 2022)</li>
+<li><strong>Orca:</strong> Academic system with continuous batching [<a class="cite" href="#ref-yu-2022">Yu et al., 2022</a>]</li>
 <li><strong>HuggingFace Transformers:</strong> Standard PyTorch implementation</li>
 </ul>
 
@@ -2055,7 +2092,7 @@ segment_id = mmap_segment(size, flags);
 
 <h3 id="section-14.4.3">14.4.3 Experimental Evaluation on Graph Analytics</h3>
 
-<p>Basu et al. (2013) evaluated Direct Segments using graph analytics and scientific computing workloads—domains characterized by large datasets and streaming access patterns. Section 5 of the paper presents experimental results using the gem5 full-system simulator configured with realistic memory hierarchies.</p>
+<p>Basu et al. [<a class="cite" href="#ref-basu-2013">2013</a>] evaluated Direct Segments using graph analytics and scientific computing workloads—domains characterized by large datasets and streaming access patterns. Section 5 of the paper presents experimental results using the gem5 full-system simulator configured with realistic memory hierarchies.</p>
 
 <p><strong>Experimental Setup:</strong> The simulator modeled a system with:</p>
 
@@ -2915,49 +2952,49 @@ Segment 1: KV cache pool (200GB allocation for multiple requests)
 <h2 id="references">References</h2>
 <h3 id="primary-sources">Primary Sources</h3>
 <ol type="1">
-<li><p>Kwon, W., Li, Z., Zhuang, S., Sheng, Y., Zheng, L., Yu, C. H., Gonzalez, J., Zhang, H., and Stoica, I. "Efficient Memory Management for Large Language Model Serving with PagedAttention." <em>SOSP 2023 (29th ACM Symposium on Operating Systems Principles)</em>. ACM, 2023.</p></li>
-<li><p>Basu, A., Gandhi, J., Straighthouse, J., Hill, M. D., and Swift, M. M. "Efficient Virtual Memory for Big Memory Servers." <em>ISCA 2013 (40th Annual International Symposium on Computer Architecture)</em>. IEEE/ACM, 2013.</p></li>
+<li id="ref-kwon-2023"><p>Kwon, W., Li, Z., Zhuang, S., Sheng, Y., Zheng, L., Yu, C. H., Gonzalez, J., Zhang, H., and Stoica, I. "Efficient Memory Management for Large Language Model Serving with PagedAttention." <em>SOSP 2023 (29th ACM Symposium on Operating Systems Principles)</em>. ACM, 2023.</p></li>
+<li id="ref-basu-2013"><p>Basu, A., Gandhi, J., Straighthouse, J., Hill, M. D., and Swift, M. M. "Efficient Virtual Memory for Big Memory Servers." <em>ISCA 2013 (40th Annual International Symposium on Computer Architecture)</em>. IEEE/ACM, 2013.</p></li>
 </ol>
 <h3 id="foundational-virtual-memory">Foundational Virtual Memory</h3>
 <ol type="1" start="3">
-<li><p>Denning, P. J. "Virtual Memory." <em>ACM Computing Surveys</em> 2, no. 3 (1970): 153-189.</p></li>
-<li><p>Bhattacharjee, A. and Martonosi, M. "Translation Lookaside Buffers." <em>Synthesis Lectures on Computer Architecture</em>. Morgan & Claypool, 2019.</p></li>
+<li id="ref-denning-1970"><p>Denning, P. J. "Virtual Memory." <em>ACM Computing Surveys</em> 2, no. 3 (1970): 153-189.</p></li>
+<li id="ref-bhattacharjee-2019"><p>Bhattacharjee, A. and Martonosi, M. "Translation Lookaside Buffers." <em>Synthesis Lectures on Computer Architecture</em>. Morgan & Claypool, 2019.</p></li>
 </ol>
 <h3 id="llm-architecture-and-training">LLM Architecture and Training</h3>
 <ol type="1" start="5">
-<li><p>Brown, T. B., Mann, B., Ryder, N., Subbiah, M., Kaplan, J., Dhariwal, P., Neelakantan, A., Shyam, P., Sastry, G., Askell, A., Agarwal, S., Herbert-Voss, A., Krueger, G., Henighan, T., Child, R., Ramesh, A., Ziegler, D. M., Wu, J., Winter, C., Hesse, C., Chen, M., Sigler, E., Litwin, M., Gray, S., Chess, B., Clark, J., Berner, C., McCandlish, S., Radford, A., Sutskever, I., and Amodei, D. "Language Models are Few-Shot Learners." <em>NeurIPS 2020 (34th Conference on Neural Information Processing Systems)</em>. 2020.</p></li>
-<li><p>Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., and Polosukhin, I. "Attention is All You Need." <em>NeurIPS 2017 (31st Conference on Neural Information Processing Systems)</em>. 2017.</p></li>
+<li id="ref-brown-2020"><p>Brown, T. B., Mann, B., Ryder, N., Subbiah, M., Kaplan, J., Dhariwal, P., Neelakantan, A., Shyam, P., Sastry, G., Askell, A., Agarwal, S., Herbert-Voss, A., Krueger, G., Henighan, T., Child, R., Ramesh, A., Ziegler, D. M., Wu, J., Winter, C., Hesse, C., Chen, M., Sigler, E., Litwin, M., Gray, S., Chess, B., Clark, J., Berner, C., McCandlish, S., Radford, A., Sutskever, I., and Amodei, D. "Language Models are Few-Shot Learners." <em>NeurIPS 2020 (34th Conference on Neural Information Processing Systems)</em>. 2020.</p></li>
+<li id="ref-vaswani-2017"><p>Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., and Polosukhin, I. "Attention is All You Need." <em>NeurIPS 2017 (31st Conference on Neural Information Processing Systems)</em>. 2017.</p></li>
 </ol>
 <h3 id="supporting-architecture-work">Supporting Architecture Work</h3>
 <ol type="1" start="7">
-<li><p>Pichai, B., Hsu, L., and Bhattacharjee, A. "Architectural Support for Address Translation on GPUs: Designing Memory Management Units for CPU/GPUs with Unified Address Spaces." <em>ASPLOS 2014 (19th International Conference on Architectural Support for Programming Languages and Operating Systems)</em>. ACM, 2014.</p></li>
-<li><p>Yan, Z., Lustig, D., Nellans, D., and Bhattacharjee, A. "Translation Ranger: Operating System Support for Contiguity-Aware TLBs." <em>ISCA 2019 (46th Annual International Symposium on Computer Architecture)</em>. IEEE/ACM, 2019.</p></li>
-<li><p>Pham, B., Vaidyanathan, V., Jaleel, A., and Bhattacharjee, A. "CoLT: Coalesced Large-Reach TLBs." <em>MICRO 2012 (45th Annual IEEE/ACM International Symposium on Microarchitecture)</em>. IEEE/ACM, 2012.</p></li>
+<li id="ref-pichai-2014"><p>Pichai, B., Hsu, L., and Bhattacharjee, A. "Architectural Support for Address Translation on GPUs: Designing Memory Management Units for CPU/GPUs with Unified Address Spaces." <em>ASPLOS 2014 (19th International Conference on Architectural Support for Programming Languages and Operating Systems)</em>. ACM, 2014.</p></li>
+<li id="ref-yan-2019"><p>Yan, Z., Lustig, D., Nellans, D., and Bhattacharjee, A. "Translation Ranger: Operating System Support for Contiguity-Aware TLBs." <em>ISCA 2019 (46th Annual International Symposium on Computer Architecture)</em>. IEEE/ACM, 2019.</p></li>
+<li id="ref-pham-2012"><p>Pham, B., Vaidyanathan, V., Jaleel, A., and Bhattacharjee, A. "CoLT: Coalesced Large-Reach TLBs." <em>MICRO 2012 (45th Annual IEEE/ACM International Symposium on Microarchitecture)</em>. IEEE/ACM, 2012.</p></li>
 </ol>
 <h3 id="llm-serving-systems-comparison-baselines">LLM Serving Systems (Comparison Baselines)</h3>
 <ol type="1" start="10">
-<li><p>Yu, G.-I., Jeong, J. S., Kim, G.-W., Kim, S., and Chun, B.-G. "Orca: A Distributed Serving System for Transformer-Based Generative Models." <em>OSDI 2022 (16th USENIX Symposium on Operating Systems Design and Implementation)</em>. USENIX, 2022.</p></li>
-<li><p>NVIDIA Corporation. "FasterTransformer: Transformer-based Models Inference Acceleration." NVIDIA Developer Documentation, 2023.</p></li>
+<li id="ref-yu-2022"><p>Yu, G.-I., Jeong, J. S., Kim, G.-W., Kim, S., and Chun, B.-G. "Orca: A Distributed Serving System for Transformer-Based Generative Models." <em>OSDI 2022 (16th USENIX Symposium on Operating Systems Design and Implementation)</em>. USENIX, 2022.</p></li>
+<li id="ref-nvidia-2023a"><p>NVIDIA Corporation. "FasterTransformer: Transformer-based Models Inference Acceleration." NVIDIA Developer Documentation, 2023.</p></li>
 </ol>
 <h3 id="emerging-work-preprints-not-peer-reviewed">Emerging Work (Preprints - Not Peer-Reviewed)</h3>
 <ol type="1" start="12">
-<li><p>Memory Scheduling Research Group. "MSched: Proactive Memory Scheduling for Over-subscribed GPUs." <em>arXiv preprint arXiv:2512.24637v1</em>. January 5, 2026. <strong>Note: Preprint only, not peer-reviewed as of February 2026.</strong></p></li>
+<li id="ref-memory-2026"><p>Memory Scheduling Research Group. "MSched: Proactive Memory Scheduling for Over-subscribed GPUs." <em>arXiv preprint arXiv:2512.24637v1</em>. January 5, 2026. <strong>Note: Preprint only, not peer-reviewed as of February 2026.</strong></p></li>
 </ol>
 <h3 id="related-memory-management">Related Memory Management</h3>
 <ol type="1" start="13">
-<li><p>Jacob, B. and Mudge, T. "Virtual Memory in Contemporary Microprocessors." <em>IEEE Micro</em> 18, no. 4 (1998): 60-75.</p></li>
-<li><p>Intel Corporation. "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1." Intel Corporation, 2023.</p></li>
-<li><p>ARM Limited. "ARM Architecture Reference Manual ARMv8, for ARMv8-A Architecture Profile." ARM Limited, 2023.</p></li>
-<li><p>NVIDIA Corporation. "CUDA C++ Programming Guide." NVIDIA Corporation, 2023.</p></li>
+<li id="ref-jacob-1998"><p>Jacob, B. and Mudge, T. "Virtual Memory in Contemporary Microprocessors." <em>IEEE Micro</em> 18, no. 4 (1998): 60-75.</p></li>
+<li id="ref-intel-2023"><p>Intel Corporation. "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1." Intel Corporation, 2023.</p></li>
+<li id="ref-arm-2023"><p>ARM Limited. "ARM Architecture Reference Manual ARMv8, for ARMv8-A Architecture Profile." ARM Limited, 2023.</p></li>
+<li id="ref-nvidia-2023b"><p>NVIDIA Corporation. "CUDA C++ Programming Guide." NVIDIA Corporation, 2023.</p></li>
 </ol>
 <h3 id="graph-analytics-benchmarks">Graph Analytics Benchmarks</h3>
 <ol type="1" start="17">
-<li><p>Shun, J., Blelloch, G. E., Fineman, J. T., Gibbons, P. B., Kyrola, A., Simhadri, H. V., and Tangwongsan, K. "Brief Announcement: The Problem Based Benchmark Suite." <em>SPAA 2012 (24th ACM Symposium on Parallelism in Algorithms and Architectures)</em>. ACM, 2012.</p></li>
+<li id="ref-shun-2012"><p>Shun, J., Blelloch, G. E., Fineman, J. T., Gibbons, P. B., Kyrola, A., Simhadri, H. V., and Tangwongsan, K. "Brief Announcement: The Problem Based Benchmark Suite." <em>SPAA 2012 (24th ACM Symposium on Parallelism in Algorithms and Architectures)</em>. ACM, 2012.</p></li>
 </ol>
 <h3 id="gpu-and-multi-accelerator-memory-systems">GPU and Multi-Accelerator Memory Systems</h3>
 <ol type="1" start="18">
-<li><p>Menychtas, K., Bhattacharjee, A., Kwon, J., and Kozuch, M. A. "GPU-Resident Incremental TLB Management for Multi-GPU Systems (GRIT)." <em>HPCA 2024 (30th IEEE International Symposium on High-Performance Computer Architecture)</em>. IEEE, 2024.</p></li>
-<li><p>Bhattacharjee, A., Lustig, D., and Martonosi, M. "Architectural and Operating System Support for Virtual Memory." <em>Synthesis Lectures on Computer Architecture</em>. Morgan & Claypool, 2017.</p></li>
+<li id="ref-menychtas-2024"><p>Menychtas, K., Bhattacharjee, A., Kwon, J., and Kozuch, M. A. "GPU-Resident Incremental TLB Management for Multi-GPU Systems (GRIT)." <em>HPCA 2024 (30th IEEE International Symposium on High-Performance Computer Architecture)</em>. IEEE, 2024.</p></li>
+<li id="ref-bhattacharjee-2017"><p>Bhattacharjee, A., Lustig, D., and Martonosi, M. "Architectural and Operating System Support for Virtual Memory." <em>Synthesis Lectures on Computer Architecture</em>. Morgan & Claypool, 2017.</p></li>
 </ol>
 
 <script>

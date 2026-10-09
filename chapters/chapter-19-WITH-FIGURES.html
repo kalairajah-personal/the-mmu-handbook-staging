@@ -569,6 +569,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -678,19 +701,23 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </header>
 
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-19.1">19.1 Introduction: When Physical Memory Leaves the Socket</a></li>
-<li><a href="#section-19.2">19.2 CXL Protocol Architecture: .io, .cache, .mem</a></li>
-<li><a href="#section-19.3">19.3 CXL as a NUMA Node: How Linux Sees Disaggregated Memory</a></li>
-<li><a href="#section-19.4">19.4 The Unchanged Mechanism, the Changed Cost</a></li>
-<li><a href="#section-19.5">19.5 The Page Table Pinning Constraint</a></li>
-<li><a href="#section-19.6">19.6 Memory Tiering: The OS Page Allocator Under CXL</a></li>
-<li><a href="#section-19.7">19.7 TLB Shootdown Inverted: CXL Back-Invalidation</a></li>
-<li><a href="#section-19.8">19.8 CXL 3.0 Shared Memory: Two-Stage Translation Returns</a></li>
-<li><a href="#section-19.9">19.9 Production Deployments and Performance Engineering</a></li>
-<li><a href="#section-19.10">19.10 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li class="toc-leaf"><a href="#section-19.1">19.1 Introduction: When Physical Memory Leaves the Socket</a></li>
+<li class="toc-leaf"><a href="#section-19.2">19.2 CXL Protocol Architecture: .io, .cache, .mem</a></li>
+<li class="toc-leaf"><a href="#section-19.3">19.3 CXL as a NUMA Node: How Linux Sees Disaggregated Memory</a></li>
+<li class="toc-leaf"><a href="#section-19.4">19.4 The Unchanged Mechanism, the Changed Cost</a></li>
+<li class="toc-leaf"><a href="#section-19.5">19.5 The Page Table Pinning Constraint</a></li>
+<li class="toc-leaf"><a href="#section-19.6">19.6 Memory Tiering: The OS Page Allocator Under CXL</a></li>
+<li class="toc-leaf"><a href="#section-19.7">19.7 TLB Shootdown Inverted: CXL Back-Invalidation</a></li>
+<li class="toc-leaf"><a href="#section-19.8">19.8 CXL 3.0 Shared Memory: Two-Stage Translation Returns</a></li>
+<li><details class="toc-sec"><summary><a href="#section-19.9">19.9 Production Deployments and Performance Engineering</a></summary>
+<ul><li><a href="#sec-19-9-1-azure-pond-cxl-memory-pooling-at-cloud-scale">19.9.1 Azure Pond: CXL Memory Pooling at Cloud Scale</a></li><li><a href="#sec-19-9-2-directcxl-load-store-vs-page-based-disaggregation">19.9.2 DirectCXL: Load/Store vs Page-Based Disaggregation</a></li><li><a href="#sec-19-9-3-meta-tpp-transparent-page-placement">19.9.3 Meta TPP: Transparent Page Placement</a></li><li><a href="#sec-19-9-4-tlb-thrashing-on-cxl-the-hash-join-problem">19.9.4 TLB Thrashing on CXL: The Hash Join Problem</a></li><li><a href="#sec-19-9-5-ai-ml-workloads-kv-cache-and-anns">19.9.5 AI/ML Workloads: KV Cache and ANNS</a></li><li><a href="#sec-19-9-6-five-production-tuning-rules">19.9.6 Five Production Tuning Rules</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-19.10">19.10 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 
 <h2 id="section-19.1">19.1 Introduction: When Physical Memory Leaves the Socket</h2>
@@ -1686,7 +1713,7 @@ $ cat /proc/sys/vm/demote_page_tables
 
 <p>The preceding sections have established the mechanisms; this section grounds them in measured production reality. CXL is no longer a research prototype technology — it is shipping in hyperscale datacenters, AI training clusters, and cloud platforms. The measurements below come from peer-reviewed publications and production deployments that have documented their results.</p>
 
-<h3>19.9.1 Azure Pond: CXL Memory Pooling at Cloud Scale</h3>
+<h3 id="sec-19-9-1-azure-pond-cxl-memory-pooling-at-cloud-scale">19.9.1 Azure Pond: CXL Memory Pooling at Cloud Scale</h3>
 
 <p>Microsoft Azure's Pond system, published at ASPLOS 2023 by Li, Berger, et al., represents the most thoroughly characterised production CXL deployment. Pond pools DDR5 DRAM from an External Memory Controller (EMC) across 8–16 dual-socket servers connected via CXL, creating a shared memory pool of 1–4 TB that is presented to each server as a cpuless NUMA node.</p>
 
@@ -1696,7 +1723,7 @@ $ cat /proc/sys/vm/demote_page_tables
 
 <p>Pond's cost model shows that 7–9% reduction in DRAM cost per server is achievable through pooling-enabled utilisation improvements. At Azure's scale, this represents a significant absolute cost saving — the CXL infrastructure investment is recovered in DRAM savings within a deployment generation.</p>
 
-<h3>19.9.2 DirectCXL: Load/Store vs Page-Based Disaggregation</h3>
+<h3 id="sec-19-9-2-directcxl-load-store-vs-page-based-disaggregation">19.9.2 DirectCXL: Load/Store vs Page-Based Disaggregation</h3>
 
 <p>The DirectCXL system from KAIST (USENIX ATC 2022, Gouk et al.) was the first published implementation of CXL 2.0 on real hardware, using an FPGA-based CXL controller and custom Type 3 device. DirectCXL's central contribution to this chapter's discussion is its comparison between two models of memory disaggregation: page-based access (which uses the OS virtual memory infrastructure and incurs page fault overhead) and direct load/store access (which exposes the CXL memory as HDM and accesses it through normal CPU load/store instructions).</p>
 
@@ -1706,7 +1733,7 @@ $ cat /proc/sys/vm/demote_page_tables
 
 <p>This comparison is important for understanding why CXL is the correct architecture for memory disaggregation rather than RDMA or software-defined memory. RDMA achieves low latency only by pinning memory and bypassing the OS page allocator — which sacrifices the very flexibility that memory disaggregation is supposed to provide. CXL achieves sub-RDMA latency while allowing the OS to allocate, migrate, and reclaim CXL-backed pages through the standard virtual memory machinery.</p>
 
-<h3>19.9.3 Meta TPP: Transparent Page Placement</h3>
+<h3 id="sec-19-9-3-meta-tpp-transparent-page-placement">19.9.3 Meta TPP: Transparent Page Placement</h3>
 
 <p>Meta's Transparent Page Placement (TPP) mechanism, published at ASPLOS 2023, addresses the AutoNUMA pitfall described in Section 19.3 for Meta's production server fleet. Meta's servers run a combination of compute-intensive workloads (ML training, data processing) and latency-sensitive workloads (social media serving, real-time analytics), which have very different CXL tolerance profiles even when running on the same physical host.</p>
 
@@ -1714,7 +1741,7 @@ $ cat /proc/sys/vm/demote_page_tables
 
 <p>In production at Meta, TPP achieves a DRAM cost reduction comparable to Pond's 7–9% while maintaining tail latency (P99 request latency) within 5% of the baseline for the latency-sensitive serving workloads. The key enabling insight is that serving workloads and batch processing workloads have naturally complementary working-set sizes: the serving workload's hot working set fits comfortably in local DRAM, while the batch workload's cold data can occupy the CXL tier without performance impact.</p>
 
-<h3>19.9.4 TLB Thrashing on CXL: The Hash Join Problem</h3>
+<h3 id="sec-19-9-4-tlb-thrashing-on-cxl-the-hash-join-problem">19.9.4 TLB Thrashing on CXL: The Hash Join Problem</h3>
 
 <p>A 2024 study published at the VLDB ADMS workshop provides the most direct measurement of CXL's interaction with TLB behaviour under analytical database workloads. The study evaluated radix hash join — a standard database operator that is highly sensitive to TLB miss rate because it accesses memory with a stride determined by the hash function, which is effectively random at the TLB granularity.</p>
 
@@ -1722,7 +1749,7 @@ $ cat /proc/sys/vm/demote_page_tables
 
 <p>The practical recommendation from this study — applicable to any database or analytics operator that exceeds TLB coverage — is to place the write-heavy phase (the scatter/build phase of hash join) in local DRAM or NUMA-local memory, reserving CXL for the read-heavy probe phase where the latency differential has smaller impact. For ML workloads, the analogous recommendation is to place attention score matrices (written during forward pass, read during backward pass) in local DRAM, while placing embeddings and frozen model layers (read-only during inference) in CXL.</p>
 
-<h3>19.9.5 AI/ML Workloads: KV Cache and ANNS</h3>
+<h3 id="sec-19-9-5-ai-ml-workloads-kv-cache-and-anns">19.9.5 AI/ML Workloads: KV Cache and ANNS</h3>
 
 <p>Two AI workload patterns have been specifically studied in the context of CXL: LLM inference KV cache management and approximate nearest neighbour search (ANNS) over billion-scale embeddings.</p>
 
@@ -1730,7 +1757,7 @@ $ cat /proc/sys/vm/demote_page_tables
 
 <p>For LLM inference specifically, the KV cache exhibits a bimodal access pattern: recently generated tokens are accessed every decode step (hot), while tokens from the beginning of long contexts are rarely re-accessed after their initial contribution to the attention computation (cold). This bimodality makes the KV cache an ideal CXL tiering candidate: keep the hot recent KV cache in local DRAM (or GPU HBM), demote the cold long-context prefix to CXL, and promote only when a long-context lookup requires the old tokens. Systems like MemVerge's memory machine, which XConn Technologies demonstrated at SC25 using CXL switches, deliver KV cache overflow to CXL that reduces total inference memory cost by 30–50% for context lengths above 32K tokens.</p>
 
-<h3>19.9.6 Five Production Tuning Rules</h3>
+<h3 id="sec-19-9-6-five-production-tuning-rules">19.9.6 Five Production Tuning Rules</h3>
 
 <p>Based on the measurements and deployments described above, five operational rules summarise correct CXL memory system configuration:</p>
 
@@ -2021,20 +2048,20 @@ $ cat /proc/sys/vm/demote_page_tables
 
 <ol>
 
-<li><p>CXL Consortium. <em>Compute Express Link Specification, Revision 3.0</em>. CXL Consortium, 2022. https://www.computeexpresslink.org/</p></li>
-<li><p>CXL Consortium. <em>Compute Express Link Specification, Revision 4.0</em>. CXL Consortium, November 2025. https://www.computeexpresslink.org/</p></li>
-<li><p>Glisse, M., Abramson, D., Bhatia, T., and Sharma, D. "An Introduction to the Compute Express Link (CXL) Interconnect." <em>ACM Computing Surveys</em>, 2024. DOI: 10.1145/3669900</p></li>
-<li><p>Gouk, D., Lee, S., Kwon, M., and Jung, M. "Direct Access, High-Performance Memory Disaggregation with DirectCXL." In <em>Proceedings of the 2022 USENIX Annual Technical Conference (USENIX ATC '22)</em>, pp. 287–294, 2022. https://www.usenix.org/conference/atc22/presentation/gouk</p></li>
-<li><p>Jang, J., Choi, H., Bae, H., Lee, S., Kwon, M., and Jung, M. "CXL-ANNS: Software-Hardware Collaborative Memory Disaggregation and Computation for Billion-Scale Approximate Nearest Neighbor Search." In <em>Proceedings of the 2023 USENIX Annual Technical Conference (USENIX ATC '23)</em>, 2023.</p></li>
-<li><p>Kim, J., Nam, H., Kim, J., and Huh, J. "Exploring the Design Space of Page Management for Multi-Tiered Memory Systems." In <em>Proceedings of the 2021 USENIX Annual Technical Conference (USENIX ATC '21)</em>, 2021.</p></li>
-<li><p>Li, H., Berger, D.S., Hsu, L., Ernst, D., Zardoshti, P., Novakovic, S., Shah, M., Rajadnya, S., Lee, S., Agarwal, I., Hill, M.D., Fontoura, M., and Bianchini, R. "Pond: CXL-Based Memory Pooling Systems for Cloud Platforms." In <em>Proceedings of the 28th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '23)</em>, Volume 2, pp. 574–587, 2023. DOI: 10.1145/3575693.3578835</p></li>
-<li><p>Liang, Y., Huang, T., Chen, K., et al. "Innovation in Computational Architecture: Opportunities and Challenges of CXL Memory Disaggregation Technology in Intelligent Computing Centers." <em>Tsinghua Science and Technology</em>, vol. 31, no. 4, pp. 2020–2039, 2026. DOI: 10.26599/TST.2025.9010010</p></li>
-<li><p>Al Maruf, H., Wang, H., Dhanotia, A., Weiner, J., Agarwal, N., Bhattacharya, P., Petersen, C., Chowdhury, M., Kanaujia, S., and Chauhan, P. "TPP: Transparent Page Placement for CXL-Enabled Tiered Memory." In <em>Proceedings of the 28th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '23)</em>, 2023. arXiv:2206.02878</p></li>
-<li><p>Pan, Y., Lala, Y., Unal, M., Ren, Y., Lee, S., Bhattacharjee, A., Khandelwal, A., and Kashyap, S. "Scalable Far Memory: Balancing Faults and Evictions." In <em>Proceedings of the ACM Symposium on Operating Systems Principles (SOSP '25)</em>, 2025.</p></li>
-<li><p>PCI-SIG. <em>Address Translation Services Revision 1.1</em>. PCI Special Interest Group, 2020.</p></li>
-<li><p>Tang, Y., Lee, S., Bhattacharjee, A., and Khandelwal, A. "pulse: Accelerating Distributed Pointer-Traversals on Disaggregated Memory." In <em>Proceedings of the 30th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '25)</em>, 2025.</p></li>
-<li><p>Wang, S., et al. "Bandwidth Expansion via CXL: A Pathway to Accelerating In-Memory Analytical Processing." In <em>Fifteenth International Workshop on Accelerating Analytics and Data Management Systems Using Modern Processor and Storage Architectures (ADMS '24), co-located with VLDB 2024</em>, 2024.</p></li>
-<li><p>Zhang, R., et al. "Next-Gen Computing Systems with Compute Express Link: A Comprehensive Survey." arXiv preprint arXiv:2412.20249, 2025.</p></li>
+<li id="ref-cxl-2022"><p>CXL Consortium. <em>Compute Express Link Specification, Revision 3.0</em>. CXL Consortium, 2022. <a class="ref-link" href="https://www.computeexpresslink.org/">https://www.computeexpresslink.org/</a></p></li>
+<li id="ref-cxl-2025"><p>CXL Consortium. <em>Compute Express Link Specification, Revision 4.0</em>. CXL Consortium, November 2025. <a class="ref-link" href="https://www.computeexpresslink.org/">https://www.computeexpresslink.org/</a></p></li>
+<li id="ref-glisse-2024"><p>Glisse, M., Abramson, D., Bhatia, T., and Sharma, D. "An Introduction to the Compute Express Link (CXL) Interconnect." <em>ACM Computing Surveys</em>, 2024. <a class="ref-link" href="https://doi.org/10.1145/3669900">DOI: 10.1145/3669900</a></p></li>
+<li id="ref-gouk-2022"><p>Gouk, D., Lee, S., Kwon, M., and Jung, M. "Direct Access, High-Performance Memory Disaggregation with DirectCXL." In <em>Proceedings of the 2022 USENIX Annual Technical Conference (USENIX ATC '22)</em>, pp. 287–294, 2022. <a class="ref-link" href="https://www.usenix.org/conference/atc22/presentation/gouk">https://www.usenix.org/conference/atc22/presentation/gouk</a></p></li>
+<li id="ref-jang-2023"><p>Jang, J., Choi, H., Bae, H., Lee, S., Kwon, M., and Jung, M. "CXL-ANNS: Software-Hardware Collaborative Memory Disaggregation and Computation for Billion-Scale Approximate Nearest Neighbor Search." In <em>Proceedings of the 2023 USENIX Annual Technical Conference (USENIX ATC '23)</em>, 2023.</p></li>
+<li id="ref-kim-2021"><p>Kim, J., Nam, H., Kim, J., and Huh, J. "Exploring the Design Space of Page Management for Multi-Tiered Memory Systems." In <em>Proceedings of the 2021 USENIX Annual Technical Conference (USENIX ATC '21)</em>, 2021.</p></li>
+<li id="ref-li-2023"><p>Li, H., Berger, D.S., Hsu, L., Ernst, D., Zardoshti, P., Novakovic, S., Shah, M., Rajadnya, S., Lee, S., Agarwal, I., Hill, M.D., Fontoura, M., and Bianchini, R. "Pond: CXL-Based Memory Pooling Systems for Cloud Platforms." In <em>Proceedings of the 28th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '23)</em>, Volume 2, pp. 574–587, 2023. <a class="ref-link" href="https://doi.org/10.1145/3575693.3578835">DOI: 10.1145/3575693.3578835</a></p></li>
+<li id="ref-liang-2020"><p>Liang, Y., Huang, T., Chen, K., et al. "Innovation in Computational Architecture: Opportunities and Challenges of CXL Memory Disaggregation Technology in Intelligent Computing Centers." <em>Tsinghua Science and Technology</em>, vol. 31, no. 4, pp. 2020–2039, 2026. <a class="ref-link" href="https://doi.org/10.26599/TST.2025.9010010">DOI: 10.26599/TST.2025.9010010</a></p></li>
+<li id="ref-almaruf-2023"><p>Al Maruf, H., Wang, H., Dhanotia, A., Weiner, J., Agarwal, N., Bhattacharya, P., Petersen, C., Chowdhury, M., Kanaujia, S., and Chauhan, P. "TPP: Transparent Page Placement for CXL-Enabled Tiered Memory." In <em>Proceedings of the 28th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '23)</em>, 2023. arXiv:2206.02878</p></li>
+<li id="ref-pan-2025"><p>Pan, Y., Lala, Y., Unal, M., Ren, Y., Lee, S., Bhattacharjee, A., Khandelwal, A., and Kashyap, S. "Scalable Far Memory: Balancing Faults and Evictions." In <em>Proceedings of the ACM Symposium on Operating Systems Principles (SOSP '25)</em>, 2025.</p></li>
+<li id="ref-pcisig-2020"><p>PCI-SIG. <em>Address Translation Services Revision 1.1</em>. PCI Special Interest Group, 2020.</p></li>
+<li id="ref-tang-2025"><p>Tang, Y., Lee, S., Bhattacharjee, A., and Khandelwal, A. "pulse: Accelerating Distributed Pointer-Traversals on Disaggregated Memory." In <em>Proceedings of the 30th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '25)</em>, 2025.</p></li>
+<li id="ref-wang-2024"><p>Wang, S., et al. "Bandwidth Expansion via CXL: A Pathway to Accelerating In-Memory Analytical Processing." In <em>Fifteenth International Workshop on Accelerating Analytics and Data Management Systems Using Modern Processor and Storage Architectures (ADMS '24), co-located with VLDB 2024</em>, 2024.</p></li>
+<li id="ref-zhang-2025"><p>Zhang, R., et al. "Next-Gen Computing Systems with Compute Express Link: A Comprehensive Survey." arXiv preprint arXiv:2412.20249, 2025.</p></li>
 
 </ol>
 

@@ -568,6 +568,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -677,19 +700,39 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 <h1 class="title">Chapter 3: Page Table Structures and Implementation</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-3.1">3.1 Introduction</a></li>
-<li><a href="#section-3.2">3.2 Single-Level Page Tables: The Simplest Approach</a></li>
-<li><a href="#section-3.3">3.3 Two-Level Page Tables</a></li>
-<li><a href="#section-3.4">3.4 Multi-Level Page Tables (3+ Levels)</a></li>
-<li><a href="#section-3.5">3.5 Virtualization: Two-Stage Address Translation</a></li>
-<li><a href="#section-3.6">3.6 What Gets Cached: TLB and Page Walk Caches</a></li>
-<li><a href="#section-3.7">3.7 Hardware Page Table Walker</a></li>
-<li><a href="#section-3.8">3.8 Page Table Management from the OS Perspective</a></li>
-<li><a href="#section-3.9">3.9 Design Trade-offs</a></li>
-<li><a href="#section-3.10">3.10 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-3.1">3.1 Introduction</a></summary>
+<ul><li><a href="#why-page-table-design-matters">Why Page Table Design Matters</a></li><li><a href="#the-evolution-from-simple-to-sophisticated">The Evolution: From Simple to Sophisticated</a></li><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#a-note-on-architecture-coverage">A Note on Architecture Coverage</a></li><li><a href="#roadmap-for-part-2">Roadmap for Part 2</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-3.2">3.2 Single-Level Page Tables: The Simplest Approach</a></summary>
+<ul><li><a href="#3.2.1-structure-and-mechanics">3.2.1 Structure and Mechanics</a></li><li><a href="#3.2.2-size-calculations-and-memory-overhead">3.2.2 Size Calculations and Memory Overhead</a></li><li><a href="#3.2.3-advantages-and-when-single-level-tables-make-sense">3.2.3 Advantages and When Single-Level Tables Make Sense</a></li><li><a href="#3.2.4-fundamental-limitations">3.2.4 Fundamental Limitations</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-3.3">3.3 Two-Level Page Tables</a></summary>
+<ul><li><a href="#3.3.1-the-hierarchical-structure">3.3.1 The Hierarchical Structure</a></li><li><a href="#3.3.2-x86-32-bit-example-the-classic-implementation">3.3.2 x86 32-bit Example: The Classic Implementation</a></li><li><a href="#3.3.3-translation-walkthrough-with-concrete-example">3.3.3 Translation Walkthrough with Concrete Example</a></li><li><a href="#3.3.4-memory-savings-analysis">3.3.4 Memory Savings Analysis</a></li><li><a href="#3.3.5-the-cost-translation-complexity">3.3.5 The Cost: Translation Complexity</a></li><li><a href="#3.3.6-transition-to-more-levels">3.3.6 Transition to More Levels</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-3.4">3.4 Multi-Level Page Tables (3+ Levels)</a></summary>
+<ul><li><a href="#3.4.1-x86-64-four-level-paging-the-current-standard">3.4.1 x86-64 Four-Level Paging: The Current Standard</a></li><li><a href="#3.4.2-x86-64-five-level-paging-expanding-to-128-pb">3.4.2 x86-64 Five-Level Paging: Expanding to 128 PB</a></li><li><a href="#3.4.3-arm64-page-table-structures">3.4.3 ARM64 Page Table Structures</a></li><li><a href="#3.4.4-risc-v-page-table-structures">3.4.4 RISC-V Page Table Structures</a></li><li><a href="#3.4.5-translation-process-summary">3.4.5 Translation Process Summary</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-3.5">3.5 Virtualization: Two-Stage Address Translation</a></summary>
+<ul><li><a href="#3.6.2-intel-ept-extended-page-tables">3.6.2 Intel EPT (Extended Page Tables)</a></li><li><a href="#3.6.3-amd-npt-nested-page-tables">3.6.3 AMD NPT (Nested Page Tables)</a></li><li><a href="#3.6.4-arm-stage-2-translation">3.6.4 ARM Stage 2 Translation</a></li><li><a href="#3.6.5-risc-v-hypervisor-extension">3.6.5 RISC-V Hypervisor Extension</a></li><li><a href="#3.6.6-performance-impact-and-mitigations">3.6.6 Performance Impact and Mitigations</a></li><li><a href="#3.6.7-why-two-stages-matter">3.6.7 Why Two Stages Matter</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-3.6">3.6 What Gets Cached: TLB and Page Walk Caches</a></summary>
+<ul><li><a href="#3.7.1-translation-lookaside-buffer-tlb-final-translation-cache">3.7.1 Translation Lookaside Buffer (TLB): Final Translation Cache</a></li><li><a href="#3.7.2-page-walk-caches-the-hidden-optimization">3.7.2 Page Walk Caches: The Hidden Optimization</a></li><li><a href="#3.7.3-caching-in-virtualization-combined-tlb">3.7.3 Caching in Virtualization: Combined TLB</a></li><li><a href="#3.7.4-what-is-not-cached-important-clarifications">3.7.4 What Is NOT Cached: Important Clarifications</a></li><li><a href="#3.7.5-caching-hierarchy-summary-table">3.7.5 Caching Hierarchy Summary Table</a></li><li><a href="#3.7.6-performance-implications">3.7.6 Performance Implications</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-3.7">3.7 Hardware Page Table Walker</a></summary>
+<ul><li><a href="#3.8.1-the-page-walk-state-machine">3.8.1 The Page Walk State Machine</a></li><li><a href="#3.8.2-hardware-managed-vs-software-managed-bits">3.8.2 Hardware-Managed vs Software-Managed Bits</a></li><li><a href="#3.8.3-performance-characteristics">3.8.3 Performance Characteristics</a></li><li><a href="#3.8.4-tlb-coherence-and-shootdown-mechanisms">3.8.4 TLB Coherence and Shootdown on Multicore Processors</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-3.8">3.8 Page Table Management from the OS Perspective</a></summary>
+<ul><li><a href="#3.9.1-process-creation-and-page-table-allocation">3.9.1 Process Creation and Page Table Allocation</a></li><li><a href="#3.9.2-copy-on-write-cow-and-fork">3.9.2 Copy-on-Write (COW) and Fork</a></li><li><a href="#3.9.3-transparent-huge-pages-thp">3.9.3 Transparent Huge Pages (THP)</a></li><li><a href="#3.9.4-page-table-reclamation">3.9.4 Page Table Reclamation</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-3.9">3.9 Design Trade-offs</a></summary>
+<ul><li><a href="#3.10.1-memory-overhead-vs-translation-speed">3.10.1 Memory Overhead vs Translation Speed</a></li><li><a href="#3.10.2-page-size-selection">3.10.2 Page Size Selection</a></li><li><a href="#3.10.3-hardware-vs-software-complexity">3.10.3 Hardware vs Software Complexity</a></li><li><a href="#3.10.4-virtualization-overhead">3.10.4 Virtualization Overhead</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-3.10">3.10 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 
 <h2 id="section-3.1">3.1 Introduction</h2>
@@ -4135,7 +4178,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Multiple academic studies have measured two-stage translation overhead:</p>
 
-<strong>Adams & Agesen (2006), VMware</strong>:
+<strong>Adams & Agesen [<a class="cite" href="#ref-adams-2006">2006</a>], VMware</strong>:
 <ul>
 <li>Compared software (shadow) vs hardware (EPT) virtualization</li>
 <li>Hardware two-stage translation: 2-7% overhead</li>
@@ -4144,7 +4187,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 </ul>
 
-<strong>Barr et al. (2010), VMware Mobile</strong>:
+<strong>Barr et al. [<a class="cite" href="#ref-barr-2010a">2010</a>], VMware Mobile</strong>:
 <ul>
 <li>Nested page tables on mobile ARM processors</li>
 <li>Overhead: 3-5% for typical mobile workloads</li>
@@ -4513,7 +4556,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Intel doesn't officially document PWC details in their optimization manuals, but researchers have measured its existence and characteristics:</p>
 
-<strong>Barr et al. (2011)</strong> measured Intel processors and found:
+<strong>Barr et al. [<a class="cite" href="#ref-barr-2011">2011</a>]</strong> measured Intel processors and found:
 <ul>
 <li>PWC caches PML4, PDPT, and PD entries</li>
 <li>Estimated size: ~32 entries per level</li>
@@ -4522,7 +4565,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 </ul>
 
-<strong>Bhattacharjee et al. (2011)</strong> further analyzed PWC:
+<strong>Bhattacharjee et al. [<a class="cite" href="#ref-bhattacharjee-2011">2011</a>]</strong> further analyzed PWC:
 <ul>
 <li>Called it "intermediate TLB" or "TLB for page tables"</li>
 <li>Showed 50-80% reduction in page walk memory accesses</li>
@@ -4600,7 +4643,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </ul>
 <strong>Measured Impact</strong>
 
-<strong>Bhattacharjee & Martonosi (2009)</strong> measured TLB behavior with virtualization:
+<strong>Bhattacharjee & Martonosi [<a class="cite" href="#ref-bhattacharjee-2009">2009</a>]</strong> measured TLB behavior with virtualization:
 <ul>
 <li>TLB hit rate: 85-95% for typical virtualized workloads</li>
 <li>VPID/ASID support improved hit rate by 10-15 percentage points</li>
@@ -5278,98 +5321,98 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <h2 id="references">References</h2>
 <ol type="1">
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 4: Paging. Document 325384, 2023. <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html">https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html</a></p></li>
-<li><p>AMD Inc. <em>AMD64 Architecture Programmer's Manual, Volume 2: System Programming</em>. Chapter 5: Page Translation and Protection. Publication 24593, Rev. 3.38, 2023. <a href="https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/24593.pdf">https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/24593.pdf</a></p></li>
-<li><p>Arm Limited. <em>ARM Architecture Reference Manual for A-profile Architecture</em>. Chapter D5: The AArch64 Virtual Memory System Architecture. DDI 0487J.a, 2023. <a href="https://developer.arm.com/documentation/ddi0487">https://developer.arm.com/documentation/ddi0487</a></p></li>
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 20211203. Chapter 4: Supervisor-Level ISA. 2021. <a href="https://github.com/riscv/riscv-isa-manual">https://github.com/riscv/riscv-isa-manual</a></p></li>
-<li><p>Bhattacharjee, A., Lustig, D. <em>Architectural and Operating System Support for Virtual Memory</em>. Morgan &amp; Claypool Publishers, Synthesis Lectures on Computer Architecture, 2017. DOI: 10.2200/S00795ED1V01Y201708CAC042</p></li>
-<li><p>Denning, P. J. "Virtual Memory." <em>ACM Computing Surveys</em>, 2(3):153–189, 1970. DOI: 10.1145/356571.356573</p></li>
-<li><p>Silberschatz, A., Galvin, P. B., Gagne, G. <em>Operating System Concepts</em>, 10th ed. Wiley, 2018. Chapters 8–9: Main Memory and Virtual Memory.</p></li>
-<li><p>Tanenbaum, A. S., Bos, H. <em>Modern Operating Systems</em>, 4th ed. Pearson, 2015. Chapter 3: Memory Management.</p></li>
-<li><p>Barr, T., Cox, A., Rixner, S. "Translation Caching: Skip, Don't Walk (the Page Table)." <em>Proceedings of the 37th Annual International Symposium on Computer Architecture (ISCA)</em>, pp. 48–59, 2010. DOI: 10.1145/1815961.1815970</p></li>
-<li><p>Lustig, D., Bhattacharjee, A., Martonosi, M. "TLB Improvements for Chip Multiprocessors: Inter-Core Cooperative Prefetchers and Shared Last-Level TLBs." <em>ACM Transactions on Architecture and Code Optimization (TACO)</em>, 10(1):2, 2013. DOI: 10.1145/2445572.2445574</p></li>
-<li><p>Gandini, C., Moreto, M., Cristal, A., Valero, M. "A Study of Hardware-Assisted Address Translation." <em>ACM SIGARCH Computer Architecture News</em>, 43(1):34–39, 2016.</p></li>
-<li><p>Karakostas, V., Gandhi, J., Ayar, F., Cristal, A., Hill, M. D., McKinley, K. S., Nemirovsky, M., Swift, M. M., Ünsal, O. S. "Redundant Memory Mappings for Fast Access to Large Memories." <em>Proceedings of the 42nd Annual International Symposium on Computer Architecture (ISCA)</em>, pp. 441–453, 2015. DOI: 10.1145/2749469.2749471</p></li>
+<li id="ref-intel-2023"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Chapter 4: Paging. Document 325384, 2023. <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html">https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html</a></p></li>
+<li id="ref-amd-2023a"><p>AMD Inc. <em>AMD64 Architecture Programmer's Manual, Volume 2: System Programming</em>. Chapter 5: Page Translation and Protection. Publication 24593, Rev. 3.38, 2023. <a class="ref-link" href="https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/24593.pdf">https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/24593.pdf</a></p></li>
+<li id="ref-arm-2023a"><p>Arm Limited. <em>ARM Architecture Reference Manual for A-profile Architecture</em>. Chapter D5: The AArch64 Virtual Memory System Architecture. DDI 0487J.a, 2023. <a class="ref-link" href="https://developer.arm.com/documentation/ddi0487">https://developer.arm.com/documentation/ddi0487</a></p></li>
+<li id="ref-riscv-2021a"><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 20211203. Chapter 4: Supervisor-Level ISA. 2021. <a class="ref-link" href="https://github.com/riscv/riscv-isa-manual">https://github.com/riscv/riscv-isa-manual</a></p></li>
+<li id="ref-bhattacharjee-2017"><p>Bhattacharjee, A., Lustig, D. <em>Architectural and Operating System Support for Virtual Memory</em>. Morgan &amp; Claypool Publishers, Synthesis Lectures on Computer Architecture, 2017. <a class="ref-link" href="https://doi.org/10.2200/S00795ED1V01Y201708CAC042">DOI: 10.2200/S00795ED1V01Y201708CAC042</a></p></li>
+<li id="ref-denning-1970"><p>Denning, P. J. "Virtual Memory." <em>ACM Computing Surveys</em>, 2(3):153–189, 1970. <a class="ref-link" href="https://doi.org/10.1145/356571.356573">DOI: 10.1145/356571.356573</a></p></li>
+<li id="ref-silberschatz-2018"><p>Silberschatz, A., Galvin, P. B., Gagne, G. <em>Operating System Concepts</em>, 10th ed. Wiley, 2018. Chapters 8–9: Main Memory and Virtual Memory.</p></li>
+<li id="ref-tanenbaum-2015"><p>Tanenbaum, A. S., Bos, H. <em>Modern Operating Systems</em>, 4th ed. Pearson, 2015. Chapter 3: Memory Management.</p></li>
+<li id="ref-barr-2010a"><p>Barr, T., Cox, A., Rixner, S. "Translation Caching: Skip, Don't Walk (the Page Table)." <em>Proceedings of the 37th Annual International Symposium on Computer Architecture (ISCA)</em>, pp. 48–59, 2010. <a class="ref-link" href="https://doi.org/10.1145/1815961.1815970">DOI: 10.1145/1815961.1815970</a></p></li>
+<li id="ref-lustig-2013"><p>Lustig, D., Bhattacharjee, A., Martonosi, M. "TLB Improvements for Chip Multiprocessors: Inter-Core Cooperative Prefetchers and Shared Last-Level TLBs." <em>ACM Transactions on Architecture and Code Optimization (TACO)</em>, 10(1):2, 2013. <a class="ref-link" href="https://doi.org/10.1145/2445572.2445574">DOI: 10.1145/2445572.2445574</a></p></li>
+<li id="ref-gandini-2016"><p>Gandini, C., Moreto, M., Cristal, A., Valero, M. "A Study of Hardware-Assisted Address Translation." <em>ACM SIGARCH Computer Architecture News</em>, 43(1):34–39, 2016.</p></li>
+<li id="ref-karakostas-2015"><p>Karakostas, V., Gandhi, J., Ayar, F., Cristal, A., Hill, M. D., McKinley, K. S., Nemirovsky, M., Swift, M. M., Ünsal, O. S. "Redundant Memory Mappings for Fast Access to Large Memories." <em>Proceedings of the 42nd Annual International Symposium on Computer Architecture (ISCA)</em>, pp. 441–453, 2015. <a class="ref-link" href="https://doi.org/10.1145/2749469.2749471">DOI: 10.1145/2749469.2749471</a></p></li>
 </ol>
 <h3 id="3-8-4-tlb-coherence-and-shootdown-on-multicore-processors">§3.8.4 — TLB Coherence and Shootdown on Multicore Processors</h3>
 <ol type="1" start="13">
-<li><p>Mittal, S. "A survey of techniques for architecting TLBs." <em>Concurrency and Computation: Practice and Experience (CPE)</em>, 29(10), 2016. (Citing Villavieja et al. on shootdown overhead.)
-    <a href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">DOI: 10.1002/cpe.4061</a></p></li>
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide</em>. §10.12: x2APIC IPI delivery. 2024.
-    <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, for ARMv8-A architecture profile</em>. §D5.10: TLB maintenance instructions (TLBI). ARM DDI 0487J.a, 2023.
-    <a href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
+<li id="ref-mittal-2016"><p>Mittal, S. "A survey of techniques for architecting TLBs." <em>Concurrency and Computation: Practice and Experience (CPE)</em>, 29(10), 2016. (Citing Villavieja et al. on shootdown overhead.)
+    <a class="ref-link" href="https://doi.org/10.1002/cpe.4061" target="_blank" rel="noopener">DOI: 10.1002/cpe.4061</a></p></li>
+<li id="ref-intel-2024a"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide</em>. §10.12: x2APIC IPI delivery. 2024.
+    <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
+<li id="ref-arm-2023b"><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8, for ARMv8-A architecture profile</em>. §D5.10: TLB maintenance instructions (TLBI). ARM DDI 0487J.a, 2023.
+    <a class="ref-link" href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
 </ol>
 <h3 id="3-2-single-level-page-tables">§3.2 — Single-Level Page Tables</h3>
 <ol type="1" start="16">
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Section 4.2: "Hierarchical Paging Structures: An Overview" (CR3 role); Section 4.3: "32-Bit Paging" (two-level legacy paging). Intel Corporation, 2024.
-    <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual for ARMv8-A</em>. Document DDI 0487J.a, Chapter D5: "The AArch64 Virtual Memory System Architecture." ARM Limited, 2024.
-    <a href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 1.12, Section 4.1.11: "Supervisor Address Translation and Protection Register (satp)." 2021.
-    <a href="https://github.com/riscv/riscv-isa-manual" target="_blank" rel="noopener">github.com/riscv/riscv-isa-manual</a></p></li>
-<li><p>Levy, H. M. and Lipman, P. H. "Virtual memory management in the VAX/VMS operating system." <em>IEEE Computer</em>, 15(3):35–41, 1982.</p></li>
+<li id="ref-intel-2024b"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A: System Programming Guide, Part 1</em>. Section 4.2: "Hierarchical Paging Structures: An Overview" (CR3 role); Section 4.3: "32-Bit Paging" (two-level legacy paging). Intel Corporation, 2024.
+    <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
+<li id="ref-arm-2024a"><p>ARM Limited. <em>ARM Architecture Reference Manual for ARMv8-A</em>. Document DDI 0487J.a, Chapter D5: "The AArch64 Virtual Memory System Architecture." ARM Limited, 2024.
+    <a class="ref-link" href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
+<li id="ref-riscv-2021b"><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 1.12, Section 4.1.11: "Supervisor Address Translation and Protection Register (satp)." 2021.
+    <a class="ref-link" href="https://github.com/riscv/riscv-isa-manual" target="_blank" rel="noopener">github.com/riscv/riscv-isa-manual</a></p></li>
+<li id="ref-levy-1982"><p>Levy, H. M. and Lipman, P. H. "Virtual memory management in the VAX/VMS operating system." <em>IEEE Computer</em>, 15(3):35–41, 1982.</p></li>
 </ol>
 <h3 id="3-4-multi-level-page-tables-x86-64-arm64-risc-v">§3.4 — Multi-Level Page Tables (x86-64, ARM64, RISC-V)</h3>
 <ol type="1" start="20">
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A</em>. Section 4.5: "4-Level Paging and 5-Level Paging"; Section 4.5.4: "5-Level Paging." Intel Corporation, 2024.
-    <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
-<li><p>Shutemov, K. A. "x86: 5-level paging enabling for v4.14." <em>Linux Kernel Mailing List</em>, 2017.
-    <a href="https://lwn.net/Articles/717293/" target="_blank" rel="noopener">lwn.net/Articles/717293</a></p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual for ARMv8-A</em>. ARM DDI 0487J.a, Section D5.2: "The VMSAv8-64 address translation system"; Section D5.3.3: "Descriptor formats." ARM Limited, 2024.
-    <a href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 1.12, Section 4.3: "Sv39," Section 4.4: "Sv48," Section 4.5: "Sv57." 2021.
-    <a href="https://github.com/riscv/riscv-isa-manual" target="_blank" rel="noopener">github.com/riscv/riscv-isa-manual</a></p></li>
+<li id="ref-intel-2024c"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A</em>. Section 4.5: "4-Level Paging and 5-Level Paging"; Section 4.5.4: "5-Level Paging." Intel Corporation, 2024.
+    <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
+<li id="ref-shutemov-2017"><p>Shutemov, K. A. "x86: 5-level paging enabling for v4.14." <em>Linux Kernel Mailing List</em>, 2017.
+    <a class="ref-link" href="https://lwn.net/Articles/717293/" target="_blank" rel="noopener">lwn.net/Articles/717293</a></p></li>
+<li id="ref-arm-2024b"><p>ARM Limited. <em>ARM Architecture Reference Manual for ARMv8-A</em>. ARM DDI 0487J.a, Section D5.2: "The VMSAv8-64 address translation system"; Section D5.3.3: "Descriptor formats." ARM Limited, 2024.
+    <a class="ref-link" href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
+<li id="ref-riscv-2021c"><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 1.12, Section 4.3: "Sv39," Section 4.4: "Sv48," Section 4.5: "Sv57." 2021.
+    <a class="ref-link" href="https://github.com/riscv/riscv-isa-manual" target="_blank" rel="noopener">github.com/riscv/riscv-isa-manual</a></p></li>
 </ol>
 <h3 id="3-6-two-stage-address-translation-and-virtualization">§3.6 — Two-Stage Address Translation and Virtualization</h3>
 <ol type="1" start="24">
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3C</em>. Section 28.2: "The Extended Page Table Mechanism (EPT)." Intel Corporation, 2024.
-    <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
-<li><p>AMD. <em>AMD64 Architecture Programmer's Manual, Volume 2: System Programming</em>. Section 15.25: "Nested Paging." AMD, 2023.
-    <a href="https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/24593.pdf" target="_blank" rel="noopener">amd.com/24593.pdf</a></p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual for ARMv8-A</em>. ARM DDI 0487J.a, Section D5.2.5: "Translation table walks for stage 2 translations." ARM Limited, 2024.
-    <a href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
-<li><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 1.12, Chapter 8: "Hypervisor Extension." 2021.
-    <a href="https://github.com/riscv/riscv-isa-manual" target="_blank" rel="noopener">github.com/riscv/riscv-isa-manual</a></p></li>
-<li><p>Adams, K. and Agesen, O. "A comparison of software and hardware techniques for x86 virtualization." <em>ACM SIGPLAN Notices</em>, 41(11):2–13, 2006.
-    <a href="https://doi.org/10.1145/1168857.1168860" target="_blank" rel="noopener">DOI: 10.1145/1168857.1168860</a></p></li>
-<li><p>Barr, K. et al. "The VMware mobile virtualization platform: is that a hypervisor in your pocket?" <em>ACM SIGOPS Operating Systems Review</em>, 44(4):124–135, 2010.
-    <a href="https://doi.org/10.1145/1899928.1899945" target="_blank" rel="noopener">DOI: 10.1145/1899928.1899945</a></p></li>
+<li id="ref-intel-2024d"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3C</em>. Section 28.2: "The Extended Page Table Mechanism (EPT)." Intel Corporation, 2024.
+    <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
+<li id="ref-amd-2023b"><p>AMD. <em>AMD64 Architecture Programmer's Manual, Volume 2: System Programming</em>. Section 15.25: "Nested Paging." AMD, 2023.
+    <a class="ref-link" href="https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/24593.pdf" target="_blank" rel="noopener">amd.com/24593.pdf</a></p></li>
+<li id="ref-arm-2024c"><p>ARM Limited. <em>ARM Architecture Reference Manual for ARMv8-A</em>. ARM DDI 0487J.a, Section D5.2.5: "Translation table walks for stage 2 translations." ARM Limited, 2024.
+    <a class="ref-link" href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
+<li id="ref-riscv-2021d"><p>RISC-V International. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em>. Version 1.12, Chapter 8: "Hypervisor Extension." 2021.
+    <a class="ref-link" href="https://github.com/riscv/riscv-isa-manual" target="_blank" rel="noopener">github.com/riscv/riscv-isa-manual</a></p></li>
+<li id="ref-adams-2006"><p>Adams, K. and Agesen, O. "A comparison of software and hardware techniques for x86 virtualization." <em>ACM SIGPLAN Notices</em>, 41(11):2–13, 2006.
+    <a class="ref-link" href="https://doi.org/10.1145/1168857.1168860" target="_blank" rel="noopener">DOI: 10.1145/1168857.1168860</a></p></li>
+<li id="ref-barr-2010b"><p>Barr, K. et al. "The VMware mobile virtualization platform: is that a hypervisor in your pocket?" <em>ACM SIGOPS Operating Systems Review</em>, 44(4):124–135, 2010.
+    <a class="ref-link" href="https://doi.org/10.1145/1899928.1899945" target="_blank" rel="noopener">DOI: 10.1145/1899928.1899945</a></p></li>
 </ol>
 <h3 id="3-7-tlb-and-page-walk-caches">§3.7 — TLB and Page Walk Caches</h3>
 <ol type="1" start="30">
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Optimization Reference Manual</em>. Section 2.5: "Translation Lookaside Buffers (TLB)." Intel Corporation, 2024.
-    <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
-<li><p>AMD. <em>Software Optimization Guide for AMD Family 19h Processors (Zen 3)</em>. Publication #56665, Rev. 3.01, Section 2.10: "Translation Lookaside Buffer." AMD, 2020.
-    <a href="https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/software-optimization-guides/56665.pdf" target="_blank" rel="noopener">amd.com/56665.pdf</a></p></li>
-<li><p>ARM Limited. <em>ARM Cortex-A77 Core Technical Reference Manual</em>. Section 5.2: "TLB organization." ARM Limited, 2019.
-    <a href="https://developer.arm.com/documentation/100802" target="_blank" rel="noopener">developer.arm.com/100802</a></p></li>
-<li><p>Barr, T. W., Cox, A. L., and Rixner, S. "Translation caching: skip, don't walk (the page table)." <em>ACM SIGARCH Computer Architecture News</em>, 39(3):48–59, 2011.
-    <a href="https://doi.org/10.1145/1961295.1950382" target="_blank" rel="noopener">DOI: 10.1145/1961295.1950382</a></p></li>
-<li><p>Bhattacharjee, A., Lustig, D., and Martonosi, M. "Shared last-level TLBs for chip multiprocessors." <em>Proceedings of the 17th IEEE Symposium on High Performance Computer Architecture (HPCA)</em>, pp. 62–73, 2011.
-    <a href="https://doi.org/10.1109/HPCA.2011.5749717" target="_blank" rel="noopener">DOI: 10.1109/HPCA.2011.5749717</a></p></li>
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3C</em>. Section 28.3.3.1: "Virtual-Processor Identifiers (VPIDs)." Intel Corporation, 2024.
-    <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
-<li><p>ARM Limited. <em>ARM Architecture Reference Manual for ARMv8-A</em>. ARM DDI 0487J.a, Section D5.10.3: "TLB maintenance requirements" (VMID and ASID usage). ARM Limited, 2024.
-    <a href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
-<li><p>Bhattacharjee, A. and Martonosi, M. "Characterizing the TLB behavior of emerging parallel workloads on chip multiprocessors." <em>Proceedings of the 18th International Conference on Parallel Architectures and Compilation Techniques (PACT)</em>, pp. 29–40, 2009.
-    <a href="https://doi.org/10.1145/1629575.1629579" target="_blank" rel="noopener">DOI: 10.1145/1629575.1629579</a></p></li>
+<li id="ref-intel-2024e"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Optimization Reference Manual</em>. Section 2.5: "Translation Lookaside Buffers (TLB)." Intel Corporation, 2024.
+    <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
+<li id="ref-amd-2020"><p>AMD. <em>Software Optimization Guide for AMD Family 19h Processors (Zen 3)</em>. Publication #56665, Rev. 3.01, Section 2.10: "Translation Lookaside Buffer." AMD, 2020.
+    <a class="ref-link" href="https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/software-optimization-guides/56665.pdf" target="_blank" rel="noopener">amd.com/56665.pdf</a></p></li>
+<li id="ref-arm-2019"><p>ARM Limited. <em>ARM Cortex-A77 Core Technical Reference Manual</em>. Section 5.2: "TLB organization." ARM Limited, 2019.
+    <a class="ref-link" href="https://developer.arm.com/documentation/100802" target="_blank" rel="noopener">developer.arm.com/100802</a></p></li>
+<li id="ref-barr-2011"><p>Barr, T. W., Cox, A. L., and Rixner, S. "Translation caching: skip, don't walk (the page table)." <em>ACM SIGARCH Computer Architecture News</em>, 39(3):48–59, 2011.
+    <a class="ref-link" href="https://doi.org/10.1145/1961295.1950382" target="_blank" rel="noopener">DOI: 10.1145/1961295.1950382</a></p></li>
+<li id="ref-bhattacharjee-2011"><p>Bhattacharjee, A., Lustig, D., and Martonosi, M. "Shared last-level TLBs for chip multiprocessors." <em>Proceedings of the 17th IEEE Symposium on High Performance Computer Architecture (HPCA)</em>, pp. 62–73, 2011.
+    <a class="ref-link" href="https://doi.org/10.1109/HPCA.2011.5749717" target="_blank" rel="noopener">DOI: 10.1109/HPCA.2011.5749717</a></p></li>
+<li id="ref-intel-2024f"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3C</em>. Section 28.3.3.1: "Virtual-Processor Identifiers (VPIDs)." Intel Corporation, 2024.
+    <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
+<li id="ref-arm-2024d"><p>ARM Limited. <em>ARM Architecture Reference Manual for ARMv8-A</em>. ARM DDI 0487J.a, Section D5.10.3: "TLB maintenance requirements" (VMID and ASID usage). ARM Limited, 2024.
+    <a class="ref-link" href="https://developer.arm.com/documentation/ddi0487" target="_blank" rel="noopener">developer.arm.com/ddi0487</a></p></li>
+<li id="ref-bhattacharjee-2009"><p>Bhattacharjee, A. and Martonosi, M. "Characterizing the TLB behavior of emerging parallel workloads on chip multiprocessors." <em>Proceedings of the 18th International Conference on Parallel Architectures and Compilation Techniques (PACT)</em>, pp. 29–40, 2009.
+    <a class="ref-link" href="https://doi.org/10.1145/1629575.1629579" target="_blank" rel="noopener">DOI: 10.1145/1629575.1629579</a></p></li>
 </ol>
 <h3 id="3-8-hardware-page-table-walker">§3.8 — Hardware Page Table Walker</h3>
 <ol type="1" start="38">
-<li><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A</em>. Section 4.7: "Page-Fault Exceptions." Intel Corporation, 2024.
-    <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
+<li id="ref-intel-2024g"><p>Intel Corporation. <em>Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A</em>. Section 4.7: "Page-Fault Exceptions." Intel Corporation, 2024.
+    <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank" rel="noopener">intel.com/sdm</a></p></li>
 </ol>
 <h3 id="3-9-os-page-table-management">§3.9 — OS Page Table Management</h3>
 <ol type="1" start="39">
-<li><p>Appel, A. W. and Li, K. "Virtual memory primitives for user programs." <em>ACM SIGPLAN Notices</em>, 26(4):96–107, 1991.
-    <a href="https://doi.org/10.1145/106972.106984" target="_blank" rel="noopener">DOI: 10.1145/106972.106984</a></p></li>
-<li><p>Arcangeli, A., Eidus, I., and Wright, C. "Increasing memory density by using KSM." <em>Proceedings of the Linux Symposium</em>, pp. 19–28, 2011.</p></li>
+<li id="ref-appel-1991"><p>Appel, A. W. and Li, K. "Virtual memory primitives for user programs." <em>ACM SIGPLAN Notices</em>, 26(4):96–107, 1991.
+    <a class="ref-link" href="https://doi.org/10.1145/106972.106984" target="_blank" rel="noopener">DOI: 10.1145/106972.106984</a></p></li>
+<li id="ref-arcangeli-2011"><p>Arcangeli, A., Eidus, I., and Wright, C. "Increasing memory density by using KSM." <em>Proceedings of the Linux Symposium</em>, pp. 19–28, 2011.</p></li>
 </ol>
 <h3 id="3-10-design-trade-offs">§3.10 — Design Trade-offs</h3>
 <ol type="1" start="41">
-<li><p>Rosenblum, M. et al. "Complete computer system simulation: The SimOS approach." <em>IEEE Parallel &amp; Distributed Technology</em>, 3(4):34–43, 1995.
-    <a href="https://doi.org/10.1109/88.386348" target="_blank" rel="noopener">DOI: 10.1109/88.386348</a></p></li>
+<li id="ref-rosenblum-1995"><p>Rosenblum, M. et al. "Complete computer system simulation: The SimOS approach." <em>IEEE Parallel &amp; Distributed Technology</em>, 3(4):34–43, 1995.
+    <a class="ref-link" href="https://doi.org/10.1109/88.386348" target="_blank" rel="noopener">DOI: 10.1109/88.386348</a></p></li>
 </ol>
 
 <script>

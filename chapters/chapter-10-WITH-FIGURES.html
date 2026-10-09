@@ -567,6 +567,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -677,17 +700,33 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 Access</h1>
 </header>
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-10.1">10.1 Introduction: Beyond the CPU Core</a></li>
-<li><a href="#section-10.2">10.2 IOMMU Architecture Deep Dive</a></li>
-<li><a href="#section-10.3">10.3 PCIe ATS and Address Translation Services</a></li>
-<li><a href="#section-10.4">10.4 RDMA and Memory Registration</a></li>
-<li><a href="#section-10.5">10.5 Smart NICs and Data Processing Units</a></li>
-<li><a href="#section-10.6">10.6 Video and Media Accelerators</a></li>
-<li><a href="#section-10.7">10.7 Multi-Device Coherency and Coordination</a></li>
-<li><a href="#section-10.8">10.8 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-10.1">10.1 Introduction: Beyond the CPU Core</a></summary>
+<ul><li><a href="#the-evolution-of-device-memory-access">The Evolution of Device Memory Access</a></li><li><a href="#what-this-chapter-covers">What This Chapter Covers</a></li><li><a href="#why-these-mechanisms-matter">Why These Mechanisms Matter</a></li><li><a href="#relationship-to-previous-chapters">Relationship to Previous Chapters</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-10.2">10.2 IOMMU Architecture Deep Dive</a></summary>
+<ul><li><a href="#the-core-challenge-per-device-isolation">The Core Challenge: Per-Device Isolation</a></li><li><a href="#intel-vt-d-architecture">Intel VT-d Architecture</a></li><li><a href="#iommu-page-fault-handling">IOMMU Page Fault Handling</a></li><li><a href="#performance-case-study-nvme-with-iommu">Performance Case Study: NVMe with IOMMU</a></li><li><a href="#amd-iommu-amd-vi-differences">AMD IOMMU (AMD-Vi) Differences</a></li><li><a href="#arm-smmu-system-memory-management-unit">ARM SMMU (System Memory Management Unit)</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-10.3">10.3 PCIe ATS and Address Translation Services</a></summary>
+<ul><li><a href="#the-ats-innovation">The ATS Innovation</a></li><li><a href="#ats-protocol-messages">ATS Protocol Messages</a></li><li><a href="#pasid-process-address-space-id">PASID: Process Address Space ID</a></li><li><a href="#pri-page-request-interface">PRI: Page Request Interface</a></li><li><a href="#performance-analysis-rdma-with-ats">Performance Analysis: RDMA with ATS</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-10.4">10.4 RDMA and Memory Registration</a></summary>
+<ul><li><a href="#the-rdma-model">The RDMA Model</a></li><li><a href="#traditional-memory-registration">Traditional Memory Registration</a></li><li><a href="#the-registration-problem-in-practice">The Registration Problem in Practice</a></li><li><a href="#solution-1-pre-registration">Solution 1: Pre-Registration</a></li><li><a href="#solution-2-memory-registration-cache">Solution 2: Memory Registration Cache</a></li><li><a href="#solution-3-on-demand-paging-odp">Solution 3: On-Demand Paging (ODP)</a></li><li><a href="#hybrid-approach-explicit-odp">Hybrid Approach: Explicit + ODP</a></li><li><a href="#case-study-redis-with-rdma">Case Study: Redis with RDMA</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-10.5">10.5 Smart NICs and Data Processing Units</a></summary>
+<ul><li><a href="#nvidia-bluefield-dpu-architecture">NVIDIA BlueField DPU Architecture</a></li><li><a href="#accessing-host-memory-from-dpu">Accessing Host Memory from DPU</a></li><li><a href="#use-case-1-ovs-offload">Use Case 1: OVS Offload</a></li><li><a href="#use-case-2-nvme-of-target">Use Case 2: NVMe-oF Target</a></li><li><a href="#coherency-challenges">Coherency Challenges</a></li><li><a href="#real-world-deployment-cloud-provider-networking">Real-World Deployment: Cloud Provider Networking</a></li><li><a href="#fpga-coherent-accelerators">FPGA Coherent Accelerators</a></li><li><a href="#intel-pac-programmable-acceleration-card-with-cci-p">Intel PAC (Programmable Acceleration Card) with CCI-P</a></li><li><a href="#fpga-cpu-memory-access-example">FPGA → CPU Memory Access Example</a></li><li><a href="#use-case-genomics-alignment">Use Case: Genomics Alignment</a></li><li><a href="#cache-coherency-protocol">Cache Coherency Protocol</a></li><li><a href="#amd-ccix-cache-coherent-interconnect-for-accelerators">AMD CCIX (Cache Coherent Interconnect for Accelerators)</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-10.6">10.6 Video and Media Accelerators</a></summary>
+<ul><li><a href="#intel-quicksync-architecture">Intel QuickSync Architecture</a></li><li><a href="#nvidia-nvencnvdec">NVIDIA NVENC/NVDEC</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-10.7">10.7 Multi-Device Coherency and Coordination</a></summary>
+<ul><li><a href="#the-tlb-shootdown-problem">The TLB Shootdown Problem</a></li><li><a href="#batching-tlb-invalidations">Batching TLB Invalidations</a></li><li><a href="#cross-device-ordering">Cross-Device Ordering</a></li><li><a href="#deadlock-avoidance">Deadlock Avoidance</a></li><li><a href="#system-architecture">System Architecture</a></li><li><a href="#memory-layout-and-sharing">Memory Layout and Sharing</a></li><li><a href="#iommu-configuration">IOMMU Configuration</a></li><li><a href="#device-synchronization">Device Synchronization</a></li><li><a href="#tlb-coherency-across-devices">TLB Coherency Across Devices</a></li><li><a href="#performance-results">Performance Results</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-10.8">10.8 Chapter Summary</a></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 <h2 id="section-10.1">10.1 Introduction: Beyond the
 CPU Core</h2>
@@ -5055,18 +5094,18 @@ devices supported required features (ATS, ODP, etc.)</p>
 </script>
 <h2 id="references">References</h2>
 <ol type="1">
-<li><p>Ben-Yehuda, M., Mason, J., Krieger, O., Xenidis, J., Van Doorn, L., Mallick, A., Trossman, J., and Wahlig, E. "Utilizing IOMMUs for Virtualization in Linux and Xen." <em>Ottawa Linux Symposium 2006</em>. 2006.</p></li>
-<li><p>ARM Limited. <em>ARM System Memory Management Unit Architecture Specification, SMMU Architecture Version 3</em>. ARM IHI 0070D.b. ARM Limited, 2019.</p></li>
-<li><p>Intel Corporation. <em>Intel Virtualization Technology for Directed I/O Architecture Specification</em>. Revision 3.3. Intel Corporation, 2020.</p></li>
-<li><p>PCI-SIG. <em>PCI Express Base Specification Revision 5.0</em>. Including Address Translation Services (ATS) Specification. PCI-SIG, 2019.</p></li>
-<li><p>InfiniBand Trade Association. <em>InfiniBand Architecture Specification, Volume 1, Release 1.4</em>. IBTA, 2020.</p></li>
-<li><p>Markuze, A., Morrison, A., and Tsafrir, D. "True IOMMU Protection from DMA Attacks: When Copy is Faster than Zero Copy." <em>21st International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2016)</em>. ACM, 2016. DOI: 10.1145/2872362.2872379</p></li>
-<li><p>Pfefferle, J., Stuedi, P., Trivedi, A., Metzler, B., Koltsidas, I., and Gross, T. "A Hybrid I/O Virtualization Framework for RDMA-capable Network Interfaces." <em>11th ACM SIGPLAN/SIGOPS International Conference on Virtual Execution Environments (VEE 2015)</em>. ACM, 2015. DOI: 10.1145/2731186.2731194</p></li>
-<li><p>NVIDIA Corporation. <em>NVIDIA NVLink and NVSwitch: Highest Bandwidth Chip-to-Chip Interconnect</em>. NVIDIA Technical Brief TB-10253-001. NVIDIA Corporation, 2022.</p></li>
-<li><p>Ferdman, M., Adileh, A., Kocberber, O., Volos, S., Alisafaee, M., Jevdjic, D., Kaynak, C., Popescu, A.D., Ailamaki, A., and Falsafi, B. "Clearing the Clouds: A Study of Emerging Scale-out Workloads on Modern Hardware." <em>17th International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2012)</em>. ACM, 2012. DOI: 10.1145/2150976.2150982</p></li>
-<li><p>Bhattacharjee, A., Lustig, D., and Martonosi, M. <em>Architectural and Operating System Support for Virtual Memory</em>. Synthesis Lectures on Computer Architecture. Morgan &amp; Claypool, 2017. DOI: 10.2200/S00786ED1V01Y201707CAC040</p></li>
-<li><p>Arm Limited. <em>ARM System Memory Management Unit Architecture Specification — SMMU architecture version 3.</em> ARM IHI 0070F. 2022. https://developer.arm.com/documentation/ihi0070/</p></li>
-<li><p>Cutress, I. <em>AMD EPYC 7003 Series: The AMD Milan Deep Dive Review.</em> AnandTech. March 2021. https://www.anandtech.com/show/16529/amd-epyc-milan-review</p></li>
+<li id="ref-benyehuda-2006"><p>Ben-Yehuda, M., Mason, J., Krieger, O., Xenidis, J., Van Doorn, L., Mallick, A., Trossman, J., and Wahlig, E. "Utilizing IOMMUs for Virtualization in Linux and Xen." <em>Ottawa Linux Symposium 2006</em>. 2006.</p></li>
+<li id="ref-arm-2019"><p>ARM Limited. <em>ARM System Memory Management Unit Architecture Specification, SMMU Architecture Version 3</em>. ARM IHI 0070D.b. ARM Limited, 2019.</p></li>
+<li id="ref-intel-2020"><p>Intel Corporation. <em>Intel Virtualization Technology for Directed I/O Architecture Specification</em>. Revision 3.3. Intel Corporation, 2020.</p></li>
+<li id="ref-pcisig-2019"><p>PCI-SIG. <em>PCI Express Base Specification Revision 5.0</em>. Including Address Translation Services (ATS) Specification. PCI-SIG, 2019.</p></li>
+<li id="ref-infiniband-2020"><p>InfiniBand Trade Association. <em>InfiniBand Architecture Specification, Volume 1, Release 1.4</em>. IBTA, 2020.</p></li>
+<li id="ref-markuze-2016"><p>Markuze, A., Morrison, A., and Tsafrir, D. "True IOMMU Protection from DMA Attacks: When Copy is Faster than Zero Copy." <em>21st International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2016)</em>. ACM, 2016. <a class="ref-link" href="https://doi.org/10.1145/2872362.2872379">DOI: 10.1145/2872362.2872379</a></p></li>
+<li id="ref-pfefferle-2015"><p>Pfefferle, J., Stuedi, P., Trivedi, A., Metzler, B., Koltsidas, I., and Gross, T. "A Hybrid I/O Virtualization Framework for RDMA-capable Network Interfaces." <em>11th ACM SIGPLAN/SIGOPS International Conference on Virtual Execution Environments (VEE 2015)</em>. ACM, 2015. <a class="ref-link" href="https://doi.org/10.1145/2731186.2731194">DOI: 10.1145/2731186.2731194</a></p></li>
+<li id="ref-nvidia-2022"><p>NVIDIA Corporation. <em>NVIDIA NVLink and NVSwitch: Highest Bandwidth Chip-to-Chip Interconnect</em>. NVIDIA Technical Brief TB-10253-001. NVIDIA Corporation, 2022.</p></li>
+<li id="ref-ferdman-2012"><p>Ferdman, M., Adileh, A., Kocberber, O., Volos, S., Alisafaee, M., Jevdjic, D., Kaynak, C., Popescu, A.D., Ailamaki, A., and Falsafi, B. "Clearing the Clouds: A Study of Emerging Scale-out Workloads on Modern Hardware." <em>17th International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS 2012)</em>. ACM, 2012. <a class="ref-link" href="https://doi.org/10.1145/2150976.2150982">DOI: 10.1145/2150976.2150982</a></p></li>
+<li id="ref-bhattacharjee-2017"><p>Bhattacharjee, A., Lustig, D., and Martonosi, M. <em>Architectural and Operating System Support for Virtual Memory</em>. Synthesis Lectures on Computer Architecture. Morgan &amp; Claypool, 2017. <a class="ref-link" href="https://doi.org/10.2200/S00786ED1V01Y201707CAC040">DOI: 10.2200/S00786ED1V01Y201707CAC040</a></p></li>
+<li id="ref-arm-2022"><p>Arm Limited. <em>ARM System Memory Management Unit Architecture Specification — SMMU architecture version 3.</em> ARM IHI 0070F. 2022. <a class="ref-link" href="https://developer.arm.com/documentation/ihi0070/">https://developer.arm.com/documentation/ihi0070/</a></p></li>
+<li id="ref-cutress-2021"><p>Cutress, I. <em>AMD EPYC 7003 Series: The AMD Milan Deep Dive Review.</em> AnandTech. March 2021. <a class="ref-link" href="https://www.anandtech.com/show/16529/amd-epyc-milan-review">https://www.anandtech.com/show/16529/amd-epyc-milan-review</a></p></li>
 </ol>
 
 </body>

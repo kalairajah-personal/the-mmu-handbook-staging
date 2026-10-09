@@ -570,6 +570,29 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
   body { margin-left: 0 !important; }
 }
 
+
+/* ── In-page TOC: collapsible h2 → h3 (PIPELINE §7.6) ── */
+#TOC details.toc > ul { padding-left: 0; }
+#TOC details > summary { cursor: pointer; list-style: none; }
+#TOC details > summary::-webkit-details-marker { display: none; }
+#TOC details.toc > summary { font-weight: 600; margin-bottom: 0.4em; }
+#TOC details.toc > summary::after { content: " \25BE"; color: #5E81AC; }
+#TOC details.toc:not([open]) > summary::after { content: " \25B8"; }
+#TOC details.toc-sec > summary::before {
+  content: "\25B8"; display: inline-block; width: 1.1em;
+  color: #5E81AC; transition: transform 0.15s;
+}
+#TOC details.toc-sec[open] > summary::before { transform: rotate(90deg); }
+#TOC li.toc-leaf { padding-left: 1.1em; }
+#TOC details.toc-sec > ul { padding-left: 2.2em; font-size: 0.95em; margin: 0.2em 0 0.4em; }
+
+/* ── Citations and reference links (PIPELINE §7.3–§7.4) ── */
+a.cite { text-decoration: none; color: #5E81AC; }
+a.cite:hover { text-decoration: underline; }
+li[id^="ref-"] { scroll-margin-top: 1.5em; }
+li[id^="ref-"]:target { background: rgba(94,129,172,0.14); outline: 2px solid rgba(94,129,172,0.45); border-radius: 4px; }
+a.ref-link { word-break: break-all; }
+a.ref-link--search { opacity: 0.75; font-size: 0.9em; }
 </style>
 <style>
 
@@ -682,16 +705,30 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 </header>
 
 <nav id="TOC" role="doc-toc">
+<details class="toc" open><summary>Contents</summary>
 <ul>
-<li><a href="#section-12.1">12.1 The Six Drivers of AI Memory Systems</a></li>
-<li><a href="#section-12.2">12.2 The Architectural Cost of Runtime Address Translation</a></li>
-<li><a href="#section-12.3">12.3 Introduction - When Good Architecture Faces New Constraints</a></li>
-<li><a href="#section-12.4">12.4 Multi-GPU TLB Coordination - The O(N) Scaling Problem</a></li>
-<li><a href="#section-12.5">12.5 Multi-Tenancy - Isolation vs Performance Trade-Offs</a></li>
-<li><a href="#section-12.6">12.6 Virtualization - The Page Fault Challenge</a></li>
-<li><a href="#section-12.7">12.7 Chapter Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><details class="toc-sec"><summary><a href="#section-12.1">12.1 The Six Drivers of AI Memory Systems</a></summary>
+<ul><li><a href="#driver-1-working-set-size-10-1-000-larger">Driver 1: Working Set Size (10× → 1,000× Larger)</a></li><li><a href="#driver-2-device-count-1-1-000">Driver 2: Device Count (1 → 1,000+)</a></li><li><a href="#driver-3-memory-bandwidth-pressure-10-higher-utilization">Driver 3: Memory Bandwidth Pressure (10× Higher Utilization)</a></li><li><a href="#driver-4-multi-tenancy-perfect-isolation-requirements">Driver 4: Multi-Tenancy (Perfect Isolation Requirements)</a></li><li><a href="#driver-5-virtualization-flexibility-vs-overhead">Driver 5: Virtualization (Flexibility vs Overhead)</a></li><li><a href="#driver-6-dynamic-memory-patterns-unpredictable-access">Driver 6: Dynamic Memory Patterns (Unpredictable Access)</a></li><li><a href="#synthesis-six-simultaneous-pressures">Synthesis: Six Simultaneous Pressures</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-12.2">12.2 The Architectural Cost of Runtime Address Translation</a></summary>
+<ul><li><a href="#the-cost-breakdown-where-20-30-overhead-comes-from">The Cost Breakdown: Where 20-30% Overhead Comes From</a></li><li><a href="#two-architectural-solutions-hardware-vs-software">Two Architectural Solutions: Hardware vs Software</a></li><li><a href="#architectural-comparison">Architectural Comparison</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#section-12.3">12.3 Introduction - When Good Architecture Faces New Constraints</a></li>
+<li><details class="toc-sec"><summary><a href="#section-12.4">12.4 Multi-GPU TLB Coordination - The O(N) Scaling Problem</a></summary>
+<ul><li><a href="#section-12.4.1">12.2.1 GRIT: Measuring the Shootdown Bottleneck</a></li><li><a href="#deep-dive-gpu-resident-incremental-tlb-management-hpca-2023">Deep Dive: GPU-Resident Incremental TLB Management (HPCA 2023)</a></li><li><a href="#sec-1-problem-context-and-motivation">1. Problem Context and Motivation</a></li><li><a href="#why-this-matters">Why This Matters</a></li><li><a href="#sec-2-experimental-methodology">2. Experimental Methodology</a></li><li><a href="#sec-2-1-hardware-configuration">2.1 Hardware Configuration</a></li><li><a href="#sec-2-2-workload-selection">2.2 Workload Selection</a></li><li><a href="#sec-2-3-measurement-infrastructure">2.3 Measurement Infrastructure</a></li><li><a href="#sec-3-measured-results">3. Measured Results</a></li><li><a href="#sec-3-1-primary-finding-23-7-overhead">3.1 Primary Finding: 23.7% Overhead</a></li><li><a href="#sec-3-2-shootdown-frequency-analysis">3.2 Shootdown Frequency Analysis</a></li><li><a href="#sec-3-3-per-shootdown-latency-breakdown">3.3 Per-Shootdown Latency Breakdown</a></li><li><a href="#sec-3-4-scaling-analysis">3.4 Scaling Analysis</a></li><li><a href="#sec-4-protocol-analysis-serial-shootdown-mechanism">4. Protocol Analysis: Serial Shootdown Mechanism</a></li><li><a href="#sec-4-1-the-naive-serial-protocol">4.1 The Naive Serial Protocol</a></li><li><a href="#sec-4-2-why-serial">4.2 Why Serial?</a></li><li><a href="#sec-5-grit-s-proposed-solution-incremental-tlb-management">5. GRIT's Proposed Solution: Incremental TLB Management</a></li><li><a href="#sec-6-production-implications">6. Production Implications</a></li><li><a href="#sec-6-1-why-cloud-providers-care">6.1 Why Cloud Providers Care</a></li><li><a href="#sec-6-2-why-hardware-vendors-care">6.2 Why Hardware Vendors Care</a></li><li><a href="#sec-7-limitations-and-criticisms">7. Limitations and Criticisms</a></li><li><a href="#sec-7-1-measurement-limitations">7.1 Measurement Limitations</a></li><li><a href="#sec-7-2-workload-generality">7.2 Workload Generality</a></li><li><a href="#sec-7-3-scale-limitations">7.3 Scale Limitations</a></li><li><a href="#sec-8-citation-impact-and-follow-on-work">8. Citation Impact and Follow-On Work</a></li><li><a href="#sec-9-reproducibility-and-open-source">9. Reproducibility and Open Source</a></li><li><a href="#sec-10-summary-grit-s-contribution">10. Summary: GRIT's Contribution</a></li><li><a href="#section-12.4.2">12.2.2 Trans-FW: Remote TLB Forwarding</a></li><li><a href="#sec-1-problem-context-redundant-page-walks">1. Problem Context: Redundant Page Walks</a></li><li><a href="#sec-2-trans-fw-solution-tlb-level-forwarding">2. Trans-FW Solution: TLB-Level Forwarding</a></li><li><a href="#sec-3-architectural-implementation">3. Architectural Implementation</a></li><li><a href="#sec-4-measured-results">4. Measured Results</a></li><li><a href="#sec-5-scaling-analysis-why-only-8-gpus">5. Scaling Analysis: Why Only 8 GPUs?</a></li><li><a href="#sec-6-the-directory-solution-foreshadowing-idyll">6. The Directory Solution (Foreshadowing IDYLL)</a></li><li><a href="#sec-7-hardware-cost-analysis">7. Hardware Cost Analysis</a></li><li><a href="#sec-8-workload-sensitivity">8. Workload Sensitivity</a></li><li><a href="#sec-9-limitations-and-criticisms">9. Limitations and Criticisms</a></li><li><a href="#sec-10-relationship-to-follow-on-work">10. Relationship to Follow-On Work</a></li><li><a href="#sec-11-summary-trans-fw-s-contribution">11. Summary: Trans-FW's Contribution</a></li><li><a href="#section-12.4.3">12.2.3 ecoTLB: Eventual Consistency for TLB Coherence</a></li><li><a href="#deep-dive-eventually-consistent-tlbs-acm-taco-2020">Deep Dive: Eventually Consistent TLBs (ACM TACO 2020)</a></li><li><a href="#sec-1-the-strict-coherence-bottleneck">1. The Strict Coherence Bottleneck</a></li><li><a href="#sec-2-ecotlb-s-radical-idea-eventual-consistency">2. ecoTLB's Radical Idea: Eventual Consistency</a></li><li><a href="#sec-3-mechanism-lazy-invalidation-with-asids">3. Mechanism: Lazy Invalidation with ASIDs</a></li><li><a href="#sec-4-measured-results-2">4. Measured Results</a></li><li><a href="#sec-5-the-stale-access-problem">5. The Stale Access Problem</a></li><li><a href="#sec-6-why-ecotlb-didn-t-ship-the-correctness-problem">6. Why ecoTLB Didn't Ship: The Correctness Problem</a></li><li><a href="#sec-7-when-eventual-consistency-might-work">7. When Eventual Consistency Might Work</a></li><li><a href="#sec-8-academic-impact-vs-production-adoption">8. Academic Impact vs Production Adoption</a></li><li><a href="#sec-9-comparison-to-other-eventual-consistency-systems">9. Comparison to Other Eventual Consistency Systems</a></li><li><a href="#sec-10-summary-ecotlb-s-contribution">10. Summary: ecoTLB's Contribution</a></li><li><a href="#section-12.4.4">12.2.4 IDYLL: Directory-Based Coherence</a></li><li><a href="#deep-dive-in-pte-directory-for-lightweight-invalidation-micr">Deep Dive: In-PTE Directory for Lightweight Invalidation (MICRO 2023)</a></li><li><a href="#sec-1-the-directory-coherence-foundation">1. The Directory Coherence Foundation</a></li><li><a href="#sec-2-the-o-n-problem-revisited">2. The O(N) Problem Revisited</a></li><li><a href="#sec-3-idyll-s-directory-solution">3. IDYLL's Directory Solution</a></li><li><a href="#sec-4-in-pte-directory-architecture">4. In-PTE Directory Architecture</a></li><li><a href="#sec-5-invalidation-protocol-with-directories">5. Invalidation Protocol with Directories</a></li><li><a href="#sec-6-measured-results">6. Measured Results</a></li><li><a href="#sec-7-hardware-implementation-complexity">7. Hardware Implementation Complexity</a></li><li><a href="#sec-8-comparison-to-alternatives">8. Comparison to Alternatives</a></li><li><a href="#sec-9-production-deployment-status">9. Production Deployment Status</a></li><li><a href="#sec-10-limitations-and-open-questions">10. Limitations and Open Questions</a></li><li><a href="#sec-11-summary-idyll-s-contribution">11. Summary: IDYLL's Contribution</a></li><li><a href="#section-12.4.5">12.2.5 The Software Alternative: XLA Static Compilation</a></li><li><a href="#deep-dive-eliminating-runtime-address-translation-google-res">Deep Dive: Eliminating Runtime Address Translation (Google Research, MLSys 2019)</a></li><li><a href="#sec-1-the-compiler-solution">1. The Compiler Solution</a></li><li><a href="#sec-2-liveness-analysis-the-core-technique">2. Liveness Analysis: The Core Technique</a></li><li><a href="#sec-3-quantified-memory-savings">3. Quantified Memory Savings</a></li><li><a href="#sec-4-compile-time-address-assignment">4. Compile-Time Address Assignment</a></li><li><a href="#sec-5-performance-zero-overhead">5. Performance: Zero Overhead</a></li><li><a href="#sec-6-the-cost-flexibility-loss">6. The Cost: Flexibility Loss</a></li><li><a href="#sec-7-when-xla-works-vs-fails">7. When XLA Works vs Fails</a></li><li><a href="#sec-8-production-deployment">8. Production Deployment</a></li><li><a href="#sec-9-comparison-to-hardware-solutions">9. Comparison to Hardware Solutions</a></li><li><a href="#sec-10-summary-xla-s-role-in-the-ecosystem">10. Summary: XLA's Role in the Ecosystem</a></li><li><a href="#section-12.4-summary">Section 12.2 Summary: Five Approaches to TLB Coherence</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-12.5">12.5 Multi-Tenancy - Isolation vs Performance Trade-Offs</a></summary>
+<ul><li><a href="#section-12.5.1">12.3.1 TunneLs: Exposing Shared TLB Vulnerabilities</a></li><li><a href="#section-12.5.2">12.3.2 Three Isolation Architectures Compared</a></li><li><a href="#section-12.5.3">12.3.3 CryptoMMU: Cryptographic Translation</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-12.6">12.6 Virtualization - The Page Fault Challenge</a></summary>
+<ul><li><a href="#section-12.6.1">12.4.1 LVM: Measuring Virtualization Overhead</a></li><li><a href="#section-12.6.2">12.4.2 Performance Recovery via Prefetching and Hints</a></li><li><a href="#section-12.6.3">12.4.3 DMT: Dynamic Memory Tiering</a></li><li><a href="#section-12.6.4">12.4.4 HugeGPT: Transparent Huge Pages</a></li><li><a href="#section-12-4-summary-gpu-virtualization-the-path-from-75-to-">Section 12.4 Summary: GPU Virtualization - The Path from 75% to 3% Overhead</a></li></ul>
+</details></li>
+<li><details class="toc-sec"><summary><a href="#section-12.7">12.7 Chapter Summary</a></summary>
+<ul><li><a href="#trade-off-dimension-1-coherence-strategy">Trade-Off Dimension 1: Coherence Strategy</a></li><li><a href="#trade-off-dimension-2-isolation-strategy">Trade-Off Dimension 2: Isolation Strategy</a></li><li><a href="#trade-off-dimension-3-virtualization-strategy">Trade-Off Dimension 3: Virtualization Strategy</a></li><li><a href="#the-meta-lesson-context-dependent-optimization">The Meta-Lesson: Context-Dependent Optimization</a></li><li><a href="#the-future-specialized-workload-aware-memory-management">The Future: Specialized, Workload-Aware Memory Management</a></li><li><a href="#summary-three-key-takeaways">Summary: Three Key Takeaways</a></li></ul>
+</details></li>
+<li class="toc-leaf"><a href="#references">References</a></li>
 </ul>
+</details>
 </nav>
 
 <p><em>This chapter presents quantitative evidence from academic research demonstrating where conventional MMU architecture encounters fundamental limitations when scaled to AI workloads. We examine three specific breaking points—multi-GPU coherence, multi-tenant isolation, and virtualization overhead—and analyze the architectural solutions that emerge.</em></p>
@@ -702,7 +739,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Before examining how MMU architecture breaks under AI workloads, we must establish the fundamental requirements driving these systems. Six factors—increasing from CPU-style computing to modern AI—create pressures that conventional MMU designs struggle to accommodate.</p>
 
-<h3>Driver 1: Working Set Size (10× → 1,000× Larger)</h3>
+<h3 id="driver-1-working-set-size-10-1-000-larger">Driver 1: Working Set Size (10× → 1,000× Larger)</h3>
 
 <p>Traditional computing operates on relatively small working sets. Video game rendering requires 700 MB for textures, buffers, and shaders. With 2MB pages and 512 TLB entries, this provides 1 GB of coverage—complete coverage with 98-99% hit rates.</p>
 
@@ -773,7 +810,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>The quantified impact is severe. TLB miss penalty is 200ns for a 4-level page walk. With baseline HBM3 latency of 100ns, effective latency becomes 299.89ns (0.055% × 100ns + 99.945% × 300ns), creating a 3× slowdown compared to perfect TLB coverage. This is not marginal—TLB effectiveness has completely collapsed. The MMU was designed for working sets of 1-10 GB. AI models are 100-1,000× larger.</p>
 
-<h3>Driver 2: Device Count (1 → 1,000+)</h3>
+<h3 id="driver-2-device-count-1-1-000">Driver 2: Device Count (1 → 1,000+)</h3>
 
 <p>Consumer GPUs operate singly. Workstations use 2-4 GPUs with independent address spaces. HPC clusters max out at 8-64 GPUs using MPI message passing. TLB coordination is minimal or absent.</p>
 
@@ -781,7 +818,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>The O(N) coordination problem becomes catastrophic. A single unmap operation requires sending invalidation to GPUs 1-9,999 serially (10ms), then waiting for 9,999 acknowledgments (10ms), totaling 20ms per operation. At 74 unmaps per second (measured by GRIT), this creates 1,480ms per second—148% overhead, causing system deadlock. With batching and pipelining, actual measurement shows 23.7% overhead at 512 GPUs. Extrapolation to 10,000 GPUs yields 47-80% overhead.</p>
 
-<h3>Driver 3: Memory Bandwidth Pressure (10× Higher Utilization)</h3>
+<h3 id="driver-3-memory-bandwidth-pressure-10-higher-utilization">Driver 3: Memory Bandwidth Pressure (10× Higher Utilization)</h3>
 
 <p>Gaming GPUs achieve 200-400 GB/s utilization of 1 TB/s peak bandwidth (20-40%). They're limited by compute, not memory. TLB misses occur during idle memory cycles, enabling latency hiding. Throughput loss: 2-5%.</p>
 
@@ -789,7 +826,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>At low utilization (40%), other threads issue requests during TLB misses, using spare bandwidth. The 200ns stall is hidden. At high utilization (90%), all 10,752 threads access memory simultaneously. A TLB miss blocks all threads, idling the entire GPU for 200ns. At 1% TLB miss rate, low utilization yields negligible 2ns average delay. High utilization yields 18% throughput loss. Bandwidth pressure amplifies overhead exponentially.</p>
 
-<h3>Driver 4: Multi-Tenancy (Perfect Isolation Requirements)</h3>
+<h3 id="driver-4-multi-tenancy-perfect-isolation-requirements">Driver 4: Multi-Tenancy (Perfect Isolation Requirements)</h3>
 
 <p>Consumer GPUs serve single users who own the hardware. Trust is implicit. Workstations serve single organizations. Colleagues are trusted within departmental boundaries.</p>
 
@@ -799,7 +836,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Three solutions emerge: partitioned TLB (5-7% performance cost, 99% isolation), chiplet isolation (0% cost via physics-based separation), and CryptoMMU (18% cost, 95% isolation, research only).</p>
 
-<h3>Driver 5: Virtualization (Flexibility vs Overhead)</h3>
+<h3 id="driver-5-virtualization-flexibility-vs-overhead">Driver 5: Virtualization (Flexibility vs Overhead)</h3>
 
 <p>CPU virtualization matured from 2005-2026. Nested page tables create two-level translation (Guest VA → Guest PA → Host PA), doubling TLB miss cost from 200 to 400 cycles. With 98% hit rates and good locality, total overhead stays at 2-5%. This is acceptable. Deployment reached 90%+ of cloud servers.</p>
 
@@ -807,7 +844,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>The GPU page fault problem differs fundamentally from CPUs. When a CPU thread faults, it stalls for 50,000 cycles while other threads continue, impacting only 12.5% of capacity (1 of 8 threads). When a GPU thread faults, all 10,752 threads stall due to warp execution model, idling 100% of GPU capacity. Measured impact: 75% throughput loss over full iteration.</p>
 
-<h3>Driver 6: Dynamic Memory Patterns (Unpredictable Access)</h3>
+<h3 id="driver-6-dynamic-memory-patterns-unpredictable-access">Driver 6: Dynamic Memory Patterns (Unpredictable Access)</h3>
 
 <p>Traditional compute follows predictable patterns. Image processing scans pixel arrays sequentially (stride-1). Matrix multiply traverses row-major (predictable strides). Hardware prefetchers achieve 90-95% accuracy, hiding most TLB misses.</p>
 
@@ -815,7 +852,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Measured prefetching effectiveness varies dramatically by workload. Image processing with sequential access achieves 95% prefetch accuracy and 98% TLB hit rate. CNN (ResNet) with mostly sequential patterns achieves 75% accuracy and 92% hit rate. Transformer (GPT) with data-dependent access achieves only 20% accuracy and 45% hit rate. Graph neural networks with random walks achieve 5% accuracy and 12% hit rate. Dynamic workloads cannot rely on hardware prefetching.</p>
 
-<h3>Synthesis: Six Simultaneous Pressures</h3>
+<h3 id="synthesis-six-simultaneous-pressures">Synthesis: Six Simultaneous Pressures</h3>
 
 <p>These six drivers do not occur independently. Modern AI systems face all six simultaneously. GPT-4 training combines 1.8 TB working set, 25,000 GPUs, 85-90% bandwidth utilization, and attention's unpredictable access patterns. Combined MMU challenges include 99.9% TLB miss rate, 40%+ coherence overhead at 25K GPUs, no latency hiding at 90% bandwidth, 75% virtualization overhead if enabled, and ineffective prefetching.</p>
 
@@ -827,7 +864,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>Dynamic memory allocation enables protection, sharing, and flexibility. But flexibility has a cost. This section quantifies the architectural overhead of runtime address translation for AI workloads.</p>
 
-<h3>The Cost Breakdown: Where 20-30% Overhead Comes From</h3>
+<h3 id="the-cost-breakdown-where-20-30-overhead-comes-from">The Cost Breakdown: Where 20-30% Overhead Comes From</h3>
 
 <p><strong>Component 1: TLB Lookup Latency.</strong> Every virtual address requires translation. TLB hits cost 2 cycles (overlapped with L1 cache). TLB misses cost 50-200 cycles for 4-level page table walks (200ns at 2.5 GHz). With 95% hit rate, effective latency becomes 9.4 cycles average (0.95 × 2 + 0.05 × 150), creating 4.7× slowdown per memory access.</p>
 
@@ -941,7 +978,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p><strong>Component 3: TLB Shootdown.</strong> Single-GPU shootdown costs 500ns. Multi-GPU shootdown with 512 GPUs using serial protocol costs 5.12ms: 2.56ms sending invalidation to 511 GPUs (511 × 5µs), plus 2.56ms waiting for ACKs. At 74 shootdowns per second (GRIT measurement), overhead reaches 379ms per second—37.9%. Measured with batching: 23.7%. With IDYLL directory-based coherence: ~5%.</p>
 
-<h3>Two Architectural Solutions: Hardware vs Software</h3>
+<h3 id="two-architectural-solutions-hardware-vs-software">Two Architectural Solutions: Hardware vs Software</h3>
 
 <p><strong>Solution 1: Hardware Directory-Based Coherence (IDYLL).</strong> Directory-based cache coherence (Censier & Feautrier, IEEE TC 1978) tracks which processors cache each memory line, invalidating only processors with cached copies. This reduces O(N) broadcast to O(log N) multicast.</p>
 
@@ -961,7 +998,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <p>The cost: flexibility loss. XLA cannot handle dynamic batch sizes (must be fixed at compile time), data-dependent control flow (if/else based on tensor values), or variable-length sequences (must pad to maximum). Recompilation takes 30-60 minutes for large models.</p>
 
-<h3>Architectural Comparison</h3>
+<h3 id="architectural-comparison">Architectural Comparison</h3>
 
 <table>
 <thead>
@@ -1095,7 +1132,7 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <h3 id="section-12.4.1">12.2.1 GRIT: Measuring the Shootdown Bottleneck</h3>
 
-<h3>Deep Dive: GPU-Resident Incremental TLB Management (HPCA 2023)</h3>
+<h3 id="deep-dive-gpu-resident-incremental-tlb-management-hpca-2023">Deep Dive: GPU-Resident Incremental TLB Management (HPCA 2023)</h3>
 
 <strong>Authors:</strong> Konstantinos Menychtas, Abhishek Bhattacharjee (Yale University), Jihye Kwon, Michael A. Kozuch (University of Pittsburgh)  
 <strong>Institution:</strong> University of Pittsburgh, Yale University  
@@ -1105,11 +1142,11 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <hr />
 
-<h3>1. Problem Context and Motivation</h3>
+<h3 id="sec-1-problem-context-and-motivation">1. Problem Context and Motivation</h3>
 
 <p>The GRIT paper represents the first comprehensive measurement study quantifying TLB coherence overhead in multi-GPU distributed training systems. Prior work assumed TLB shootdowns were negligible (< 1% overhead) based on single-GPU or small-scale systems. GRIT's key contribution is demonstrating that at scale (512+ GPUs), TLB coherence becomes the <strong>dominant performance bottleneck</strong>, consuming up to 23.7% of total system time.</p>
 
-<h3>Why This Matters</h3>
+<h3 id="why-this-matters">Why This Matters</h3>
 
 <p>Modern AI training distributes computation across hundreds or thousands of GPUs. All GPUs share a unified virtual address space (via CUDA Unified Memory or distributed training frameworks like PyTorch DDP). When one GPU modifies page table entries—allocating new memory, freeing tensors, or changing permissions—all other GPUs must invalidate their cached translations. This is the TLB shootdown problem.</p>
 
@@ -1117,9 +1154,9 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 <hr />
 
-<h3>2. Experimental Methodology</h3>
+<h3 id="sec-2-experimental-methodology">2. Experimental Methodology</h3>
 
-<h3>2.1 Hardware Configuration</h3>
+<h3 id="sec-2-1-hardware-configuration">2.1 Hardware Configuration</h3>
 
 <strong>System Specifications:</strong>
 <ul>
@@ -1145,14 +1182,14 @@ h1,h2,h3,h4 { scroll-margin-top: 20px; }
 
 Each server: NVLink for intra-server GPU-GPU, InfiniBand for inter-server.
 
-<h3>2.2 Workload Selection</h3>
+<h3 id="sec-2-2-workload-selection">2.2 Workload Selection</h3>
 
 <strong>Training Workloads Tested:</strong>
 <p>1. <strong>ResNet-50</strong> (image classification): 512 GPUs, batch size 32/GPU 2. <strong>GPT-2</strong> (language modeling): 512 GPUs, batch size 16/GPU, sequence length 1024 3. <strong>BERT-Large</strong> (NLP): 512 GPUs, batch size 24/GPU 4. <strong>DLRM</strong> (recommendation): 512 GPUs, sparse embeddings</p>
 
 <p>Each workload runs for 1,000 training iterations with profiling instrumentation.</p>
 
-<h3>2.3 Measurement Infrastructure</h3>
+<h3 id="sec-2-3-measurement-infrastructure">2.3 Measurement Infrastructure</h3>
 
 <p>The authors instrumented the Linux kernel to intercept and measure TLB shootdown operations:</p>
 
@@ -1184,9 +1221,9 @@ void flush_tlb_mm_range(struct mm_struct *mm,
 
 <hr />
 
-<h3>3. Measured Results</h3>
+<h3 id="sec-3-measured-results">3. Measured Results</h3>
 
-<h3>3.1 Primary Finding: 23.7% Overhead</h3>
+<h3 id="sec-3-1-primary-finding-23-7-overhead">3.1 Primary Finding: 23.7% Overhead</h3>
 
 <strong>GPT-2 Training (Representative Workload):</strong>
 
@@ -1217,7 +1254,7 @@ Breakdown:
 
 <p>The key variable is <em>how often shared tensors are freed</em>. Convolutional networks with static weight shapes free fewer shared buffers per iteration. Transformer models free large gradient tensors after every all-reduce. Graph neural networks with irregular topology exhibit the highest shootdown rates. A mitigation that works well for ResNet (batching 8–22 shootdowns/sec) may be insufficient for graph NNs (89/sec).</p>
 
-<h3>3.2 Shootdown Frequency Analysis</h3>
+<h3 id="sec-3-2-shootdown-frequency-analysis">3.2 Shootdown Frequency Analysis</h3>
 
 <strong>Per-Iteration Statistics:</strong>
 <pre><code>Training iteration components:
@@ -1241,7 +1278,7 @@ Not all allocations trigger shootdowns—only those modifying page table entries
 
 In distributed training, gradient tensors are freed after all-reduce (shared across GPUs), triggering shootdowns.
 
-<h3>3.3 Per-Shootdown Latency Breakdown</h3>
+<h3 id="sec-3-3-per-shootdown-latency-breakdown">3.3 Per-Shootdown Latency Breakdown</h3>
 
 <strong>Measured Latency Distribution:</strong>
 <pre><code>Mean: 3.2 ms
@@ -1297,7 +1334,7 @@ The authors discovered <strong>batching and pipelining optimizations</strong> in
 
 Combined effect: 5.58 ms theoretical → 3.2 ms measured (43% speedup from optimizations).
 
-<h3>3.4 Scaling Analysis</h3>
+<h3 id="sec-3-4-scaling-analysis">3.4 Scaling Analysis</h3>
 
 <p>The authors measured how overhead grows with GPU count:</p>
 
@@ -1333,9 +1370,9 @@ The <strong>23.7% overhead</strong> is the <em>peak</em> during critical phases,
 
 <hr />
 
-<h3>4. Protocol Analysis: Serial Shootdown Mechanism</h3>
+<h3 id="sec-4-protocol-analysis-serial-shootdown-mechanism">4. Protocol Analysis: Serial Shootdown Mechanism</h3>
 
-<h3>4.1 The Naive Serial Protocol</h3>
+<h3 id="sec-4-1-the-naive-serial-protocol">4.1 The Naive Serial Protocol</h3>
 
 <p>The Linux kernel uses a serial broadcast protocol for TLB shootdowns:</p>
 
@@ -1380,7 +1417,7 @@ GPU 2:
 
 <strong>Problem:</strong> O(N) latency. For 512 GPUs: 512 × 10µs = 5.1 ms (matches measured 5.58 ms theoretical).
 
-<h3>4.2 Why Serial?</h3>
+<h3 id="sec-4-2-why-serial">4.2 Why Serial?</h3>
 
 <p>Historical reasons: Linux kernel TLB shootdown was designed for <strong>CPUs</strong> with 4-128 cores, not 512 GPUs.</p>
 
@@ -1402,7 +1439,7 @@ GPU 2:
 
 <hr />
 
-<h3>5. GRIT's Proposed Solution: Incremental TLB Management</h3>
+<h3 id="sec-5-grit-s-proposed-solution-incremental-tlb-management">5. GRIT's Proposed Solution: Incremental TLB Management</h3>
 
 <p>The authors propose <strong>GRIT (GPU-Resident Incremental TLB management)</strong>, but this section focuses on the <em>measurement</em> contribution, not the solution. (GRIT's solution involves caching translation sharing—covered in Section 12.2.2.)</p>
 
@@ -1430,9 +1467,9 @@ GPU 2:
 
 <hr />
 
-<h3>6. Production Implications</h3>
+<h3 id="sec-6-production-implications">6. Production Implications</h3>
 
-<h3>6.1 Why Cloud Providers Care</h3>
+<h3 id="sec-6-1-why-cloud-providers-care">6.1 Why Cloud Providers Care</h3>
 
 <strong>Economic Impact:</strong>
 
@@ -1450,7 +1487,7 @@ Annual gain (10K GPUs): 10,000 × 24.5% × $10/hr × 8760 hr/year = $214M</code>
 
 <strong>This measurement study unlocked $200M+ annual revenue</strong> by identifying the bottleneck.
 
-<h3>6.2 Why Hardware Vendors Care</h3>
+<h3 id="sec-6-2-why-hardware-vendors-care">6.2 Why Hardware Vendors Care</h3>
 
 <p>GRIT's measurements drove hardware changes:</p>
 
@@ -1464,9 +1501,9 @@ Annual gain (10K GPUs): 10,000 × 24.5% × $10/hr × 8760 hr/year = $214M</code>
 
 <hr />
 
-<h3>7. Limitations and Criticisms</h3>
+<h3 id="sec-7-limitations-and-criticisms">7. Limitations and Criticisms</h3>
 
-<h3>7.1 Measurement Limitations</h3>
+<h3 id="sec-7-1-measurement-limitations">7.1 Measurement Limitations</h3>
 
 <strong>What GRIT Measured:</strong>
 <ul>
@@ -1484,7 +1521,7 @@ Annual gain (10K GPUs): 10,000 × 24.5% × $10/hr × 8760 hr/year = $214M</code>
 <li>Network congestion (do shootdowns interfere with all-reduce traffic?)</li>
 </ul>
 
-<h3>7.2 Workload Generality</h3>
+<h3 id="sec-7-2-workload-generality">7.2 Workload Generality</h3>
 
 <p>GRIT tested 4 workloads (ResNet, GPT-2, BERT, DLRM). Questions:</p>
 
@@ -1500,7 +1537,7 @@ Annual gain (10K GPUs): 10,000 × 24.5% × $10/hr × 8760 hr/year = $214M</code>
 <li>Follow-up: Inference shows 3-5% overhead (less dynamic allocation)</li>
 </ul>
 
-<h3>7.3 Scale Limitations</h3>
+<h3 id="sec-7-3-scale-limitations">7.3 Scale Limitations</h3>
 
 <p>GRIT tested up to 512 GPUs. What about 10,000 GPUs (modern LLM scale)?</p>
 
@@ -1512,7 +1549,7 @@ Clearly, the serial protocol doesn't scale beyond 1,024 GPUs. This motivated dir
 
 <hr />
 
-<h3>8. Citation Impact and Follow-On Work</h3>
+<h3 id="sec-8-citation-impact-and-follow-on-work">8. Citation Impact and Follow-On Work</h3>
 
 <p>GRIT has been cited 47 times (as of Feb 2026), with major follow-on work:</p>
 
@@ -1522,7 +1559,7 @@ Clearly, the serial protocol doesn't scale beyond 1,024 GPUs. This motivated dir
 
 <hr />
 
-<h3>9. Reproducibility and Open Source</h3>
+<h3 id="sec-9-reproducibility-and-open-source">9. Reproducibility and Open Source</h3>
 
 <strong>Code Availability:</strong>
 <ul>
@@ -1547,7 +1584,7 @@ Clearly, the serial protocol doesn't scale beyond 1,024 GPUs. This motivated dir
 
 <hr />
 
-<h3>10. Summary: GRIT's Contribution</h3>
+<h3 id="sec-10-summary-grit-s-contribution">10. Summary: GRIT's Contribution</h3>
 
 <strong>What GRIT Proved:</strong>
 <p>1. TLB shootdowns are <strong>not negligible</strong> at GPU scale (23.7% overhead measured) 2. Serial protocol scales <strong>O(N)</strong> (3.2 ms at 512 GPUs → 6.4 ms at 1024) 3. Shootdown frequency is <strong>higher than expected</strong> (11-74/sec during training) 4. Economic impact is <strong>massive</strong> ($200M+ revenue for cloud providers)</p>
@@ -1580,7 +1617,7 @@ Clearly, the serial protocol doesn't scale beyond 1,024 GPUs. This motivated dir
 
 <hr />
 
-<h3>1. Problem Context: Redundant Page Walks</h3>
+<h3 id="sec-1-problem-context-redundant-page-walks">1. Problem Context: Redundant Page Walks</h3>
 
 <p>GRIT established that TLB shootdowns consume 23.7% of system time. But shootdowns are only half the problem—the other half is <strong>redundant page walks</strong>. When 512 GPUs access the same memory (model weights, framework code), each GPU independently walks the page table to translate virtual addresses.</p>
 
@@ -1614,7 +1651,7 @@ Only 12.5% of pages are shared, but these pages account for 95% of TLB hits (mod
 
 <hr />
 
-<h3>2. Trans-FW Solution: TLB-Level Forwarding</h3>
+<h3 id="sec-2-trans-fw-solution-tlb-level-forwarding">2. Trans-FW Solution: TLB-Level Forwarding</h3>
 
 <strong>Core Idea:</strong> When GPU 0 performs a page walk, broadcast the resulting translation to all other GPUs. They install it directly without walking.
 
@@ -1637,7 +1674,7 @@ Trans-FW (With Forwarding):
 
 <hr />
 
-<h3>3. Architectural Implementation</h3>
+<h3 id="sec-3-architectural-implementation">3. Architectural Implementation</h3>
 
 <p>Trans-FW requires hardware support in the memory management unit (MMU).</p>
 
@@ -1684,7 +1721,7 @@ void handle_tlb_miss(virtual_address va) {
 
 <hr />
 
-<h3>4. Measured Results</h3>
+<h3 id="sec-4-measured-results">4. Measured Results</h3>
 
 <strong>Experimental Setup:</strong>
 <ul>
@@ -1744,7 +1781,7 @@ void handle_tlb_miss(virtual_address va) {
 
 <hr />
 
-<h3>5. Scaling Analysis: Why Only 8 GPUs?</h3>
+<h3 id="sec-5-scaling-analysis-why-only-8-gpus">5. Scaling Analysis: Why Only 8 GPUs?</h3>
 
 <p>Trans-FW's experiments used only 8 GPUs, far fewer than GRIT's 512. Why?</p>
 
@@ -1770,7 +1807,7 @@ Correct. Trans-FW has a <strong>sweet spot</strong>:
 
 <hr />
 
-<h3>6. The Directory Solution (Foreshadowing IDYLL)</h3>
+<h3 id="sec-6-the-directory-solution-foreshadowing-idyll">6. The Directory Solution (Foreshadowing IDYLL)</h3>
 
 <p>Trans-FW's authors acknowledged the broadcast bottleneck and suggested directory-based coherence as the solution:</p>
 
@@ -1788,7 +1825,7 @@ Correct. Trans-FW has a <strong>sweet spot</strong>:
 
 <hr />
 
-<h3>7. Hardware Cost Analysis</h3>
+<h3 id="sec-7-hardware-cost-analysis">7. Hardware Cost Analysis</h3>
 
 <strong>Silicon Area:</strong>
 <ul>
@@ -1824,7 +1861,7 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <hr />
 
-<h3>8. Workload Sensitivity</h3>
+<h3 id="sec-8-workload-sensitivity">8. Workload Sensitivity</h3>
 
 <strong>When Trans-FW Helps:</strong>
 <ul>
@@ -1871,7 +1908,7 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <hr />
 
-<h3>9. Limitations and Criticisms</h3>
+<h3 id="sec-9-limitations-and-criticisms">9. Limitations and Criticisms</h3>
 
 <strong>Criticism 1: Limited Scalability</strong>
 
@@ -1893,7 +1930,7 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <hr />
 
-<h3>10. Relationship to Follow-On Work</h3>
+<h3 id="sec-10-relationship-to-follow-on-work">10. Relationship to Follow-On Work</h3>
 
 <strong>Trans-FW → IDYLL (MICRO 2023):</strong>
 
@@ -1917,7 +1954,7 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <hr />
 
-<h3>11. Summary: Trans-FW's Contribution</h3>
+<h3 id="sec-11-summary-trans-fw-s-contribution">11. Summary: Trans-FW's Contribution</h3>
 
 <strong>What Trans-FW Proved:</strong>
 <p>1. <strong>60-80% of page walks are redundant</strong> in data-parallel training 2. <strong>Broadcasting translations</strong> reduces walk overhead by 75% 3. <strong>Broadcast doesn't scale</strong> beyond ~100 GPUs (requires directories)</p>
@@ -1932,7 +1969,7 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <h3 id="section-12.4.3">12.2.3 ecoTLB: Eventual Consistency for TLB Coherence</h3>
 
-<h3>Deep Dive: Eventually Consistent TLBs (ACM TACO 2020)</h3>
+<h3 id="deep-dive-eventually-consistent-tlbs-acm-taco-2020">Deep Dive: Eventually Consistent TLBs (ACM TACO 2020)</h3>
 
 <strong>Authors:</strong> Steffen Maass, Mohan Kumar, Taesoo Kim, Tushar Krishna, Abhishek Bhattacharjee  
 <strong>Institutions:</strong> Georgia Institute of Technology, Yale University  
@@ -1942,7 +1979,7 @@ The hardware cost is justified if Trans-FW is deployed at scale.
 
 <hr />
 
-<h3>1. The Strict Coherence Bottleneck</h3>
+<h3 id="sec-1-the-strict-coherence-bottleneck">1. The Strict Coherence Bottleneck</h3>
 
 <p>Traditional TLB coherence protocols enforce <strong>strict consistency</strong>: when one CPU/GPU modifies a page table entry, all other processors must invalidate their cached translations <strong>immediately</strong> before the modification completes.</p>
 
@@ -1968,7 +2005,7 @@ This is why strict coherence is mandatory... or is it?
 
 <hr />
 
-<h3>2. ecoTLB's Radical Idea: Eventual Consistency</h3>
+<h3 id="sec-2-ecotlb-s-radical-idea-eventual-consistency">2. ecoTLB's Radical Idea: Eventual Consistency</h3>
 
 <strong>Key Insight:</strong> Not all TLB invalidations require <strong>immediate</strong> global synchronization. If we can tolerate brief periods of inconsistency, we can eliminate expensive synchronous operations.
 
@@ -1989,7 +2026,7 @@ This is why strict coherence is mandatory... or is it?
 
 <hr />
 
-<h3>3. Mechanism: Lazy Invalidation with ASIDs</h3>
+<h3 id="sec-3-mechanism-lazy-invalidation-with-asids">3. Mechanism: Lazy Invalidation with ASIDs</h3>
 
 <p>ecoTLB uses <strong>Address Space Identifiers (ASIDs)</strong> to track TLB entry validity without synchronous flushes.</p>
 
@@ -2064,7 +2101,7 @@ void receive_invalidation(page, new_asid) {
 
 <hr />
 
-<h3>4. Measured Results</h3>
+<h3 id="sec-4-measured-results-2">4. Measured Results</h3>
 
 <strong>Experimental Setup:</strong>
 <ul>
@@ -2124,7 +2161,7 @@ ecoTLB (eventual coherence):
 
 <hr />
 
-<h3>5. The Stale Access Problem</h3>
+<h3 id="sec-5-the-stale-access-problem">5. The Stale Access Problem</h3>
 
 <strong>Critical Question:</strong> What happens when GPU 2 uses a stale translation during the transition period?
 
@@ -2153,7 +2190,7 @@ Two scenarios:
 
 <hr />
 
-<h3>6. Why ecoTLB Didn't Ship: The Correctness Problem</h3>
+<h3 id="sec-6-why-ecotlb-didn-t-ship-the-correctness-problem">6. Why ecoTLB Didn't Ship: The Correctness Problem</h3>
 
 <p>Despite impressive performance (8× speedup in stress tests), ecoTLB has <strong>never been deployed in production</strong>. Why?</p>
 
@@ -2186,7 +2223,7 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <hr />
 
-<h3>7. When Eventual Consistency Might Work</h3>
+<h3 id="sec-7-when-eventual-consistency-might-work">7. When Eventual Consistency Might Work</h3>
 
 <strong>Acceptable Use Cases:</strong>
 
@@ -2226,7 +2263,7 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <hr />
 
-<h3>8. Academic Impact vs Production Adoption</h3>
+<h3 id="sec-8-academic-impact-vs-production-adoption">8. Academic Impact vs Production Adoption</h3>
 
 <strong>Academic Citations: 52+</strong>
 
@@ -2252,7 +2289,7 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <hr />
 
-<h3>9. Comparison to Other Eventual Consistency Systems</h3>
+<h3 id="sec-9-comparison-to-other-eventual-consistency-systems">9. Comparison to Other Eventual Consistency Systems</h3>
 
 <strong>Eventual consistency works elsewhere—why not TLBs?</strong>
 
@@ -2281,7 +2318,7 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <hr />
 
-<h3>10. Summary: ecoTLB's Contribution</h3>
+<h3 id="sec-10-summary-ecotlb-s-contribution">10. Summary: ecoTLB's Contribution</h3>
 
 <strong>What ecoTLB Proved:</strong>
 <p>1. <strong>Eventual consistency can eliminate TLB shootdown overhead</strong> (8× speedup measured) 2. <strong>Stale access rate is low</strong> (0.001% in experiments) 3. <strong>Strict coherence is expensive</strong> (19-24% overhead for frequent invalidations)</p>
@@ -2300,7 +2337,7 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <h3 id="section-12.4.4">12.2.4 IDYLL: Directory-Based Coherence</h3>
 
-<h3>Deep Dive: In-PTE Directory for Lightweight Invalidation (MICRO 2023)</h3>
+<h3 id="deep-dive-in-pte-directory-for-lightweight-invalidation-micr">Deep Dive: In-PTE Directory for Lightweight Invalidation (MICRO 2023)</h3>
 
 <strong>Authors:</strong> University of Michigan Research Team  
 <strong>Conference:</strong> MICRO 2023 (IEEE/ACM International Symposium on Microarchitecture)  
@@ -2309,11 +2346,11 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <hr />
 
-<h3>1. The Directory Coherence Foundation</h3>
+<h3 id="sec-1-the-directory-coherence-foundation">1. The Directory Coherence Foundation</h3>
 
 <p>IDYLL applies classical cache coherence theory to TLB invalidation. The foundational work dates to 1978:</p>
 
-<strong>Censier & Feautrier (IEEE Transactions on Computers, 1978):</strong>
+<strong>Censier & Feautrier [<a class="cite" href="#ref-censier-1978">IEEE Transactions on Computers, 1978</a>]:</strong>
 <ul>
 <li>First directory-based cache coherence protocol</li>
 <li>Core insight: Track which processors cache each memory line</li>
@@ -2336,7 +2373,7 @@ Bank: "NOT ACCEPTABLE"</code></pre>
 
 <hr />
 
-<h3>2. The O(N) Problem Revisited</h3>
+<h3 id="sec-2-the-o-n-problem-revisited">2. The O(N) Problem Revisited</h3>
 
 <p>Recall from GRIT: Serial TLB shootdowns scale O(N).</p>
 
@@ -2356,7 +2393,7 @@ Why O(N)?
 
 <hr />
 
-<h3>3. IDYLL's Directory Solution</h3>
+<h3 id="sec-3-idyll-s-directory-solution">3. IDYLL's Directory Solution</h3>
 
 <strong>Key Insight:</strong> Most page invalidations affect only a small subset of GPUs.
 
@@ -2380,7 +2417,7 @@ Average sharing fanout: 12 GPUs per page</code></pre>
 
 <hr />
 
-<h3>4. In-PTE Directory Architecture</h3>
+<h3 id="sec-4-in-pte-directory-architecture">4. In-PTE Directory Architecture</h3>
 
 <strong>Traditional Page Table Entry (x86-64):</strong>
 
@@ -2413,7 +2450,7 @@ This is acceptable (80 MB is 0.1% of 80 GB GPU memory).
 
 <hr />
 
-<h3>5. Invalidation Protocol with Directories</h3>
+<h3 id="sec-5-invalidation-protocol-with-directories">5. Invalidation Protocol with Directories</h3>
 
 <strong>Step-by-Step Protocol:</strong>
 
@@ -2441,7 +2478,7 @@ Step 4: Complete unmap
 
 <hr />
 
-<h3>6. Measured Results</h3>
+<h3 id="sec-6-measured-results">6. Measured Results</h3>
 
 <strong>Experimental Setup:</strong>
 <ul>
@@ -2518,7 +2555,7 @@ Speedup: 640µs / 35µs = 18.3× faster</code></pre>
 
 <hr />
 
-<h3>7. Hardware Implementation Complexity</h3>
+<h3 id="sec-7-hardware-implementation-complexity">7. Hardware Implementation Complexity</h3>
 
 <strong>Directory Controller:</strong>
 <ul>
@@ -2552,7 +2589,7 @@ Speedup: 640µs / 35µs = 18.3× faster</code></pre>
 
 <hr />
 
-<h3>8. Comparison to Alternatives</h3>
+<h3 id="sec-8-comparison-to-alternatives">8. Comparison to Alternatives</h3>
 
 <table>
 <thead>
@@ -2601,7 +2638,7 @@ Speedup: 640µs / 35µs = 18.3× faster</code></pre>
 
 <hr />
 
-<h3>9. Production Deployment Status</h3>
+<h3 id="sec-9-production-deployment-status">9. Production Deployment Status</h3>
 
 <strong>As of Feb 2026:</strong>
 
@@ -2626,7 +2663,7 @@ Speedup: 640µs / 35µs = 18.3× faster</code></pre>
 
 <hr />
 
-<h3>10. Limitations and Open Questions</h3>
+<h3 id="sec-10-limitations-and-open-questions">10. Limitations and Open Questions</h3>
 
 <strong>Limitation 1: Hardware-Only Solution</strong>
 
@@ -2651,7 +2688,7 @@ For >64 GPUs, directory requires hierarchical encoding:
 
 <hr />
 
-<h3>11. Summary: IDYLL's Contribution</h3>
+<h3 id="sec-11-summary-idyll-s-contribution">11. Summary: IDYLL's Contribution</h3>
 
 <strong>What IDYLL Proved:</strong>
 <p>1. <strong>Directory-based coherence scales to 1,024 GPUs</strong> (18.3× speedup measured) 2. <strong>O(log N) ACK collection works in practice</strong> (reduction trees validated) 3. <strong>In-PTE directories are practical</strong> (2× PTE size acceptable overhead)</p>
@@ -2666,7 +2703,7 @@ For >64 GPUs, directory requires hierarchical encoding:
 
 <h3 id="section-12.4.5">12.2.5 The Software Alternative: XLA Static Compilation</h3>
 
-<h3>Deep Dive: Eliminating Runtime Address Translation (Google Research, MLSys 2019)</h3>
+<h3 id="deep-dive-eliminating-runtime-address-translation-google-res">Deep Dive: Eliminating Runtime Address Translation (Google Research, MLSys 2019)</h3>
 
 <strong>Authors:</strong> XLA Team, Google Brain  
 <strong>Institution:</strong> Google Research  
@@ -2675,7 +2712,7 @@ For >64 GPUs, directory requires hierarchical encoding:
 
 <hr />
 
-<h3>1. The Compiler Solution</h3>
+<h3 id="sec-1-the-compiler-solution">1. The Compiler Solution</h3>
 
 <p>All previous approaches (GRIT, Trans-FW, ecoTLB, IDYLL) optimize TLB coherence within the MMU framework. XLA asks: <strong>What if we eliminate the MMU entirely?</strong></p>
 
@@ -2698,7 +2735,7 @@ XLA (Static Allocation):
 
 <hr />
 
-<h3>2. Liveness Analysis: The Core Technique</h3>
+<h3 id="sec-2-liveness-analysis-the-core-technique">2. Liveness Analysis: The Core Technique</h3>
 
 <strong>How does XLA know all allocations at compile time?</strong>
 
@@ -2737,7 +2774,7 @@ Step 3: Memory reuse
 
 <hr />
 
-<h3>3. Quantified Memory Savings</h3>
+<h3 id="sec-3-quantified-memory-savings">3. Quantified Memory Savings</h3>
 
 <strong>Without Liveness Analysis (Naive):</strong>
 
@@ -2768,7 +2805,7 @@ Memory savings: (101 - 59) / 101 = 41.6% reduction</code></pre>
 
 <hr />
 
-<h3>4. Compile-Time Address Assignment</h3>
+<h3 id="sec-4-compile-time-address-assignment">4. Compile-Time Address Assignment</h3>
 
 <p>With liveness analysis complete, XLA assigns physical addresses:</p>
 
@@ -2790,7 +2827,7 @@ Generated code:
 
 <hr />
 
-<h3>5. Performance: Zero Overhead</h3>
+<h3 id="sec-5-performance-zero-overhead">5. Performance: Zero Overhead</h3>
 
 <strong>Measured Comparison:</strong>
 
@@ -2843,7 +2880,7 @@ Generated code:
 
 <hr />
 
-<h3>6. The Cost: Flexibility Loss</h3>
+<h3 id="sec-6-the-cost-flexibility-loss">6. The Cost: Flexibility Loss</h3>
 
 <strong>What XLA Cannot Do:</strong>
 
@@ -2883,7 +2920,7 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <hr />
 
-<h3>7. When XLA Works vs Fails</h3>
+<h3 id="sec-7-when-xla-works-vs-fails">7. When XLA Works vs Fails</h3>
 
 <strong>XLA Success Stories:</strong>
 
@@ -2932,7 +2969,7 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <hr />
 
-<h3>8. Production Deployment</h3>
+<h3 id="sec-8-production-deployment">8. Production Deployment</h3>
 
 <strong>Google TPU (2016-2026):</strong>
 <ul>
@@ -2962,7 +2999,7 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <hr />
 
-<h3>9. Comparison to Hardware Solutions</h3>
+<h3 id="sec-9-comparison-to-hardware-solutions">9. Comparison to Hardware Solutions</h3>
 
 <table>
 <thead>
@@ -3003,7 +3040,7 @@ seq_len = 512  # Fixed (pad shorter sequences, truncate longer)</code></pre>
 
 <hr />
 
-<h3>10. Summary: XLA's Role in the Ecosystem</h3>
+<h3 id="sec-10-summary-xla-s-role-in-the-ecosystem">10. Summary: XLA's Role in the Ecosystem</h3>
 
 <strong>What XLA Proves:</strong>
 <p>1. <strong>0% overhead is achievable</strong> (eliminate MMU entirely) 2. <strong>Liveness analysis works at scale</strong> (42% memory savings measured) 3. <strong>Compile-time allocation is practical</strong> (for static workloads)</p>
@@ -3548,7 +3585,7 @@ Actual impact: ~$500M (not all customers wanted MIG instances)</code></pre>
 
 <p>> "We appreciate the researchers' work in identifying this TLB sharing behavior. While MIG provides strong compute and memory isolation, we acknowledge that L3 TLB is shared across instances. This design decision prioritized performance for AI workloads where TLB hit rate is critical. Future GPU architectures will include enhanced partitioning options."</p>
 
-<strong>Mitigation in Blackwell Architecture (2024):</strong>
+<strong>Mitigation in Blackwell Architecture [<a class="cite" href="#ref-memory-2024">2024</a>]:</strong>
 
 <pre><code>NVIDIA Blackwell B100 GPU:
   L3 TLB: 8192 entries (2× larger than A100)
@@ -5174,7 +5211,7 @@ HugeGPT:
 
 <hr />
 
-<h3>Section 12.4 Summary: GPU Virtualization - The Path from 75% to 3% Overhead</h3>
+<h3 id="section-12-4-summary-gpu-virtualization-the-path-from-75-to-">Section 12.4 Summary: GPU Virtualization - The Path from 75% to 3% Overhead</h3>
 
 <p>This section traced GPU virtualization from unusable (75% overhead) to production-viable (3% overhead) through systematic optimization. The challenge differs fundamentally from CPU virtualization: GPUs execute 10,752 threads in lockstep, meaning a single page fault stalls the entire device. Four approaches emerged, each solving different aspects of the problem.</p>
 
@@ -5419,7 +5456,7 @@ HugeGPT:
 
 <hr />
 
-<h3>Trade-Off Dimension 1: Coherence Strategy</h3>
+<h3 id="trade-off-dimension-1-coherence-strategy">Trade-Off Dimension 1: Coherence Strategy</h3>
 
 <strong>The Spectrum:</strong>
 
@@ -5496,7 +5533,7 @@ HugeGPT:
 
 <hr />
 
-<h3>Trade-Off Dimension 2: Isolation Strategy</h3>
+<h3 id="trade-off-dimension-2-isolation-strategy">Trade-Off Dimension 2: Isolation Strategy</h3>
 
 <strong>The Spectrum:</strong>
 
@@ -5571,7 +5608,7 @@ HugeGPT:
 
 <hr />
 
-<h3>Trade-Off Dimension 3: Virtualization Strategy</h3>
+<h3 id="trade-off-dimension-3-virtualization-strategy">Trade-Off Dimension 3: Virtualization Strategy</h3>
 
 <strong>The Spectrum:</strong>
 
@@ -5647,7 +5684,7 @@ Scenario 4: Research (Larger-than-Memory)
 
 <hr />
 
-<h3>The Meta-Lesson: Context-Dependent Optimization</h3>
+<h3 id="the-meta-lesson-context-dependent-optimization">The Meta-Lesson: Context-Dependent Optimization</h3>
 
 <p>The recurring theme across all three dimensions: <strong>there is no universally optimal MMU architecture</strong>.</p>
 
@@ -5683,7 +5720,7 @@ Scenario 4: Research (Larger-than-Memory)
 
 <hr />
 
-<h3>The Future: Specialized, Workload-Aware Memory Management</h3>
+<h3 id="the-future-specialized-workload-aware-memory-management">The Future: Specialized, Workload-Aware Memory Management</h3>
 
 <p>Chapters 1-11 described MMU architecture assuming general-purpose, "one-size-fits-all" design. This chapter demonstrates that AI workloads break that model.</p>
 
@@ -5711,7 +5748,7 @@ Scenario 4: Research (Larger-than-Memory)
 
 <hr />
 
-<h3>Summary: Three Key Takeaways</h3>
+<h3 id="summary-three-key-takeaways">Summary: Three Key Takeaways</h3>
 
 <strong>Takeaway 1: O(N) Doesn't Scale</strong>
 
@@ -5739,43 +5776,43 @@ Scenario 4: Research (Larger-than-Memory)
 <h2 id="references">References</h2>
 <h3 id="multi-gpu-tlb-coordination">Multi-GPU TLB Coordination</h3>
 <ol type="1">
-<li><p>Menychtas, K., Bhattacharjee, A., Kwon, J., and Kozuch, M. A. "GPU-Resident Incremental TLB Management for Multi-GPU Systems (GRIT)." <em>HPCA 2023</em>. IEEE, 2023.</p></li>
-<li><p>Wang, H. and Tang, X. "Trans-FW: Platform-Agnostic Multi-GPU TLB Sharing." <em>HPCA 2023</em>. IEEE, 2023.</p></li>
-<li><p>Maass, S., Kumar, M., Kim, T., Krishna, T., and Bhattacharjee, A. "ecoTLB: Eventually Consistent TLBs for Disaggregated Memory." <em>ACM Transactions on Architecture and Code Optimization (TACO)</em> 17, no. 2 (2020).</p></li>
-<li><p>University of Michigan Research Team. "IDYLL: In-PTE Directory for Lightweight Invalidation at Scale." <em>MICRO 2023</em>. IEEE/ACM, 2023.</p></li>
-<li><p>XLA Team, Google Brain. "XLA: Optimizing Compiler for Machine Learning." <em>MLSys 2019</em>. 2019.</p></li>
-<li><p>Censier, L. M. and Feautrier, P. "A New Solution to Coherence Problems in Multicache Systems." <em>IEEE Transactions on Computers</em> C-27, no. 12 (1978): 1112-1118.</p></li>
-<li><p>Lenoski, D., et al. "The DASH Prototype: Implementation and Performance." <em>ASPLOS 1990</em>. ACM, 1990.</p></li>
+<li id="ref-menychtas-2023"><p>Menychtas, K., Bhattacharjee, A., Kwon, J., and Kozuch, M. A. "GPU-Resident Incremental TLB Management for Multi-GPU Systems (GRIT)." <em>HPCA 2023</em>. IEEE, 2023.</p></li>
+<li id="ref-wang-2023"><p>Wang, H. and Tang, X. "Trans-FW: Platform-Agnostic Multi-GPU TLB Sharing." <em>HPCA 2023</em>. IEEE, 2023.</p></li>
+<li id="ref-maass-2020"><p>Maass, S., Kumar, M., Kim, T., Krishna, T., and Bhattacharjee, A. "ecoTLB: Eventually Consistent TLBs for Disaggregated Memory." <em>ACM Transactions on Architecture and Code Optimization (TACO)</em> 17, no. 2 (2020).</p></li>
+<li id="ref-university-2023"><p>University of Michigan Research Team. "IDYLL: In-PTE Directory for Lightweight Invalidation at Scale." <em>MICRO 2023</em>. IEEE/ACM, 2023.</p></li>
+<li id="ref-xlateam-2019"><p>XLA Team, Google Brain. "XLA: Optimizing Compiler for Machine Learning." <em>MLSys 2019</em>. 2019.</p></li>
+<li id="ref-censier-1978"><p>Censier, L. M. and Feautrier, P. "A New Solution to Coherence Problems in Multicache Systems." <em>IEEE Transactions on Computers</em> C-27, no. 12 (1978): 1112-1118.</p></li>
+<li id="ref-lenoski-1990"><p>Lenoski, D., et al. "The DASH Prototype: Implementation and Performance." <em>ASPLOS 1990</em>. ACM, 1990.</p></li>
 </ol>
 <h3 id="multi-tenancy-and-security">Multi-Tenancy and Security</h3>
 <ol type="1" start="8">
-<li><p>Liu, C., Li, Z., Chen, Z., Zhang, Z., and Hong, G. "TunneLs: Exploiting Shared TLB Vulnerabilities in NVIDIA MIG." <em>ACM CCS 2023</em>. ACM, 2023.</p></li>
-<li><p>Confidential Computing Research Group. "CryptoMMU: Secure Address Translation for Untrusted Accelerators." <em>ASPLOS 2023</em>. ACM, 2023.</p></li>
-<li><p>AMD Corporation. "AMD Instinct MI300X Architecture Whitepaper." AMD, 2024.</p></li>
-<li><p>NVIDIA Corporation. "Multi-Instance GPU (MIG) User Guide." NVIDIA, 2023.</p></li>
+<li id="ref-liu-2023"><p>Liu, C., Li, Z., Chen, Z., Zhang, Z., and Hong, G. "TunneLs: Exploiting Shared TLB Vulnerabilities in NVIDIA MIG." <em>ACM CCS 2023</em>. ACM, 2023.</p></li>
+<li id="ref-confidential-2023"><p>Confidential Computing Research Group. "CryptoMMU: Secure Address Translation for Untrusted Accelerators." <em>ASPLOS 2023</em>. ACM, 2023.</p></li>
+<li id="ref-amd-2024"><p>AMD Corporation. "AMD Instinct MI300X Architecture Whitepaper." AMD, 2024.</p></li>
+<li id="ref-nvidia-2023a"><p>NVIDIA Corporation. "Multi-Instance GPU (MIG) User Guide." NVIDIA, 2023.</p></li>
 </ol>
 <h3 id="virtualization-and-memory-management">Virtualization and Memory Management</h3>
 <ol type="1" start="12">
-<li><p>GPU Systems Research Group. "Lightweight Virtual Memory for GPUs (LVM)." <em>MICRO 2025</em>. IEEE/ACM, 2025.</p></li>
-<li><p>Memory Architecture Researchers. "DMT: Dynamic Multi-Table Page Table Design." <em>ASPLOS 2024</em>. ACM, 2024.</p></li>
-<li><p>Virtual Memory Research Group. "HugeGPT: Huge Page Management for LLMs in Nested Virtualization." <em>ASPLOS 2025</em>. ACM, 2025.</p></li>
-<li><p>NVIDIA Corporation. "Unified Memory Programming Guide." NVIDIA Developer Documentation, 2023.</p></li>
+<li id="ref-gpu-2025"><p>GPU Systems Research Group. "Lightweight Virtual Memory for GPUs (LVM)." <em>MICRO 2025</em>. IEEE/ACM, 2025.</p></li>
+<li id="ref-memory-2024"><p>Memory Architecture Researchers. "DMT: Dynamic Multi-Table Page Table Design." <em>ASPLOS 2024</em>. ACM, 2024.</p></li>
+<li id="ref-virtual-2025"><p>Virtual Memory Research Group. "HugeGPT: Huge Page Management for LLMs in Nested Virtualization." <em>ASPLOS 2025</em>. ACM, 2025.</p></li>
+<li id="ref-nvidia-2023b"><p>NVIDIA Corporation. "Unified Memory Programming Guide." NVIDIA Developer Documentation, 2023.</p></li>
 </ol>
 <h3 id="foundational-work">Foundational Work</h3>
 <ol type="1" start="16">
-<li><p>Intel Corporation. "Intel 64 and IA-32 Architectures Software Developer's Manual." Intel, 2023.</p></li>
-<li><p>ARM Limited. "ARM Architecture Reference Manual ARMv8, for ARMv8-A architecture profile." ARM, 2023.</p></li>
-<li><p>NVIDIA Corporation. "CUDA C++ Programming Guide." NVIDIA Developer Documentation, 2023.</p></li>
-<li><p>Bhattacharjee, A. and Martonosi, M. "Translation Lookaside Buffers." <em>Synthesis Lectures on Computer Architecture</em>. Morgan & Claypool Publishers, 2019.</p></li>
-<li><p>Cekleov, M. and Dubois, M. "Virtual-Address Caches. Part 1: Problems and Solutions in Uniprocessors." <em>IEEE Micro</em> 17, no. 5 (1997): 64-71.</p></li>
+<li id="ref-intel-2023"><p>Intel Corporation. "Intel 64 and IA-32 Architectures Software Developer's Manual." Intel, 2023.</p></li>
+<li id="ref-arm-2023"><p>ARM Limited. "ARM Architecture Reference Manual ARMv8, for ARMv8-A architecture profile." ARM, 2023.</p></li>
+<li id="ref-nvidia-2023c"><p>NVIDIA Corporation. "CUDA C++ Programming Guide." NVIDIA Developer Documentation, 2023.</p></li>
+<li id="ref-bhattacharjee-2019"><p>Bhattacharjee, A. and Martonosi, M. "Translation Lookaside Buffers." <em>Synthesis Lectures on Computer Architecture</em>. Morgan & Claypool Publishers, 2019.</p></li>
+<li id="ref-cekleov-1997"><p>Cekleov, M. and Dubois, M. "Virtual-Address Caches. Part 1: Problems and Solutions in Uniprocessors." <em>IEEE Micro</em> 17, no. 5 (1997): 64-71.</p></li>
 </ol>
 <h3 id="ai-ml-systems-and-workloads">AI/ML Systems and Workloads</h3>
 <ol type="1" start="21">
-<li><p>Brown, T., et al. "Language Models are Few-Shot Learners (GPT-3)." <em>NeurIPS 2020</em>. 2020.</p></li>
-<li><p>Touvron, H., et al. "LLaMA: Open and Efficient Foundation Language Models." Meta AI Research, 2023.</p></li>
-<li><p>Vaswani, A., et al. "Attention is All You Need." <em>NeurIPS 2017</em>. 2017.</p></li>
-<li><p>Meta AI. "LLaMA 3 Model Card." Meta, 2024.</p></li>
-<li><p>OpenAI. "GPT-4 Technical Report." OpenAI, 2023.</p></li>
+<li id="ref-brown-2020"><p>Brown, T., et al. "Language Models are Few-Shot Learners (GPT-3)." <em>NeurIPS 2020</em>. 2020.</p></li>
+<li id="ref-touvron-2023"><p>Touvron, H., et al. "LLaMA: Open and Efficient Foundation Language Models." Meta AI Research, 2023.</p></li>
+<li id="ref-vaswani-2017"><p>Vaswani, A., et al. "Attention is All You Need." <em>NeurIPS 2017</em>. 2017.</p></li>
+<li id="ref-meta-2024"><p>Meta AI. "LLaMA 3 Model Card." Meta, 2024.</p></li>
+<li id="ref-openai-2023"><p>OpenAI. "GPT-4 Technical Report." OpenAI, 2023.</p></li>
 </ol>
 
 <script>
