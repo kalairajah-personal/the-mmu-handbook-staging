@@ -764,7 +764,7 @@ faults on GPUs are expensive—50,000 to 500,000 cycles compared to
 PCIe bus to the CPU driver. NVIDIA's Unified Virtual Addressing (UVA)
 allows CPUs and GPUs to share the same virtual address space, enabling
 zero-copy data sharing. AMD's HSA (Heterogeneous System Architecture)
-provides shared page tables between CPU and GPU, while Apple's M-series
+provides shared page tables between CPU and GPU [<a class="cite" href="#ref-vesely-2016">Vesely, 2016</a>], while Apple's M-series
 achieves true unified memory where all processors access a single
 physical memory pool.</p>
 <p>These are critical architectural facts that enable virtual memory on
@@ -798,7 +798,7 @@ Intel)</strong></p>
 <p>These accelerators provide complete MMU functionality similar to
 CPUs, with page tables, TLBs, and page fault handling. This approach
 offers maximum flexibility: memory can be overcommitted, pages can be
-swapped, and CPU and GPU can share address spaces. The cost is overhead.
+swapped, and CPU and GPU can share address spaces [<a class="cite" href="#ref-pichai-2014">Pichai, 2014</a>; <a class="cite" href="#ref-power-2014">Power, 2014</a>]. The cost is overhead.
 Page table walks consume memory bandwidth. TLB misses add latency. Page
 faults can stall thousands of GPU threads simultaneously. Chapter 4.13
 covered the hardware architecture of these MMUs. This chapter explores
@@ -813,7 +813,7 @@ software-managed memory. The XLA compiler generates a static memory
 layout at compile time, allocating every tensor to a specific physical
 address. There are no page tables, no TLB, no page faults, and no
 address translation overhead. The benefit is extreme efficiency—TPU v4
-achieves 275 teraFLOPS with only 1.2 TB/s of memory bandwidth, a 229:1
+achieves 275 teraFLOPS with only 1.2 TB/s of memory bandwidth [<a class="cite" href="#ref-google-2024">Google Cloud, 2024</a>], a 229:1
 compute-to-bandwidth ratio that would be impossible with MMU overhead.
 The cost is zero flexibility: you can't swap memory, can't overcommit,
 and can't share memory between processes. Yet for training neural
@@ -826,7 +826,7 @@ Workloads)</strong></p>
 <p>Some accelerators use hybrid approaches, selectively applying virtual
 memory where it provides value while using physical addressing for
 performance-critical paths. Intel's Habana Gaudi 2, for example,
-integrates 24 RDMA network interfaces directly on the accelerator die
+integrates 24 RDMA network interfaces directly on the accelerator die [<a class="cite" href="#ref-intel-2023">Intel Corporation, 2023</a>]
 for gradient exchange during distributed training. The compute cores use
 virtual addressing with an MMU, but the RDMA engines can optionally use
 physical addressing for zero-overhead transfers. This requires careful
@@ -911,7 +911,7 @@ fault concurrently. With each fault costing 50,000 cycles, that's 537
 million cycles of wasted computation. The faults also reduce GPU
 occupancy—warps stall while waiting for pages, leaving compute units
 idle. We'll examine fault storm scenarios in depth, understand migration
-thrashing (when pages bounce between CPU and GPU repeatedly), and
+thrashing (when pages bounce between CPU and GPU repeatedly) [<a class="cite" href="#ref-ganguly-2020">Ganguly, 2020</a>], and
 explore solutions beyond basic prefetching: pinning critical data
 structures, using cudaMemAdvise() for access pattern hints, and
 structuring training loops to eliminate runtime faults.</p>
@@ -945,7 +945,7 @@ MMUs. Does each chiplet have independent page tables that must be
 synchronized, or do they share a page table base? How do TLB
 invalidations propagate across the Infinity Fabric interconnect? The
 MI300X's 192 GB capacity enables fitting models that require two or more
-NVIDIA H100s (80 GB each), avoiding model parallelism overhead. But
+NVIDIA H100s (80 GB each) [<a class="cite" href="#ref-amd-2024">AMD, 2024</a>], avoiding model parallelism overhead. But
 managing a 192 GB address space requires careful TLB design. We'll
 examine AMD's approach, understand the chiplet TLB hierarchy, and see
 why 1 GB pages provide full TLB coverage for the entire 192 GB
@@ -1005,7 +1005,7 @@ Chapters</h3>
 <p>This chapter synthesizes concepts from Chapters 3, 4, and 10 while
 introducing challenges unique to AI/ML scale:</p>
 <p>Chapter 3 examined page table structures, showing how x86-64's
-four-level page tables (PML4 → PDPT → PD → PT) translate virtual
+four-level page tables (PML4 → PDPT → PD → PT) [<a class="cite" href="#ref-intel-2024">Intel Corporation, 2024</a>] translate virtual
 addresses. GPUs use compatible formats, allowing CPUs and GPUs to share
 page tables in unified memory architectures. But AI/ML models with 100
 GB+ working sets create page table overhead that Chapter 3's examples
@@ -1031,7 +1031,7 @@ emerge when you scale from one GPU to 1,000 GPUs and from 10 GB models
 to 500 GB models.</p>
 <p>Chapter 10 examined how external devices (network cards, storage
 controllers, FPGAs) access memory through IOMMUs, and how PCIe ATS
-enables device-side caching of translations. Intel Habana Gaudi 2's
+enables device-side caching of translations [<a class="cite" href="#ref-pcisig-2022">PCI-SIG, 2022</a>]. Intel Habana Gaudi 2's
 integrated RDMA NICs represent an evolution of these concepts—instead of
 separate devices connected via PCIe, the NICs sit on the same die as the
 AI accelerator, sharing its MMU infrastructure. This creates new
@@ -1066,7 +1066,7 @@ extraordinary efficiency by eliminating virtual memory entirely, showing
 us the theoretical limit of what's possible when flexibility is traded
 for performance.</p>
 <p>In 2016, Google revealed that its datacenters had been running custom
-AI accelerators—Tensor Processing Units (TPUs)—for over a year. The
+AI accelerators—Tensor Processing Units (TPUs)—for over a year [<a class="cite" href="#ref-jouppi-2017">Jouppi, 2017</a>]. The
 architecture surprised the industry not for what it included, but for
 what it omitted: a Memory Management Unit. TPU v1, and its successors v2
 and v3, used pure physical addressing with software-managed memory
@@ -1232,7 +1232,7 @@ resolve, the other 10,751 cores continue executing their warps. The
 fault is expensive but localized.</p>
 <p>A systolic array works differently. TPU's matrix multiply unit
 consists of a 256×256 grid of multiply-accumulate (MAC) units arranged
-in a two-dimensional array. Data flows through this array in
+in a two-dimensional array [<a class="cite" href="#ref-jouppi-2017">Jouppi, 2017</a>]. Data flows through this array in
 synchronized waves, like blood pulsing through the cardiovascular system
 (hence "systolic"). In each clock cycle, every MAC unit receives inputs
 from its neighbors to the north and west, performs a multiplication,
@@ -1890,7 +1890,7 @@ faults. Here's how:</p>
 <p>When <code>batch['images'].cuda()</code> executes on the first batch,
 the CUDA runtime allocates GPU memory for the 154 MB batch. With
 NVIDIA's Unified Memory, this allocation creates virtual memory mappings
-but doesn't migrate pages immediately—pages migrate on first access.</p>
+but doesn't migrate pages immediately—pages migrate on first access [<a class="cite" href="#ref-nvidia-2024a">NVIDIA Corporation, 2024a</a>].</p>
 <p>The forward pass (<code>model(inputs)</code>) accesses the input
 tensor. All 10,752 CUDA cores (on an A100) begin reading input data
 simultaneously. With 4 KB pages, the 154 MB batch spans:</p>
@@ -2019,7 +2019,7 @@ accessing them.</p>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>cudaStreamSynchronize<span class="op">(</span>stream<span class="op">);</span>  <span class="co">// Wait for prefetch to complete</span></span>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>kernel<span class="op">&lt;&lt;&lt;</span>blocks<span class="op">,</span> threads<span class="op">&gt;&gt;&gt;(</span>data<span class="op">);</span></span></code></pre></div>
 <p><code>cudaMemPrefetchAsync</code> initiates page migration without
-waiting for page faults. The GPU's memory management unit migrates pages
+waiting for page faults [<a class="cite" href="#ref-nvidia-2024a">NVIDIA Corporation, 2024a</a>]. The GPU's memory management unit migrates pages
 in the background while the CPU continues execution. When the kernel
 launches, pages are already resident—no faults.</p>
 <p><strong>Batched Prefetching:</strong></p>
@@ -2322,7 +2322,7 @@ one core modifies a page table, it must invalidate TLB entries on all
 other cores to maintain coherency. A typical server with 128 CPU cores
 requires broadcasting invalidations to 127 other cores—a well-studied
 problem with established solutions (IPI-based shootdown, hardware
-broadcast via shareability domains on ARM).</p>
+broadcast via shareability domains on ARM [<a class="cite" href="#ref-arm-2024">ARM Limited, 2024</a>]).</p>
 <p>But AI/ML training operates at a different scale. OpenAI's GPT-4
 training used 25,000 NVIDIA A100 GPUs. Meta's LLaMA 70B training used
 2,048 A100 GPUs. Google's PaLM training used 6,144 TPU v4 chips. When
@@ -2698,7 +2698,7 @@ reuse the physical memory.</p>
 id="nccl-integration-gradient-synchronization-and-tlb-coherency">NCCL
 Integration: Gradient Synchronization and TLB Coherency</h3>
 <p>NVIDIA Collective Communications Library (NCCL) handles gradient
-all-reduce during distributed training. NCCL must coordinate with memory
+all-reduce during distributed training [<a class="cite" href="#ref-nvidia-2024c">NVIDIA Corporation, 2024c</a>]. NCCL must coordinate with memory
 management because gradient buffers involve page table operations.</p>
 <p><strong>Training Iteration with Multi-GPU:</strong></p>
 <pre><code>1. Forward pass (all GPUs compute outputs)
@@ -5314,11 +5314,6 @@ design]</p></li>
 100s of GPU lanes." <em>2014 IEEE 20th International Symposium on High
 Performance Computer Architecture (HPCA)</em>. IEEE, 2014. <a class="ref-link" href="https://doi.org/10.1109/HPCA.2014.6835960">DOI:
 10.1109/HPCA.2014.6835960</a> [Page table walker design for GPUs]</p></li>
-<li id="ref-ausavarungnirun-2017"><p>Ausavarungnirun, Rachata, et al. "Mosaic: A GPU memory manager
-with application-transparent support for multiple page sizes."
-<em>Proceedings of the 50th Annual IEEE/ACM International Symposium on
-Microarchitecture (MICRO 2017)</em>. ACM, 2017. <a class="ref-link" href="https://doi.org/10.1145/3123939.3123975">DOI:
-10.1145/3123939.3123975</a> [Huge page management for GPUs]</p></li>
 <li id="ref-vesely-2016"><p>Vesely, Jan, et al. "Observations and opportunities in
 architecting shared virtual memory for heterogeneous systems." <em>2016
 IEEE International Symposium on Performance Analysis of Systems and
@@ -5327,20 +5322,13 @@ Software (ISPASS)</em>. IEEE, 2016. <a class="ref-link" href="https://doi.org/10
 <li id="ref-nvidia-2024a"><p>NVIDIA Corporation. <em>CUDA C++ Programming Guide</em>. Version
 12.3. 2024. Chapter 3: "Unified Memory Programming." [Official unified
 memory documentation] <a class="ref-link" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">https://docs.nvidia.com/cuda/cuda-c-programming-guide/</a></p></li>
-<li id="ref-nvidia-2024b"><p>NVIDIA Corporation. <em>CUDA C++ Best Practices Guide</em>.
-Version 12.3. 2024. Section 8.2: "Unified Memory Performance
-Guidelines." [Performance optimization recommendations] <a class="ref-link" href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/">https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/</a></p></li>
 </ol>
 <h3 id="google-tpu-architecture">Google TPU Architecture</h3>
-<ol start="7" type="1">
+<ol type="1" start="5">
 <li id="ref-jouppi-2017"><p>Jouppi, Norman P., et al. "In-datacenter performance analysis of
 a tensor processing unit." <em>Proceedings of the 44th Annual
 International Symposium on Computer Architecture (ISCA 2017)</em>. ACM,
 2017. <a class="ref-link" href="https://doi.org/10.1145/3079856.3080246">DOI: 10.1145/3079856.3080246</a> [Original TPU v1 paper]</p></li>
-<li id="ref-jouppi-2020"><p>Jouppi, Norman P., et al. "A domain-specific supercomputer for
-training deep neural networks." <em>Communications of the ACM</em> 63.7
-(2020): 67-78. <a class="ref-link" href="https://doi.org/10.1145/3360307">DOI: 10.1145/3360307</a> [TPU v2/v3 architecture and systolic
-arrays]</p></li>
 <li id="ref-google-2024"><p>Google Cloud. "Cloud TPU System Architecture." <em>Google Cloud
 Documentation</em>. 2024.
 <a class="ref-link" href="https://cloud.google.com/tpu/docs/system-architecture-tpu-vm">https://cloud.google.com/tpu/docs/system-architecture-tpu-vm</a> [TPU v4/v5
@@ -5348,90 +5336,95 @@ virtual memory additions]</p></li>
 </ol>
 <h3 id="multi-gpu-coordination-and-scaling">Multi-GPU Coordination and
 Scaling</h3>
-<ol start="10" type="1">
-<li id="ref-zhao-2020"><p>Zhao, Hongzhang, et al. "Multi-GPU graph analytics." <em>2020
-IEEE International Parallel and Distributed Processing Symposium
-(IPDPS)</em>. IEEE, 2020. <a class="ref-link" href="https://doi.org/10.1109/IPDPS47924.2020.00116">DOI: 10.1109/IPDPS47924.2020.00116</a> [Multi-GPU
-TLB coherency protocols]</p></li>
+<ol type="1" start="7">
 <li id="ref-nvidia-2024c"><p>NVIDIA Corporation. "NVIDIA Collective Communications Library
 (NCCL) Documentation." Version 2.19. 2024.
 <a class="ref-link" href="https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/">https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/</a> [Multi-GPU
 gradient synchronization]</p></li>
-<li id="ref-nvidia-2023"><p>NVIDIA Corporation. "NVSwitch Architecture Whitepaper." 2023.
-[Hardware broadcast mechanisms] <a class="ref-link ref-link--search" href="https://scholar.google.com/scholar?q=NVSwitch+Architecture+Whitepaper">[search]</a></p></li>
 </ol>
 <h3 id="amd-mi300x-and-chiplet-architectures">AMD MI300X and Chiplet
 Architectures</h3>
-<ol start="13" type="1">
+<ol type="1" start="8">
 <li id="ref-amd-2024"><p>AMD. "AMD Instinct MI300X Accelerator." <em>AMD Product
 Documentation</em>. 2024.
 <a class="ref-link" href="https://www.amd.com/en/products/accelerators/instinct/mi300/mi300x.html">https://www.amd.com/en/products/accelerators/instinct/mi300/mi300x.html</a>
 [MI300X architecture overview]</p></li>
-<li id="ref-naffziger-2021"><p>Naffziger, Samuel, et al. "AMD Chiplet Architecture for
-High-Performance Server and Desktop Products." <em>2021 IEEE
-International Solid-State Circuits Conference (ISSCC)</em>. IEEE, 2021.
-<a class="ref-link" href="https://doi.org/10.1109/ISSCC42613.2021.9365796">DOI: 10.1109/ISSCC42613.2021.9365796</a> [Infinity Fabric and chiplet
-coordination]</p></li>
 </ol>
 <h3 id="intel-habana-gaudi">Intel Habana Gaudi</h3>
-<ol start="15" type="1">
+<ol type="1" start="9">
 <li id="ref-intel-2023"><p>Intel Corporation. "Intel Gaudi 2 AI Accelerator White Paper."
 2023. [RDMA integration with AI accelerator] <a class="ref-link" href="https://www.intel.com/content/www/us/en/content-details/839363/intel-gaudi-2-ai-accelerators-white-paper.html">https://www.intel.com/content/www/us/en/content-details/839363/intel-gaudi-2-ai-accelerators-white-paper.html</a></p></li>
-<li id="ref-dally-2021"><p>Dally, William J., et al. "Evolution of the Graphics Processing
-Unit (GPU)." <em>IEEE Micro</em> 41.6 (2021): 42-51. <a class="ref-link" href="https://doi.org/10.1109/MM.2021.3113475">DOI:
-10.1109/MM.2021.3113475</a> [Accelerator architecture trends]</p></li>
-</ol>
-<h3 id="apple-neural-engine-and-unified-memory">Apple Neural Engine and
-Unified Memory</h3>
-<ol start="17" type="1">
-<li id="ref-apple-2021"><p>Apple Inc. "Apple M1 Pro and M1 Max: Technical Overview." 2021.
-[Unified memory architecture] <a class="ref-link ref-link--search" href="https://scholar.google.com/scholar?q=Apple+M1+Pro+and+M1+Max+Technical+Overview">[search]</a></p></li>
-<li id="ref-apple-2024"><p>Apple Inc. "Optimizing GPU Performance." <em>Metal Programming
-Guide</em>. 2024. [Memory management best practices] <a class="ref-link" href="https://developer.apple.com/documentation/xcode/optimizing-gpu-performance">https://developer.apple.com/documentation/xcode/optimizing-gpu-performance</a></p></li>
 </ol>
 <h3 id="page-fault-handling-and-prefetching">Page Fault Handling and
 Prefetching</h3>
-<ol start="19" type="1">
+<ol type="1" start="10">
 <li id="ref-ganguly-2020"><p>Ganguly, Debashis, et al. "Adaptive page migration for irregular
 data-intensive applications on heterogeneous systems." <em>2020 IEEE
 International Parallel and Distributed Processing Symposium
 (IPDPS)</em>. IEEE, 2020. <a class="ref-link" href="https://doi.org/10.1109/IPDPS47924.2020.00074">DOI: 10.1109/IPDPS47924.2020.00074</a> [Page
 migration strategies]</p></li>
-<li id="ref-young-2018"><p>Young, Vinson, et al. "Combining HW/SW mechanisms to improve NUMA
-performance of multi-GPU systems." <em>2018 51st Annual IEEE/ACM
-International Symposium on Microarchitecture (MICRO)</em>. IEEE, 2018.
-<a class="ref-link" href="https://doi.org/10.1109/MICRO.2018.00022">DOI: 10.1109/MICRO.2018.00022</a> [Prefetching for GPU UVM]</p></li>
-</ol>
-<h3 id="tlb-optimization">TLB Optimization</h3>
-<ol start="21" type="1">
-<li id="ref-cox-2006"><p>Cox, Russ and William Josephson. "Optimizing network
-virtualization in Xen." <em>USENIX Annual Technical Conference</em>.
-2006. [TLB shootdown optimization techniques]</p></li>
-<li id="ref-yaniv-2016"><p>Yaniv, Avi and Dan Tsafrir. "Hash, Don't Cache (the Page Table)."
-<em>Proceedings of the 2016 ACM SIGMETRICS International Conference on
-Measurement and Modeling of Computer Science</em>. ACM, 2016. <a class="ref-link" href="https://doi.org/10.1145/2896377.2901456">DOI:
-10.1145/2896377.2901456</a> [Alternative approaches to TLB]</p></li>
-</ol>
-<h3 id="performance-analysis-tools">Performance Analysis Tools</h3>
-<ol start="23" type="1">
-<li id="ref-nvidia-2024d"><p>NVIDIA Corporation. "Nsight Compute Documentation." Version
-2024.1. <a class="ref-link" href="https://docs.nvidia.com/nsight-compute/">https://docs.nvidia.com/nsight-compute/</a> [TLB profiling on NVIDIA
-GPUs]</p></li>
-<li id="ref-brendan-2019"><p>Brendan Gregg. <em>BPF Performance Tools</em>. Addison-Wesley
-Professional, 2019. ISBN: 978-0-13-655482-0. Chapter 8: "Memory." [Linux
-memory profiling including huge pages] <a class="ref-link" href="https://www.pearson.com/store/en-gb/p/bpf-performance-tools/P200000009487">https://www.pearson.com/store/en-gb/p/bpf-performance-tools/P200000009487</a></p></li>
 </ol>
 <h3 id="hardware-specifications">Hardware Specifications</h3>
-<ol start="25" type="1">
+<ol type="1" start="11">
 <li id="ref-intel-2024"><p>Intel Corporation. <em>Intel® 64 and IA-32 Architectures Software
 Developer's Manual, Volume 3A: System Programming Guide</em>. Order
 Number: 325384-084US. 2024. [x86-64 page table formats] <a class="ref-link" href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html">https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html</a></p></li>
 <li id="ref-arm-2024"><p>ARM Limited. <em>ARM Architecture Reference Manual ARMv8</em>.
 ARM DDI 0487J.a. 2024. [ARM64 page table structures] <a class="ref-link" href="https://developer.arm.com/documentation/ddi0487/latest">https://developer.arm.com/documentation/ddi0487/latest</a></p></li>
-<li id="ref-jedec-2023"><p>JEDEC. "High Bandwidth Memory (HBM3) JESD238A." 2023. [HBM memory
-specifications] <a class="ref-link" href="https://www.jedec.org/standards-documents/docs/jesd238a">https://www.jedec.org/standards-documents/docs/jesd238a</a></p></li>
 <li id="ref-pcisig-2022"><p>PCI-SIG. "PCI Express Base Specification Revision 6.0." 2022.
 [PCIe specifications and Address Translation Services] <a class="ref-link ref-link--search" href="https://scholar.google.com/scholar?q=PCI+Express+Base+Specification+Revision+6+0">[search]</a></p></li>
+</ol>
+<h3 id="further-reading">Further Reading</h3>
+<ol type="1">
+<li id="ref-apple-2021"><p>Apple Inc. "Apple M1 Pro and M1 Max: Technical Overview." 2021.
+[Unified memory architecture] <a class="ref-link ref-link--search" href="https://scholar.google.com/scholar?q=Apple+M1+Pro+and+M1+Max+Technical+Overview">[search]</a></p></li>
+<li id="ref-apple-2024"><p>Apple Inc. "Optimizing GPU Performance." <em>Metal Programming
+Guide</em>. 2024. [Memory management best practices] <a class="ref-link" href="https://developer.apple.com/documentation/xcode/optimizing-gpu-performance">https://developer.apple.com/documentation/xcode/optimizing-gpu-performance</a></p></li>
+<li id="ref-ausavarungnirun-2017"><p>Ausavarungnirun, Rachata, et al. "Mosaic: A GPU memory manager
+with application-transparent support for multiple page sizes."
+<em>Proceedings of the 50th Annual IEEE/ACM International Symposium on
+Microarchitecture (MICRO 2017)</em>. ACM, 2017. <a class="ref-link" href="https://doi.org/10.1145/3123939.3123975">DOI:
+10.1145/3123939.3123975</a> [Huge page management for GPUs]</p></li>
+<li id="ref-brendan-2019"><p>Brendan Gregg. <em>BPF Performance Tools</em>. Addison-Wesley
+Professional, 2019. ISBN: 978-0-13-655482-0. Chapter 8: "Memory." [Linux
+memory profiling including huge pages] <a class="ref-link" href="https://www.pearson.com/store/en-gb/p/bpf-performance-tools/P200000009487">https://www.pearson.com/store/en-gb/p/bpf-performance-tools/P200000009487</a></p></li>
+<li id="ref-cox-2006"><p>Cox, Russ and William Josephson. "Optimizing network
+virtualization in Xen." <em>USENIX Annual Technical Conference</em>.
+2006. [TLB shootdown optimization techniques]</p></li>
+<li id="ref-dally-2021"><p>Dally, William J., et al. "Evolution of the Graphics Processing
+Unit (GPU)." <em>IEEE Micro</em> 41.6 (2021): 42-51. <a class="ref-link" href="https://doi.org/10.1109/MM.2021.3113475">DOI:
+10.1109/MM.2021.3113475</a> [Accelerator architecture trends]</p></li>
+<li id="ref-jedec-2023"><p>JEDEC. "High Bandwidth Memory (HBM3) JESD238A." 2023. [HBM memory
+specifications] <a class="ref-link" href="https://www.jedec.org/standards-documents/docs/jesd238a">https://www.jedec.org/standards-documents/docs/jesd238a</a></p></li>
+<li id="ref-jouppi-2020"><p>Jouppi, Norman P., et al. "A domain-specific supercomputer for
+training deep neural networks." <em>Communications of the ACM</em> 63.7
+(2020): 67-78. <a class="ref-link" href="https://doi.org/10.1145/3360307">DOI: 10.1145/3360307</a> [TPU v2/v3 architecture and systolic
+arrays]</p></li>
+<li id="ref-naffziger-2021"><p>Naffziger, Samuel, et al. "AMD Chiplet Architecture for
+High-Performance Server and Desktop Products." <em>2021 IEEE
+International Solid-State Circuits Conference (ISSCC)</em>. IEEE, 2021.
+<a class="ref-link" href="https://doi.org/10.1109/ISSCC42613.2021.9365796">DOI: 10.1109/ISSCC42613.2021.9365796</a> [Infinity Fabric and chiplet
+coordination]</p></li>
+<li id="ref-nvidia-2024d"><p>NVIDIA Corporation. "Nsight Compute Documentation." Version
+2024.1. <a class="ref-link" href="https://docs.nvidia.com/nsight-compute/">https://docs.nvidia.com/nsight-compute/</a> [TLB profiling on NVIDIA
+GPUs]</p></li>
+<li id="ref-nvidia-2023"><p>NVIDIA Corporation. "NVSwitch Architecture Whitepaper." 2023.
+[Hardware broadcast mechanisms] <a class="ref-link ref-link--search" href="https://scholar.google.com/scholar?q=NVSwitch+Architecture+Whitepaper">[search]</a></p></li>
+<li id="ref-nvidia-2024b"><p>NVIDIA Corporation. <em>CUDA C++ Best Practices Guide</em>.
+Version 12.3. 2024. Section 8.2: "Unified Memory Performance
+Guidelines." [Performance optimization recommendations] <a class="ref-link" href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/">https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/</a></p></li>
+<li id="ref-yaniv-2016"><p>Yaniv, Avi and Dan Tsafrir. "Hash, Don't Cache (the Page Table)."
+<em>Proceedings of the 2016 ACM SIGMETRICS International Conference on
+Measurement and Modeling of Computer Science</em>. ACM, 2016. <a class="ref-link" href="https://doi.org/10.1145/2896377.2901456">DOI:
+10.1145/2896377.2901456</a> [Alternative approaches to TLB]</p></li>
+<li id="ref-young-2018"><p>Young, Vinson, et al. "Combining HW/SW mechanisms to improve NUMA
+performance of multi-GPU systems." <em>2018 51st Annual IEEE/ACM
+International Symposium on Microarchitecture (MICRO)</em>. IEEE, 2018.
+<a class="ref-link" href="https://doi.org/10.1109/MICRO.2018.00022">DOI: 10.1109/MICRO.2018.00022</a> [Prefetching for GPU UVM]</p></li>
+<li id="ref-zhao-2020"><p>Zhao, Hongzhang, et al. "Multi-GPU graph analytics." <em>2020
+IEEE International Parallel and Distributed Processing Symposium
+(IPDPS)</em>. IEEE, 2020. <a class="ref-link" href="https://doi.org/10.1109/IPDPS47924.2020.00116">DOI: 10.1109/IPDPS47924.2020.00116</a> [Multi-GPU
+TLB coherency protocols]</p></li>
 </ol>
 <nav class="chapter-nav" aria-label="Chapter navigation">
 <a class="chapter-nav-prev" href="chapter-10-WITH-FIGURES.html" rel="prev">&larr; Chapter 10: Hardware Accelerators and External MMU Access</a>

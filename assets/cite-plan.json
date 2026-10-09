@@ -1,0 +1,21 @@
+{
+ "_doc": "PIPELINE.md §7.13. Reviewed in-text citations, applied by scripts/apply_cites.py. 'after' = text that ends the supported claim; 'why' = what the source establishes. Chapters with done=true move uncited references to Further Reading.",
+ "chapters": {
+  "11": {"done": true, "cites": [
+   {"ref": "jouppi-2017", "after": "running custom AI accelerators—Tensor Processing Units (TPUs)—for over a year", "why": "ISCA 2017 TPU paper: TPUs deployed in Google datacenters since 2015"},
+   {"ref": "jouppi-2017", "after": "multiply-accumulate (MAC) units arranged in a two-dimensional array", "why": "TPUv1 matrix unit = 65,536 (256x256) 8-bit MACs, systolic"},
+   {"ref": "google-2024", "after": "TPU v4 achieves 275 teraFLOPS with only 1.2 TB/s of memory bandwidth", "why": "Cloud TPU system architecture: v4 275 TFLOPS bf16, 1200 GBps HBM"},
+   {"ref": "vesely-2016", "after": "provides shared page tables between CPU and GPU", "why": "ISPASS 2016 measures AMD HSA shared virtual memory (GPU walks CPU page tables via IOMMUv2)"},
+   {"ref": ["pichai-2014", "power-2014"], "after": "and CPU and GPU can share address spaces", "why": "both papers design GPU MMUs for a unified CPU-GPU virtual address space"},
+   {"ref": "intel-2023", "after": "integrates 24 RDMA network interfaces directly on the accelerator die", "why": "Gaudi 2 white paper: 24 integrated 100 GbE RoCE ports"},
+   {"ref": "amd-2024", "after": "The MI300X's 192 GB capacity enables fitting models that require two or more NVIDIA H100s (80 GB each)", "why": "AMD MI300X product page: 192 GB HBM3"},
+   {"ref": "intel-2024", "after": "x86-64's four-level page tables (PML4 → PDPT → PD → PT)", "why": "Intel SDM Vol 3A ch.4 4-level paging structures"},
+   {"ref": "pcisig-2022", "after": "how PCIe ATS enables device-side caching of translations", "why": "PCIe Base spec defines ATS and the device Address Translation Cache"},
+   {"ref": "arm-2024", "after": "hardware broadcast via shareability domains on ARM", "why": "Arm ARM: broadcast TLBI to Inner Shareable domain"},
+   {"ref": "nvidia-2024a", "after": "pages migrate on first access", "why": "CUDA Programming Guide, Unified Memory: on-demand page migration on first touch"},
+   {"ref": "nvidia-2024a", "after": "initiates page migration without waiting for page faults", "why": "CUDA Programming Guide documents cudaMemPrefetchAsync"},
+   {"ref": "nvidia-2024c", "after": "handles gradient all-reduce during distributed training", "why": "NCCL user guide: collective all-reduce used for multi-GPU training"},
+   {"ref": "ganguly-2020", "after": "migration thrashing (when pages bounce between CPU and GPU repeatedly)", "why": "IPDPS 2020: page thrashing under GPU unified memory; adaptive migration"}
+  ]}
+ }
+}

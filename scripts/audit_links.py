@@ -8,6 +8,7 @@
   G12e  ledger entry/alias points at a reference that does not exist    ERROR
   G12f  TOC has one expand/collapse toggle and matches h2/h3 order             ERROR
   G12g  link_refs.py / build_toc.py would change the file (not idempotent / not applied)  ERROR
+  G12i  chapters in cite-plan: every main reference cited; others: WARN if no citations at all
   G12h  build_footer.py would change the file (footer missing, stale, or ad-hoc footer)  ERROR
 
 Usage: python3 scripts/audit_links.py [--strict] [chapters/]
@@ -21,11 +22,13 @@ import reflib as R
 import link_refs as L
 import build_toc as T
 import build_footer as F
+import apply_cites as A
 
 REPO = Path(__file__).resolve().parent.parent
 
 
-def audit(path, entries, aliases, strict=False, missing=()):
+def audit(path, entries, aliases, strict=False, missing=(), plan=None):
+    plan = plan if plan is not None else A.load_plan()
     page = path.read_text()
     ch = R.chapter_num(path)
     errs, warns = [], []
@@ -65,6 +68,18 @@ def audit(path, entries, aliases, strict=False, missing=()):
     for k, v in aliases.items():
         if k.startswith(f'ch{ch}:') and v.removeprefix('ref-') not in keys:
             errs.append(f'G12e alias {k} -> {v} matches no reference')
+    # G12i — every cited-chapter reference is cited; uncited ones live under Further Reading
+    cited = set(re.findall(r'<a class="cite" href="#ref-([^"]+)"', page))
+    fr_at = page.find('id="further-reading"')
+    main = refs if fr_at < 0 else [r for r in refs if r['start'] < fr_at]
+    if str(int(ch)) in plan and plan[str(int(ch))].get('done'):
+        unc = [r['key'] for r in main if r['key'] not in cited]
+        if unc:
+            errs.append(f'G12i {len(unc)} reference(s) never cited (move to Further Reading or cite): {unc[:4]}')
+        if not cited:
+            errs.append('G12i chapter has no in-text citations')
+    elif not cited:
+        warns.append('G12i chapter has no in-text citations (not yet in assets/cite-plan.json)')
     # G12f / G12g
     if 'id="toc-expand"' not in page:
         errs.append('G12f TOC lacks the single expand/collapse toggle')
@@ -73,6 +88,12 @@ def audit(path, entries, aliases, strict=False, missing=()):
             errs.append('G12g build_toc.py would change this file')
         if F.process(page, int(ch)) != page:
             errs.append('G12h build_footer.py would change this file (chapter footer missing/stale)')
+        cp = A.process(page, ch, plan)
+        cp = L.process(cp, ch, entries, aliases)
+        if plan.get(str(int(ch)), {}).get('done'):
+            cp = A.split_further(cp)
+        if cp != page:
+            errs.append('G12g apply_cites.py would change this file (cite plan not applied)')
         if L.process(page, ch, entries, aliases) != page:
             errs.append('G12g link_refs.py would change this file')
     except ValueError as x:

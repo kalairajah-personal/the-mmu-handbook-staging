@@ -66,23 +66,41 @@ def ref_record(li_inner):
     return {'base': base or 'ref', 'year': year, 'names': names, 'text': t}
 
 
-LI_RE = re.compile(r'<li(?:\s+id="[^"]*")?>(.*?)</li>', re.S)
+LI_RE = re.compile(r'<li(?:\s+id="(ref-[^"]*)")?>(.*?)</li>', re.S)
 
 
 def parse_refs(page):
-    """List of dicts {start, end, inner, key, year, names} for every reference <li>, in order."""
+    """List of dicts {start, end, inner, key, year, names} for every reference <li>, in order.
+
+    Keys are stable: an <li> that already carries id="ref-…" keeps that key, so moving entries
+    (e.g. to Further Reading) never re-letters a/b suffixes. New entries get surname-year, with
+    a/b suffixes only when that base repeats.
+    """
     span = refs_span(page)
     if not span:
         return []
     s0, e0 = span
-    out, seen = [], {}
+    out = []
     for m in LI_RE.finditer(page, s0, e0):
-        r = ref_record(m.group(1))
-        k = f"{r['base']}-{r['year']}"
-        seen[k] = seen.get(k, 0) + 1
-        out.append(dict(r, start=m.start(), end=m.end(), inner=m.group(1), k0=k, n=seen[k]))
-    for r in out:  # a/b suffix only when a base key repeats
-        r['key'] = r['k0'] + (chr(96 + r['n']) if seen[r['k0']] > 1 else '')
+        r = ref_record(m.group(2))
+        out.append(dict(r, start=m.start(), end=m.end(), inner=m.group(2), fixed=(m.group(1) or '')[4:],
+                        k0=f"{r['base']}-{r['year']}"))
+    taken = {r['fixed'] for r in out if r['fixed']}
+    counts = {}
+    for r in out:
+        counts[r['k0']] = counts.get(r['k0'], 0) + 1
+    seen = {}
+    for r in out:
+        if r['fixed']:
+            r['key'] = r['fixed']
+            continue
+        seen[r['k0']] = seen.get(r['k0'], 0) + 1
+        key = r['k0'] + (chr(96 + seen[r['k0']]) if counts[r['k0']] > 1 else '')
+        while key in taken:                      # never collide with an existing id
+            seen[r['k0']] += 1
+            key = r['k0'] + chr(96 + seen[r['k0']])
+        taken.add(key)
+        r['key'] = key
     return out
 
 

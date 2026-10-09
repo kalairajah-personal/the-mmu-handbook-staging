@@ -1,4 +1,5 @@
 """Tests for reflib / link_refs / build_toc / audit_links (PIPELINE §7). Run: python3 -m pytest tests -q"""
+import re
 import sys
 from pathlib import Path
 
@@ -150,3 +151,13 @@ def test_etal_and_venue_mentions_linked_without_text_change():
     assert '<a class="cite" href="#ref-allen-2021">Allen et al.</a>' in out
     assert 'Kim et al. (2014)' in out  # no ref for Kim in fixture: untouched
     assert L.process(out, '02', {}, {'ch02:Nobody,1999': 'ref-intel-2022'}) == out
+
+
+def test_keys_stable_when_entries_move():
+    p = PAGE.replace('(1970)</strong>', '(1968)</strong>')
+    once = L.link_refs(p, '02', {}, L.new_stats())
+    assert 'id="ref-denning-1968a"' in once and 'id="ref-denning-1968b"' in once
+    # move the 'b' entry to the top: keys must not swap
+    b = re.search(r'<li id="ref-denning-1968b">.*?</li>\n', once, re.S).group(0)
+    moved = once.replace(b, '').replace('<ol type="1">\n', '<ol type="1">\n' + b, 1)
+    assert [r['key'] for r in R.parse_refs(moved)][:2] == ['denning-1968b', 'denning-1968a']
