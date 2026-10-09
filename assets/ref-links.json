@@ -9,12 +9,12 @@
    "checked": "2026-10-09"
   },
   "ch01:hennessy-2024": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
-   "checked": "2026-10-09"
+   "url": "https://shop.elsevier.com/books/computer-architecture/hennessy/978-0-443-15406-5",
+   "verified_by": "publisher page (title/edition/authors match)",
+   "checked": "2026-10-09",
+   "note": "7th ed., ISBN 978-0-443-15406-5"
   },
   "ch01:jacob-2010": {
    "status": "mismatch",
@@ -95,19 +95,17 @@
    "checked": "2026-10-09"
   },
   "ch02:love-2010": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.oreilly.com/library/view/linux-kernel-development/9780768696974/",
+   "verified_by": "O'Reilly (Addison-Wesley ebook) page",
    "checked": "2026-10-09"
   },
   "ch02:silberschatz-2018": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://codex.cs.yale.edu/avi/os-book/OS10/index.html",
+   "verified_by": "official book website (10th ed.)",
    "checked": "2026-10-09"
   },
   "ch03:arcangeli-2011": {
@@ -122,7 +120,7 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -134,26 +132,24 @@
    "checked": "2026-10-09"
   },
   "ch03:silberschatz-2018": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://codex.cs.yale.edu/avi/os-book/OS10/index.html",
+   "verified_by": "official book website (10th ed.)",
    "checked": "2026-10-09"
   },
   "ch03:tanenbaum-2015": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://pearson.com/en-au/subject-catalog/p/modern-operating-systems-global-edition/P200000005537/9781292061955",
+   "verified_by": "publisher page (title/edition/authors match)",
    "checked": "2026-10-09"
   },
   "ch04:amd-2016a": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -161,7 +157,7 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -183,7 +179,7 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -209,11 +205,10 @@
    "checked": "2026-10-09"
   },
   "ch04:benyehuda-2007": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.kernel.org/doc/ols/2007/ols2007v1-pages-9-20.pdf",
+   "verified_by": "kernel.org OLS 2007 proceedings vol.1 pp.9-20 (matches cited pages)",
    "checked": "2026-10-09"
   },
   "ch04:cox-2006": {
@@ -242,7 +237,7 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -268,11 +263,11 @@
    "checked": "2026-10-09"
   },
   "ch04:marwaha-2022": {
-   "status": "search",
+   "status": "none",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "verified_by": "browser/web check 2026-10-09",
+   "note": "No IEEE CAL 2022 paper with this title/authors found",
    "checked": "2026-10-09"
   },
   "ch04:navarro-2002": {
@@ -314,7 +309,7 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -334,27 +329,24 @@
    "checked": "2026-10-09"
   },
   "ch06:amd-2020a": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://docs.amd.com/v/u/en-US/SEV-SNP-strengthening-vm-isolation-with-integrity-protection-and-more",
+   "verified_by": "docs.amd.com doc 70366",
    "checked": "2026-10-09"
   },
   "ch06:amd-2020b": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/programmer-references/55766_SEV-KM_API_Specification.pdf",
+   "verified_by": "amd.com Pub 55766",
    "checked": "2026-10-09"
   },
   "ch06:amd-2020c": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/programmer-references/55766_SEV-KM_API_Specification.pdf",
+   "verified_by": "amd.com Pub 55766",
    "checked": "2026-10-09"
   },
   "ch06:amd-2023a": {
@@ -372,20 +364,20 @@
    "checked": "2026-10-09"
   },
   "ch06:amd-2023c": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
-   "checked": "2026-10-09"
+   "url": "https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/white-papers/amd-cdna-3-white-paper.pdf",
+   "verified_by": "amd.com CDNA 3 white paper (covers MI300X/MI300A)",
+   "checked": "2026-10-09",
+   "note": "official title: 'Introducing AMD CDNA 3 Architecture'"
   },
   "ch06:amd-2023d": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
-   "checked": "2026-10-09"
+   "url": "https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/white-papers/amd-cdna-3-white-paper.pdf",
+   "verified_by": "amd.com CDNA 3 white paper (covers MI300X/MI300A)",
+   "checked": "2026-10-09",
+   "note": "official title: 'Introducing AMD CDNA 3 Architecture'"
   },
   "ch06:anderson-2020": {
    "status": "verified",
@@ -398,56 +390,52 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch06:arm-2009": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://documentation-service.arm.com/static/5f212796500e883ab8e74531",
+   "verified_by": "Arm documentation service: PRD29-GENC-009492C",
    "checked": "2026-10-09"
   },
   "ch06:arm-2018": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch06:arm-2019": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://documentation-service.arm.com/static/624ea580caabfd7b3c13e23f",
+   "verified_by": "Arm documentation service: Armv8.5-A MTE White Paper",
    "checked": "2026-10-09"
   },
   "ch06:arm-2020": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch06:arm-2021a": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.arm.com/architecture/security-features/arm-confidential-compute-architecture",
+   "verified_by": "arm.com CCA page",
    "checked": "2026-10-09"
   },
   "ch06:arm-2021b": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://developer.arm.com/documentation/den0125/latest",
+   "verified_by": "Arm DEN0125 'Introducing Arm CCA'",
    "checked": "2026-10-09"
   },
   "ch06:arm-2022": {
@@ -479,11 +467,10 @@
    "checked": "2026-10-09"
   },
   "ch06:bryant-2015": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://csapp.cs.cmu.edu/3e/about.html",
+   "verified_by": "official book website (CS:APP3e)",
    "checked": "2026-10-09"
   },
   "ch06:costan-2016": {
@@ -501,43 +488,40 @@
    "checked": "2026-10-09"
   },
   "ch06:hennessy-2017": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://shop.elsevier.com/books/computer-architecture/hennessy/978-0-12-811905-1",
+   "verified_by": "publisher page (title/edition/authors match)",
    "checked": "2026-10-09"
   },
   "ch06:intel-2020a": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch06:intel-2020b": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.intel.com/content/www/us/en/content-details/690419/intel-trust-domain-extensions.html",
+   "verified_by": "intel.com TDX white paper page",
    "checked": "2026-10-09"
   },
   "ch06:intel-2021": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch06:intel-2023": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.intel.com/content/www/us/en/developer/tools/trust-domain-extensions/documentation.html",
+   "verified_by": "intel.com TDX documentation page (module specs)",
    "checked": "2026-10-09"
   },
   "ch06:intel-2024a": {
@@ -576,19 +560,17 @@
    "checked": "2026-10-09"
   },
   "ch06:kaplan-2016": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.amd.com/content/dam/amd/en/documents/epyc-business-docs/white-papers/memory-encryption-white-paper.pdf",
+   "verified_by": "amd.com white paper",
    "checked": "2026-10-09"
   },
   "ch06:kaplan-2017": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.amd.com/content/dam/amd/en/documents/epyc-business-docs/white-papers/Protecting-VM-Register-State-with-SEV-ES.pdf",
+   "verified_by": "amd.com white paper",
    "checked": "2026-10-09"
   },
   "ch06:kemerlis-2013": {
@@ -617,32 +599,31 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch06:nvidia-2022b": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
-   "checked": "2026-10-09"
+   "url": "https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/HCC-Whitepaper-v1.0.pdf",
+   "verified_by": "NVIDIA 'Confidential Compute on NVIDIA Hopper H100' WP-11459-001",
+   "checked": "2026-10-09",
+   "note": "dated 2023, ref says 2022"
   },
   "ch06:nvidia-2023": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch06:one-1996": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://phrack.org/issues/49/smashing-the-stack-for-fun-and-profit",
+   "verified_by": "phrack.org Issue 49 article",
    "checked": "2026-10-09"
   },
   "ch06:park-2019": {
@@ -667,27 +648,25 @@
    "checked": "2026-10-09"
   },
   "ch06:riscv-2021c": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://docs.riscv.org/reference/isa/priv/smepmp.html",
+   "verified_by": "RISC-V ratified Smepmp v1.0 (formerly ePMP draft)",
    "checked": "2026-10-09"
   },
   "ch06:serebryany-2020": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch06:silberschatz-2018": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://codex.cs.yale.edu/avi/os-book/OS10/index.html",
+   "verified_by": "official book website (10th ed.)",
    "checked": "2026-10-09"
   },
   "ch06:solar-1997": {
@@ -698,11 +677,10 @@
    "checked": "2026-10-09"
   },
   "ch06:tanenbaum-2015": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://pearson.com/en-au/subject-catalog/p/modern-operating-systems-global-edition/P200000005537/9781292061955",
+   "verified_by": "publisher page (title/edition/authors match)",
    "checked": "2026-10-09"
   },
   "ch06:the-2018": {
@@ -749,11 +727,10 @@
    "checked": "2026-10-09"
   },
   "ch07:bovet-2005": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.oreilly.com/library/view/understanding-the-linux/0596005652/",
+   "verified_by": "publisher page (title/edition/authors match)",
    "checked": "2026-10-09"
   },
   "ch07:intel-2023": {
@@ -778,18 +755,17 @@
    "checked": "2026-10-09"
   },
   "ch07:silberschatz-2018": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://codex.cs.yale.edu/avi/os-book/OS10/index.html",
+   "verified_by": "official book website (10th ed.)",
    "checked": "2026-10-09"
   },
   "ch07:vesely-2015": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -797,16 +773,15 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch08:gregg-2020": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.pearson.com/en-us/subject-catalog/p/systems-performance/P200000000297/9780136821656",
+   "verified_by": "publisher page (title/edition/authors match)",
    "checked": "2026-10-09"
   },
   "ch08:johnson-1994": {
@@ -824,11 +799,10 @@
    "checked": "2026-10-09"
   },
   "ch09:bovet-2005": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.oreilly.com/library/view/understanding-the-linux/0596005652/",
+   "verified_by": "publisher page (title/edition/authors match)",
    "checked": "2026-10-09"
   },
   "ch09:gorman-2004": {
@@ -846,11 +820,10 @@
    "checked": "2026-10-09"
   },
   "ch09:silberschatz-2018": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://codex.cs.yale.edu/avi/os-book/OS10/index.html",
+   "verified_by": "official book website (10th ed.)",
    "checked": "2026-10-09"
   },
   "ch10:arm-2019": {
@@ -861,19 +834,17 @@
    "checked": "2026-10-09"
   },
   "ch10:benyehuda-2006": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.kernel.org/doc/ols/2006/ols2006v1-pages-71-86.pdf",
+   "verified_by": "kernel.org OLS 2006 PDF: title+authors match",
    "checked": "2026-10-09"
   },
   "ch10:infiniband-2020": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.infinibandta.org/ibta-specification/",
+   "verified_by": "IBTA specification page",
    "checked": "2026-10-09"
   },
   "ch10:intel-2020": {
@@ -887,7 +858,7 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -895,7 +866,7 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -903,16 +874,15 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch11:apple-2024": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://developer.apple.com/documentation/xcode/optimizing-gpu-performance",
+   "verified_by": "Apple Developer Documentation",
    "checked": "2026-10-09"
   },
   "ch11:arm-2024": {
@@ -923,11 +893,10 @@
    "checked": "2026-10-09"
   },
   "ch11:brendan-2019": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.pearson.com/store/en-gb/p/bpf-performance-tools/P200000009487",
+   "verified_by": "publisher page (title/edition/authors match)",
    "checked": "2026-10-09"
   },
   "ch11:cox-2006": {
@@ -939,11 +908,10 @@
    "checked": "2026-10-09"
   },
   "ch11:intel-2023": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.intel.com/content/www/us/en/content-details/839363/intel-gaudi-2-ai-accelerators-white-paper.html",
+   "verified_by": "intel.com Gaudi 2 white paper",
    "checked": "2026-10-09"
   },
   "ch11:intel-2024": {
@@ -954,18 +922,18 @@
    "checked": "2026-10-09"
   },
   "ch11:jedec-2023": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
-   "checked": "2026-10-09"
+   "url": "https://www.jedec.org/standards-documents/docs/jesd238a",
+   "verified_by": "jedec.org HBM3 standard page",
+   "checked": "2026-10-09",
+   "note": "JESD238A now superseded; page redirects to current revision"
   },
   "ch11:nvidia-2023": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -987,17 +955,17 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
   "ch12:amd-2024": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
-   "checked": "2026-10-09"
+   "url": "https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/white-papers/amd-cdna-3-white-paper.pdf",
+   "verified_by": "amd.com CDNA 3 white paper (covers MI300X/MI300A)",
+   "checked": "2026-10-09",
+   "note": "official title: 'Introducing AMD CDNA 3 Architecture'"
   },
   "ch12:arm-2023": {
    "status": "verified",
@@ -1007,11 +975,11 @@
    "checked": "2026-10-09"
   },
   "ch12:bhattacharjee-2019": {
-   "status": "search",
+   "status": "none",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "verified_by": "browser/web check 2026-10-09",
+   "note": "No 'Translation Lookaside Buffers' Synthesis Lecture by Bhattacharjee & Martonosi found; nearest real work: Bhattacharjee & Lustig 2017, doi:10.1007/978-3-031-01757-5",
    "checked": "2026-10-09"
   },
   "ch12:brown-2020": {
@@ -1222,11 +1190,11 @@
    "checked": "2026-10-09"
   },
   "ch14:bhattacharjee-2019": {
-   "status": "search",
+   "status": "none",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "verified_by": "browser/web check 2026-10-09",
+   "note": "No 'Translation Lookaside Buffers' Synthesis Lecture by Bhattacharjee & Martonosi found; nearest real work: Bhattacharjee & Lustig 2017, doi:10.1007/978-3-031-01757-5",
    "checked": "2026-10-09"
   },
   "ch14:brown-2020": {
@@ -1427,7 +1395,7 @@
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },
@@ -1584,11 +1552,11 @@
    "checked": "2026-10-09"
   },
   "ch19:pcisig-2020": {
-   "status": "search",
+   "status": "mismatch",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "verified_by": "browser/web check 2026-10-09",
+   "note": "ATS Revision 1.1 is 2009 (now part of PCIe Base spec), not 2020",
    "checked": "2026-10-09"
   },
   "ch19:tang-2025": {
@@ -1599,11 +1567,11 @@
    "checked": "2026-10-09"
   },
   "ch19:wang-2024": {
-   "status": "search",
+   "status": "mismatch",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "verified_by": "browser/web check 2026-10-09",
+   "note": "Real first author W. Huang et al., ADMS 2024, https://vldb.org/workshops/2024/proceedings/ADMS/ADMS24_01.pdf",
    "checked": "2026-10-09"
   },
   "ch19:zhang-2025": {
@@ -1711,11 +1679,10 @@
    "checked": "2026-10-09"
   },
   "ch21:arm-2021": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://documentation-service.arm.com/static/624ea580caabfd7b3c13e23f",
+   "verified_by": "Arm documentation service: Armv8.5-A MTE White Paper",
    "checked": "2026-10-09"
   },
   "ch21:bauereiss-2024": {
@@ -1727,11 +1694,10 @@
    "checked": "2026-10-09"
   },
   "ch21:cisa-2023": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.cisa.gov/news-events/news/urgent-need-memory-safety-software-products",
+   "verified_by": "cisa.gov, 2023-09-20",
    "checked": "2026-10-09"
   },
   "ch21:guzairov-2026": {
@@ -1757,11 +1723,10 @@
    "checked": "2026-10-09"
   },
   "ch21:microsoft-2019": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.microsoft.com/en-us/msrc/blog/2019/07/a-proactive-approach-to-more-secure-code",
+   "verified_by": "MSRC blog post",
    "checked": "2026-10-09"
   },
   "ch21:serebryany-2018": {
@@ -1779,18 +1744,17 @@
    "checked": "2026-10-09"
   },
   "ch21:watson-2023b": {
-   "status": "search",
+   "status": "verified",
    "doi": null,
-   "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
-   "note": "official landing page not yet verified",
+   "url": "https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-986.html",
+   "verified_by": "Cambridge tech report UCAM-CL-TR-986: title+authors match",
    "checked": "2026-10-09"
   },
   "ch22:pcisig-2022": {
    "status": "search",
    "doi": null,
    "url": null,
-   "verified_by": "not found in Crossref/usenix/arXiv pass 2026-10-09",
+   "verified_by": "not found after Crossref/usenix/arXiv/publisher/web search 2026-10-09",
    "note": "official landing page not yet verified",
    "checked": "2026-10-09"
   },

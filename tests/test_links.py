@@ -107,3 +107,14 @@ def test_audit(tmp_path):
     errs, warns = A.audit(f, {}, {'ch02:Nobody,1999': 'ref-intel-2022'})
     assert errs == []
     assert any('ref-belady-1966' in w for w in warns)
+
+
+def test_ledger_change_replaces_appended_link():
+    once = L.link_refs(PAGE, '02', {'ch02:belady-1966': {'status': 'search'}}, L.new_stats())
+    assert 'ref-link--search' in once
+    twice = L.link_refs(once, '02', {'ch02:belady-1966': {'status': 'verified', 'doi': '10.1147/sj.52.0078'}}, L.new_stats())
+    assert 'ref-link--search' not in twice
+    assert 'algorithms”. <a class="ref-link" href="https://doi.org/10.1147/sj.52.0078">doi:10.1147/sj.52.0078</a></p>' in twice
+    gone = L.link_refs(twice, '02', {'ch02:belady-1966': {'status': 'none'}}, L.new_stats())
+    assert 'sj.52.0078' not in gone
+    assert L.link_refs(twice, '02', {'ch02:belady-1966': {'status': 'verified', 'doi': '10.1147/sj.52.0078'}}, L.new_stats()) == twice

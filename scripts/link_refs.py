@@ -20,6 +20,7 @@ LEDGER = REPO / 'assets' / 'ref-links.json'
 DOI_RE = re.compile(r'(?i)(?:\bdoi:\s*|https?://(?:dx\.)?doi\.org/)(10\.\d{4,9}/[^\s<>"]+?)(?=[.,;)]?(?:\s|$))')
 URL_RE = re.compile(r'https?://[^\s<>"]+?(?=[.,;)]?(?:\s|$))')
 A_RE = re.compile(r'<a\b([^>]*)>', re.S)
+LEDGER_LINK_RE = re.compile(r' <a class="ref-link[^"]*" href="[^"]*">[^<]*</a>(</p>\s*)?$')
 
 
 def load_ledger(path=LEDGER):
@@ -71,6 +72,11 @@ def link_refs(page, ch, entries, stats):
     refs = R.parse_refs(page)
     for r in reversed(refs):
         inner = r['inner']
+        e = entries.get(f'ch{ch}:{r["key"]}')
+        if e:
+            # ledger keys only exist for refs with no DOI/URL in their text, so any trailing
+            # ref-link is one this script appended earlier: drop it and re-derive from the ledger
+            inner = LEDGER_LINK_RE.sub(r'\1', inner)
         if 'ref-link' not in inner:
             # existing <a href> (e.g. Ch01) -> tag it; else wrap DOI/URL text; else ledger
             if re.search(r'<a\b[^>]*href=', inner):
